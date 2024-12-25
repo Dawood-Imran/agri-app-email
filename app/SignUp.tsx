@@ -5,6 +5,11 @@ import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'; // Correct import for MaterialCommunityIcons
 import { Toast } from './components/Toast';
+import {useAuth} from './context/AuthContext';
+import { my_auth, db } from '@/firebaseConfig';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; 
+
 
 const { width } = Dimensions.get('window'); // Get screen width
 
@@ -44,8 +49,8 @@ const SignUp = () => {
       showToast(t('Invalid Email'));
       return false;
     }
-    if (pinCode.length !== 4 || !/^\d+$/.test(pinCode.trim())) {
-      showToast(t('Pin Code Must Be 4 Digits'));
+    if (pinCode.length !== 6 || !/^\d+$/.test(pinCode.trim())) {
+      showToast(t('Pin Code Must Be 6 Digits'));
       return false;
     }
     if (pinCode !== confirmPinCode) {
@@ -59,30 +64,44 @@ const SignUp = () => {
 
   const handleSignUp = async () => {
     setLoading(true); // Start loading
-    // Simulate an API call
-    setTimeout(() => {
-      setLoading(false); // Stop loading
-      if (validateForm()) {
-        Alert.alert(
-          t('Confirm'),
-          t('Are you sure you want to create an account with phone number +92') + phoneNumber + '?',
-          [
-            {
-              text: t('Cancel'),
-              style: 'cancel'
-            },
-            {
-              text: t('Yes'),
-              onPress: () => {
-                alert(t('Account Created Successfully'));
-                router.replace({ pathname: '/SignIn', params: { userType } });
-              }
-            }
-          ]
-        );
+    if (validateForm()) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(my_auth, email, pinCode);
+        const userRef = doc(db, "users", userCredential.user.uid);
+        
+        // Ensure userType is not undefined or null before saving it to Firestore
+        const userData = {
+          name,
+          email,
+          userType: userType || "",  // Set to empty string if userType is not provided
+          createdAt: new Date(),
+        };
+  
+        await setDoc(userRef, userData);
+  
+        if (userType) {
+          const userTypeRef = doc(db, userType.toLowerCase(), userCredential.user.uid);
+          await setDoc(userTypeRef, {
+            name,
+            email,
+            createdAt: new Date(),
+          });
+        }
+  
+        alert(t('Account Created Successfully'));
+        router.replace({ pathname: '/SignIn', params: { userType } });
+      } catch (error) {
+        showToast(error.message);
+        console.error('Error creating user:', error);
+      } finally {
+        setLoading(false); // Stop loading
       }
-    }, 2000);
+    } else {
+      setLoading(false); // Stop loading if validation fails
+    }
   };
+  
+  
 
   const handleBack = () => {
     router.push({ pathname: '/SignIn', params: { userType } });
@@ -166,14 +185,14 @@ const SignUp = () => {
         <Input
           placeholder={t("Enter Pin Code")}
           onChangeText={(text) => {
-            if (text.length <= 4) {
+            if (text.length <= 6) {
               setPinCode(text);
             }
           }}
           value={pinCode}
           keyboardType="numeric"
           secureTextEntry
-          maxLength={4}
+          maxLength={6}
           leftIcon={
             <View style={styles.iconContainer}>
               <Icon name="lock" type="material" color="#FFFFFF" />
@@ -189,14 +208,14 @@ const SignUp = () => {
         <Input
           placeholder={t("Confirm Pin Code")}
           onChangeText={(text) => {
-            if (text.length <= 4) {
+            if (text.length <= 6) {
               setConfirmPinCode(text);
             }
           }}
           value={confirmPinCode}
           keyboardType="numeric"
           secureTextEntry
-          maxLength={4}
+          maxLength={6}
           leftIcon={
             <View style={styles.iconContainer}>
               <Icon name="lock" type="material" color="#FFFFFF" />

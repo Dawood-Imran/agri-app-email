@@ -4,6 +4,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { Toast } from './components/Toast';
+import {useAuth} from './context/AuthContext';
+import { my_auth } from '@/firebaseConfig';
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 
 const { width } = Dimensions.get('window'); // Get screen width
 
@@ -41,14 +45,22 @@ const SignIn = () => {
 
   const handleSignIn = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
       if (!email.trim() || !pinCode.trim()) {
         showToast(t('All Fields Required'));
+        setLoading(false);
         return;
       }
 
-      // Here you would typically handle authentication
+      // Sign in with email and password
+      const response = await signInWithEmailAndPassword(my_auth, email, pinCode);
+      console.log(response);
+      // Set user data in context
+      Alert.alert(t('Success'), t('You have successfully signed in'));
+
+      
+
+      // Navigate based on userType
       if (userType) {
         switch(userType.toLowerCase()) {
           case 'farmer':
@@ -69,7 +81,11 @@ const SignIn = () => {
         Alert.alert(t('error'), 'Please select user type');
         router.replace('/UserSelectionScreen');
       }
-    }, 2000);
+    } catch (error) {
+      showToast(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFormSubmit = () => {
@@ -92,10 +108,10 @@ const SignIn = () => {
       setToastMessage(t('Invalid Email Address'));
       return false;
     }
-    if (pinCode.length !== 4 || !/^\d+$/.test(pinCode)) {
+    if (pinCode.length !== 6 || !/^\d+$/.test(pinCode)) {
       
       setToastVisible(true);
-      setToastMessage(t('Pin Code Must Be 4 Digits'));
+      setToastMessage(t('Pin Code Must Be 6 Digits'));
       return false;
     }
     return true;
@@ -180,14 +196,14 @@ const SignIn = () => {
           <Input
             placeholder={t("Enter Pin Code")}
             onChangeText={(text) => {
-              if (text.length <= 4) {
+              if (text.length <= 6) {
                 setPinCode(text);
               }
             }}
             value={pinCode}
             keyboardType="numeric"
             secureTextEntry
-            maxLength={4}
+            maxLength={6}
             leftIcon={
               <View style={styles.iconContainer}>
                 <Icon name="lock" type="material" color="#FFFFFF" />

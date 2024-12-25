@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image , Text} from 'react-native';
 import { Card, Icon } from 'react-native-elements';
 
+import { getAuth } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig'
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 
@@ -27,9 +30,12 @@ const MenuTab = () => {
   const router = useRouter();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState('');
+  const [userType, setUserType] = useState('');
 
   useEffect(() => {
     fetchWeather();
+    fetchUser();
   }, []);
 
   const fetchWeather = async () => {
@@ -41,6 +47,33 @@ const MenuTab = () => {
     } catch (error) {
       console.error('Error fetching weather data:', error);
       setLoading(false);
+    }
+  };
+
+  const fetchUser = async () => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.exists()) {
+          setUserName(userDoc.data().name);
+          setUserType(userDoc.data().userType);
+        }
+
+        const userTypeRef = doc(db, userType.toLowerCase(), user.uid); 
+        const userTypeDoc = await getDoc(userTypeRef);
+        
+        console.log(userTypeDoc.data()?.email);
+        console.log(userType);
+      
+        
+      }
+
+    } catch (error) {
+      console.error('Error fetching user name:', error);
     }
   };
 
@@ -110,7 +143,7 @@ const MenuTab = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.greeting}>Hello, Dawood</Text>
+            <Text style={styles.greeting}>Hello, {userName}</Text>
             <Text style={styles.subGreeting}>
               {weatherData ? `It's a ${weatherData.current.condition.text} day!` : 'Loading...'}
             </Text>
