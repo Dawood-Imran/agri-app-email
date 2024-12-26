@@ -15,6 +15,9 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { color } from 'react-native-elements/dist/helpers';
 import CustomHeader from '../app/components/CustomHeader';
+import { UserProvider } from './context/UserProvider';
+
+
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -47,6 +50,7 @@ export default function RootLayout() {
   };
 
   return (
+    <UserProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="SplashScreen" options={{ headerShown: false }} />
@@ -70,6 +74,7 @@ export default function RootLayout() {
         <Stack.Screen name="farmer/FieldDetails" options={{ ...commonHeaderOptions, title: t('fieldDetails') }} />
         <Stack.Screen name="farmer/SchemesList" options={{ ...commonHeaderOptions, title: t('agricultureSchemes') }} />
         <Stack.Screen name="farmer/SchemeDetails" options={{ ...commonHeaderOptions, title: t('schemeDetails') }} />
+        <Stack.Screen name="farmer/NewUserForm" options={{ headerShown: false }} />
 
         <Stack.Screen name="expert/dashboard" options={{ headerShown: false }} />
         <Stack.Screen name="expert/Profile" options={{ ...commonHeaderOptions, title: t('Profile') }} />
@@ -77,6 +82,7 @@ export default function RootLayout() {
         <Stack.Screen name="expert/Help" options={{ ...commonHeaderOptions, title: t('Help') }} />
         <Stack.Screen name="expert/CoinScreen" options={{ ...commonHeaderOptions, title: t('Coins') }} />
         <Stack.Screen name="expert/MessagesTab" options={{ headerShown: false }} />
+        <Stack.Screen name="expert/NewExpert" options={{ headerShown: false }} />
 
         <Stack.Screen name="buyer/dashboard" options={{ headerShown: false }} />
         <Stack.Screen name="buyer/Profile" options={{ ...commonHeaderOptions, title: t('Profile') }} />
@@ -86,6 +92,7 @@ export default function RootLayout() {
         <Stack.Screen name="buyer/AuctionSystemTab" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
+    </UserProvider>
   );
 }
 

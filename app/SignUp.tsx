@@ -74,6 +74,7 @@ const SignUp = () => {
           name,
           email,
           userType: userType || "",  // Set to empty string if userType is not provided
+
           createdAt: new Date(),
         };
   
@@ -84,6 +85,7 @@ const SignUp = () => {
           await setDoc(userTypeRef, {
             name,
             email,
+            isNewUser: true,
             createdAt: new Date(),
           });
         }

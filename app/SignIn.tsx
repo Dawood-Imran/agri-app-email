@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Alert, ImageBackground , Text} from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { Toast } from './components/Toast';
 import {useAuth} from './context/AuthContext';
-import { my_auth } from '@/firebaseConfig';
+import { my_auth , db } from '@/firebaseConfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { getDoc, doc } from 'firebase/firestore';
+
+
 
 
 const { width } = Dimensions.get('window'); // Get screen width
@@ -22,6 +25,7 @@ const SignIn = () => {
   const [toastMessage, setToastMessage] = useState('');
   const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
+  const navigation = useNavigation();
 
   const isRTL = i18n.language === 'ur';
 
@@ -54,6 +58,7 @@ const SignIn = () => {
 
       // Sign in with email and password
       const response = await signInWithEmailAndPassword(my_auth, email, pinCode);
+      const user = response.user;
       console.log(response);
       // Set user data in context
       Alert.alert(t('Success'), t('You have successfully signed in'));
@@ -64,10 +69,34 @@ const SignIn = () => {
       if (userType) {
         switch(userType.toLowerCase()) {
           case 'farmer':
-            router.replace('/farmer/dashboard');
+            try {
+          
+              const userDoc = await getDoc(doc(db, 'farmer', user.uid));
+              if (userDoc.exists() && userDoc.data().isNewUser) {
+                navigation.navigate('farmer/NewUserForm');
+              } else {
+                // Navigate to dashboard if the user is not new
+                navigation.navigate('farmer/dashboard');
+              }
+            } catch (error) {
+              console.error('Error signing in:', error);
+              alert(error.message);
+            }
             break;
           case 'expert':
-            router.replace('/expert/dashboard');
+            try {   
+              const userDoc = await getDoc(doc(db, 'expert', user.uid));
+              console.log("Expert Data from Sign in",userDoc.data());
+              if (userDoc.exists() && userDoc.data().isNewUser) {
+                navigation.navigate('expert/NewExpert');
+              } else {
+                // Navigate to dashboard if the user is not new
+                navigation.navigate('expert/dashboard');
+              }
+            } catch (error) {
+              console.error('Error signing in:', error);
+              alert(error.message);
+            }
             break;
           case 'buyer':
             router.replace('/buyer/dashboard');

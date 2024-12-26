@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Icon } from 'react-native-elements';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View  } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import MenuTab from './MenuTab';
@@ -9,6 +9,9 @@ import AccountTab from './AccountTab';
 import CoinScreen from './CoinScreen';
 import CoinDisplay from '../../components/CoinDisplay';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { UserProvider , useUser } from '../context/UserProvider';
+
+
 
 const Tab = createBottomTabNavigator();
 
@@ -22,8 +25,10 @@ const FarmerDashboard = () => {
   const { t } = useTranslation();
   const [coins, setCoins] = useState(100); // Example initial value
   const navigation = useNavigation();
+  
 
   return (
+    
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color }) => {
@@ -89,6 +94,7 @@ const FarmerDashboard = () => {
       <Tab.Screen name={t('account')} component={AccountTab} />
       
     </Tab.Navigator>
+    
   );
 };
 

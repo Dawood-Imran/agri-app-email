@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View , Image , Text} from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 
 const Profile = () => {
@@ -10,6 +11,14 @@ const Profile = () => {
     address: '34 st. London'
   };
 
+  const { userName, userType, email , city , address } = useLocalSearchParams();
+  console.log('User Data Profile:', userName, userType, email , city , address);
+
+
+
+
+
+
   return (
     < View style={styles.container}>
         <View style={styles.profileSection}>
@@ -18,25 +27,25 @@ const Profile = () => {
             source={require('../../assets/images/farmer-icons/farmer.png')}
             style={styles.profileImage}
           />
-          < Text style={styles.name}>Hi! Dawood Imran</ Text>
+          < Text style={styles.name}>Hi! {userName}</ Text>
         </View>
       </View>
       <View style={styles.detailsCard}>
         <View style={styles.detailRow}>
           < Text style={styles.label}>Name</ Text>
-          < Text style={styles.value}>{farmerDetails.name}</ Text>
+          < Text style={styles.value}>{userName}</ Text>
         </View>
         <View style={styles.detailRow}>
-          < Text style={styles.label}>Phone</ Text>
-          < Text style={styles.value}>{farmerDetails.phone}</ Text>
+          < Text style={styles.label}>Email</ Text>
+          < Text style={styles.value}>{email}</ Text>
         </View>
         <View style={styles.detailRow}>
           < Text style={styles.label}>City</ Text>
-          < Text style={styles.value}>{farmerDetails.city}</ Text>
+          < Text style={styles.value}>{city}</ Text>
         </View>
         <View style={styles.detailRow}>
           < Text style={styles.label}>Address</ Text>
-          < Text style={styles.value}>{farmerDetails.address}</ Text>
+          < Text style={styles.value}>{address}</ Text>
         </View>
       </View>
     </ View>

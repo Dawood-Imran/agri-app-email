@@ -3,14 +3,23 @@ import { StyleSheet, View, TouchableOpacity , Text} from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { getAuth, signOut } from 'firebase/auth';
+
 
 const AccountTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const handleLogout = () => {
-    router.replace('/SignIn');
-  };
+  const handleLogout = async () => {
+      const auth = getAuth();
+      try {
+        await signOut(auth);
+        console.log('User signed out');
+        router.replace('/UserSelectionScreen');
+      } catch (error) {
+        console.error('Error signing out:', error);
+      }
+    };
 
   const menuItems = [
     {

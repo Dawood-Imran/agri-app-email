@@ -1,23 +1,38 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity , Text } from 'react-native';
-
+import { useUser } from '../context/UserProvider';
 import { Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { getAuth, signOut } from 'firebase/auth';
+
 
 const AccountTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { userName, userType, email , city , address  } = useUser();
+  
 
-  const handleLogout = () => {
-    router.replace('/SignIn');
+  const handleLogout = async () => {
+    const auth = getAuth();
+    try {
+      await signOut(auth);
+      console.log('User signed out');
+      router.replace('/UserSelectionScreen');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   const menuItems = [
     {
       title: t('Profile'),
       icon: 'person-outline',
-      onPress: () => router.push('/farmer/Profile'),
+      onPress: () => router.push({
+        pathname:'/farmer/Profile',
+        params:  { userName, userType, email , city , address }
+      }
+      ),
       color: '#4CAF50', // Green
     },
     {

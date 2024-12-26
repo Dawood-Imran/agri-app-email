@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image , Text} from 'react-native';
 import { Card, Icon } from 'react-native-elements';
 
-import { getAuth } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig'
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { useUser } from '../context/UserProvider';
 
 const API_KEY = "33e96491c93c4bb88bc130136241209";  // Replace with your WeatherAPI key
 const BASE_URL = "http://api.weatherapi.com/v1/current.json";
@@ -30,12 +28,14 @@ const MenuTab = () => {
   const router = useRouter();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState('');
-  const [userType, setUserType] = useState('');
+  
+  const { userName, userType, email } = useUser();
 
   useEffect(() => {
     fetchWeather();
-    fetchUser();
+    
+    console.log('User Data:', userName, userType, email);
+
   }, []);
 
   const fetchWeather = async () => {
@@ -50,32 +50,7 @@ const MenuTab = () => {
     }
   };
 
-  const fetchUser = async () => {
-    try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        const userRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userRef);
-
-        if (userDoc.exists()) {
-          setUserName(userDoc.data().name);
-          setUserType(userDoc.data().userType);
-        }
-
-        const userTypeRef = doc(db, userType.toLowerCase(), user.uid); 
-        const userTypeDoc = await getDoc(userTypeRef);
-        
-        console.log(userTypeDoc.data()?.email);
-        console.log(userType);
-      
-        
-      }
-
-    } catch (error) {
-      console.error('Error fetching user name:', error);
-    }
-  };
+ 
 
   const getWeatherIcon = (condition: string): string => {
     const iconMap: { [key: string]: string } = {
