@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image , Text} from 'react-native';
+import React, { useState, useEffect , useCallback} from 'react';
+import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image , Text } from 'react-native';
 import { Card, Icon } from 'react-native-elements';
 
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useUser } from '../context/UserProvider';
+
 
 const API_KEY = "33e96491c93c4bb88bc130136241209";  // Replace with your WeatherAPI key
 const BASE_URL = "http://api.weatherapi.com/v1/current.json";
@@ -23,29 +24,45 @@ interface WeatherData {
   };
 }
 
+
+
 const MenuTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   
-  const { userName, userType, email } = useUser();
+  const { userName, userType, email , city } = useUser(); 
+
+  
 
   useEffect(() => {
+    console.log('Farmer Data Menu Tab:', userName, userType, email, city);
     fetchWeather();
     
-    console.log('User Data:', userName, userType, email);
+}, [userName, userType, email, city]);
 
-  }, []);
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
   const fetchWeather = async () => {
+    setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=Faisalabad&aqi=no`);
+      await delay(1000);
+      const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${city}&aqi=no`);
+      if (!response.ok) {
+        throw new Error(`API returned status: ${response.status}`);
+      }
       const data = await response.json();
-      setWeatherData(data);
-      setLoading(false);
+      if (data && data.current) {
+        setWeatherData(data);
+      } else {
+        console.error('Unexpected API response:', data);
+      }
     } catch (error) {
       console.error('Error fetching weather data:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -74,7 +91,7 @@ const MenuTab = () => {
 
     return iconMap[condition] || 'cloud'; // Default to 'cloud' if condition is not found
   };
-
+ 
   const features = [
     { 
       name: t('yieldPrediction'), 
@@ -103,6 +120,19 @@ const MenuTab = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#FFC107" />
+      </View>
+    );
+  }
+
+  const conditionText = weatherData?.current?.condition?.text || t('noData');
+  const temperature = weatherData?.current?.temp_c !== undefined ? `${weatherData.current.temp_c}°C` : '--';
+  const humidity = weatherData?.current?.humidity !== undefined ? `${weatherData.current.humidity}%` : '--';
+  const windSpeed = weatherData?.current?.wind_kph !== undefined ? `${weatherData.current.wind_kph} km/h` : '--';
+
   
 
   return (
@@ -119,9 +149,19 @@ const MenuTab = () => {
         >
           <View style={styles.header}>
             <Text style={styles.greeting}>Hello, {userName}</Text>
+            <View style={styles.locationContainer}>
+      
+          <Image source={require('../../assets/images/farmer-icons/weather-icons/map.png')} style={styles.locationIcon} />
+          <Text style={styles.locationText}>{city}</Text>
+        </View>
             <Text style={styles.subGreeting}>
               {weatherData ? `It's a ${weatherData.current.condition.text} day!` : 'Loading...'}
             </Text>
+
+            
+
+            {loading && <ActivityIndicator size="large" color="#FFFFFF" />}
+
           </View>
 
           <View style={styles.weatherContainer}>
@@ -136,7 +176,7 @@ const MenuTab = () => {
                 </Text>
                 <Text style={styles.weatherLabel}>{t('temperature')}</Text>
               </View>
-
+  
               <View style={styles.weatherItem}>
                 <Image 
                   source={require('../../assets/images/farmer-icons/weather-icons/humidity.png')}
@@ -224,13 +264,34 @@ const styles = StyleSheet.create({
   weatherContainer: {
     padding: 20,
   },
+  locationContainer: {
+    flexDirection: 'row',
+    marginTop: 5,
+    
+  },
+  locationIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+  },
+  locationText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+  },
   weatherRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
   },
+
+  Location: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    opacity: 0.8,
+    
+  },
   weatherItem: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(182, 141, 141, 0.15)',
     borderRadius: 15,
     padding: 15,
     alignItems: 'center',
@@ -286,6 +347,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

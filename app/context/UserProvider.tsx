@@ -88,8 +88,8 @@ export const UserProvider: React.FC = ({ children }) => {
         fetchUser();
       } else {
         // Reset user data if not authenticated
-        setUserName(''); 
-        setUserType(''); 
+        setUserName('');  
+        setUserType('');  
         setEmail('');
         setCity('');
         setAddress('');  

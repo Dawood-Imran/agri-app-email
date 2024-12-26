@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Text, FlatList, Image, RefreshControl, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Image, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { getAuth } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
@@ -64,7 +64,9 @@ const ExpertConsultation = () => {
 
   return (
     <View style={styles.container}>
-      
+      {loading ? (
+        <ActivityIndicator size="large" color="#FFC107" style={styles.loader} />
+      ) : (
       <FlatList
         data={experts}
         renderItem={renderItem}
@@ -74,6 +76,7 @@ const ExpertConsultation = () => {
         }
         ListEmptyComponent={!loading && <Text style={styles.noData}>{t('noExperts')}</Text>}
       />
+      )}
     </View>
   );
 };
@@ -89,6 +92,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#333',
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   card: {
     flexDirection: 'row',

@@ -22,7 +22,7 @@ const CoinScreen = () => {
           type="material" 
           color="#FFC107" 
           size={30} 
-          onPress={() => navigation.goBack()} 
+          onPress={() => navigation.navigate('farmer/dashboard')} 
           containerStyle={{ marginLeft: 10 }}
         />
       ),
