@@ -1,86 +1,84 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect , useCallback, ReactNode} from 'react';
 import { getAuth , onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig'; // Adjust the import based on your file structure
+import { db } from '../../firebaseConfig'; 
+import { ActivityIndicator , View, StyleSheet} from 'react-native';
 
 interface UserContextProps {
   userName: string;
   userType: string;
   email: string;
+  city: string;
+  address: string;
+  experienceYears: number;
   isNewUser: boolean;
   setIsNewUser: (value: boolean) => void;
+  isLoading: boolean;
+  reloadUser: () => void;
 }
 
 
 const UserContext = createContext<UserContextProps | undefined>(undefined);
 
-export const UserProvider: React.FC = ({ children }) => {
+interface UserProviderProps {
+  children: ReactNode;
+}
+
+export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [userName, setUserName] = useState('');
   const [userType, setUserType] = useState('');
   const [email, setEmail] = useState('');
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [experienceYears, setExperienceYears] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
   
 
   const fetchUser = async () => {
+    setIsLoading(true); 
     try {
       const auth = getAuth();
       const user = auth.currentUser;
       if (user) {
         const userRef = doc(db, 'users', user.uid);
         const userDoc = await getDoc(userRef);
-
+  
         if (userDoc.exists()) {
-          setUserName(userDoc.data().name);
-          setUserType(userDoc.data().userType);
-
-          console.log("user type ",userType)
- 
-          if (userType === 'Farmer') {
-            
-          const userTypeRef = doc(db, userDoc.data()?.userType.toLowerCase(), user.uid);
+          const userData = userDoc.data();
+          const userTypeFromDoc = userData.userType;
+  
+          setUserName(userData.name);
+          setUserType(userTypeFromDoc);
+  
+          const userTypeRef = doc(db, userTypeFromDoc.toLowerCase(), user.uid);
           const userTypeDoc = await getDoc(userTypeRef);
-
+  
           if (userTypeDoc.exists()) {
-            setEmail(userTypeDoc.data().email);
-            setCity(userTypeDoc.data().city);
-            setAddress(userTypeDoc.data().address);
-
-            console.log('Farmer data fetched from User Provider:', userDoc.data(), userTypeDoc.data());
-
+            const userTypeData = userTypeDoc.data();
+            setEmail(userTypeData.email);
+            setCity(userTypeData.city || '');
+            setAddress(userTypeData.address || '');
+            if (userTypeFromDoc === 'Expert') {
+              setExperienceYears(userTypeData.experienceYears || 0);
+            }
           } else {
-            console.error('User data not found');
+            console.error('User type-specific data not found');
           }
-             
-          }
-
-          if (userType === 'Expert') {
-            
-            const userTypeRef = doc(db, userDoc.data()?.userType.toLowerCase(), user.uid);
-            const userTypeDoc = await getDoc(userTypeRef);
-  
-            if (userTypeDoc.exists()) {
-              setEmail(userTypeDoc.data().email);
-              setCity(userTypeDoc.data().city);
-              setAddress(userTypeDoc.data().address);
-              setExperienceYears(userTypeDoc.data().experienceYears);
-  
-              console.log('Expert data fetched from User Provider:', userDoc.data(), userTypeDoc.data());
-  
-            } else {
-              console.error('User data not found');
-            }
-              
-            }
-
         }
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
- 
+  
+
+  const reloadUser = useCallback(() => {
+    fetchUser();
+  }, []);
+  
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -94,18 +92,47 @@ export const UserProvider: React.FC = ({ children }) => {
         setCity('');
         setAddress('');  
         setExperienceYears(0);
+        setIsLoading(false);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  return (
-    <UserContext.Provider value={{ userName, userType, email , city , address , experienceYears }}>
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#FFC107" />
+      </View>
+    );
+  }
+
+  return ( 
+    <UserContext.Provider value={{ 
+      userName, 
+      userType, 
+      email, 
+      city, 
+      address, 
+      experienceYears, 
+      isNewUser, 
+      setIsNewUser, 
+      reloadUser,
+      isLoading
+    }}>
       {children}
     </UserContext.Provider>
   );
 };
+
+const styles = StyleSheet.create({ 
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
 
 
 export const useUser = () => {
@@ -115,3 +142,5 @@ export const useUser = () => {
   }
   return context;
 };
+
+export default UserProvider;

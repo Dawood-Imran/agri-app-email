@@ -1,5 +1,5 @@
 import React, { useState, useEffect , useCallback} from 'react';
-import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image , Text } from 'react-native';
+import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image , Text, Alert } from 'react-native';
 import { Card, Icon } from 'react-native-elements';
 
 import { useTranslation } from 'react-i18next';
@@ -32,39 +32,40 @@ const MenuTab = () => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   
-  const { userName, userType, email , city } = useUser(); 
+  const { userName, userType, email , city , isLoading , reloadUser} = useUser(); 
 
-  
 
-  useEffect(() => {
-    console.log('Farmer Data Menu Tab:', userName, userType, email, city);
+
+useEffect(() => {
+  if (!isLoading && city) {
     fetchWeather();
-    
-}, [userName, userType, email, city]);
+    console.log('Farmer Data Menu Tab:', userName, userType, email, city);
+  }
+}, [isLoading, city]);
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
-  const fetchWeather = async () => {
-    setLoading(true);
-    try {
-      await delay(1000);
-      const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${city}&aqi=no`);
-      if (!response.ok) {
-        throw new Error(`API returned status: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data && data.current) {
-        setWeatherData(data);
-      } else {
-        console.error('Unexpected API response:', data);
-      }
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-    } finally {
-      setLoading(false);
+
+
+const fetchWeather = async () => {
+  setLoading(true);
+  try {
+    const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${city}&aqi=no`);
+    if (!response.ok) {
+      throw new Error(`API returned status: ${response.status}`);
     }
+    const data = await response.json();
+    setWeatherData(data);
+  } catch (error: any) {
+    console.error('Error fetching weather data:', error);
+    Alert.alert('Weather Fetch Error', 'Unable to fetch weather data. Please try again later.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleReload = () => {
+    reloadUser();
   };
 
  
@@ -117,13 +118,21 @@ function delay(ms) {
       name: t('agricultureSchemes'), 
       icon: require('../../assets/images/farmer-icons/manager.png'), 
       route: '/farmer/SchemesList' 
+    },
+    { 
+      name: t('Agri Bot'),
+      icon: require('../../assets/images/farmer-icons/Chatbot.jpg'),
+      route: '/farmer/Agribot/LandingPage'
     }
   ];
 
-  if (loading) {
+  if (isLoading || loading) {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#FFC107" />
+        <TouchableOpacity onPress={handleReload} style={styles.reloadButton}>
+          <Text style={styles.reloadButtonText}>Reload</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -352,6 +361,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  reloadButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#FFC107',
+    borderRadius: 5,
+  },
+  reloadButtonText: {
+    color: '#1B5E20',
+    fontWeight: 'bold',
   },
 });
 

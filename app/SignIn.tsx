@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Alert, ImageBackground , Text} from 'react-native';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { Toast } from './components/Toast';
 import {useAuth} from './context/AuthContext';
-import { my_auth , db } from '@/firebaseConfig';
+import { db, my_auth } from '@/firebaseConfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDoc, doc } from 'firebase/firestore';
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const { width } = Dimensions.get('window'); // Get screen width
@@ -25,7 +24,6 @@ const SignIn = () => {
   const [toastMessage, setToastMessage] = useState('');
   const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
-  const navigation = useNavigation();
 
   const isRTL = i18n.language === 'ur';
 
@@ -52,66 +50,59 @@ const SignIn = () => {
     try {
       if (!email.trim() || !pinCode.trim()) {
         showToast(t('All Fields Required'));
-        setLoading(false);
         return;
       }
 
-      // Sign in with email and password
-      const response = await signInWithEmailAndPassword(my_auth, email, pinCode);
-      const user = response.user;
-      console.log(response);
-      // Set user data in context
-      Alert.alert(t('Success'), t('You have successfully signed in'));
-
-      
-
-      // Navigate based on userType
-      if (userType) {
-        switch(userType.toLowerCase()) {
-          case 'farmer':
-            try {
-          
-              const userDoc = await getDoc(doc(db, 'farmer', user.uid));
-              if (userDoc.exists() && userDoc.data().isNewUser) {
-                navigation.navigate('farmer/NewUserForm');
-              } else {
-                // Navigate to dashboard if the user is not new
-                navigation.navigate('farmer/dashboard');
-              }
-            } catch (error) {
-              console.error('Error signing in:', error);
-              alert(error.message);
-            }
-            break;
-          case 'expert':
-            try {   
-              const userDoc = await getDoc(doc(db, 'expert', user.uid));
-              console.log("Expert Data from Sign in",userDoc.data());
-              if (userDoc.exists() && userDoc.data().isNewUser) {
-                navigation.navigate('expert/NewExpert');
-              } else {
-                // Navigate to dashboard if the user is not new
-                navigation.navigate('expert/dashboard');
-              }
-            } catch (error) {
-              console.error('Error signing in:', error);
-              alert(error.message);
-            }
-            break;
-          case 'buyer':
-            router.replace('/buyer/dashboard');
-            break;
-          default:
-            Alert.alert(t('error'), 'Invalid user type');
-            router.replace('/UserSelectionScreen');
-        }
-      } else {
-        // Handle case when userType is not available
+      if (!userType) {
         Alert.alert(t('error'), 'Please select user type');
-        router.replace('/UserSelectionScreen');
+        return;
       }
-    } catch (error) {
-      showToast(error.message);
+
+      const response = await signInWithEmailAndPassword(my_auth, email, pinCode);
+      console.log("Sign-in successful:", response.user.uid);
+
+      // Check user document first
+      const userDoc = await getDoc(doc(db, userType.toLowerCase(), response.user.uid));
+      
+      if (!userDoc.exists()) {
+        showToast(t('User document not found'));
+        return;
+      }
+
+      // Store auth state
+      await AsyncStorage.setItem('userAuthenticated', 'true');
+      await AsyncStorage.setItem('userType', userType);
+      await AsyncStorage.setItem('userEmail', email);
+
+      // Determine navigation based on user type and new user status
+      let navigationTarget;
+      const isNewUser = userDoc.data().isNewUser;
+
+      switch (userType.toLowerCase()) {
+        case 'farmer':
+          navigationTarget = isNewUser ? '/farmer/NewUserForm' : '/farmer/dashboard';
+          break;
+        case 'expert':
+          navigationTarget = isNewUser ? '/expert/NewExpert' : '/expert/dashboard';
+          break;
+        case 'buyer':
+          navigationTarget = isNewUser ? '/buyer/NewBuyer' : '/buyer/dashboard';
+          break;
+        default:
+          showToast(t('Invalid user type'));
+          return;
+      }
+
+      // Use requestAnimationFrame and setTimeout for safer navigation
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          router.replace(navigationTarget as any);
+        }, 100);
+      });
+
+    } catch (error: any) {
+      console.error('Error:', error);
+      showToast(error.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }

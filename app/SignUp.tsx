@@ -63,7 +63,7 @@ const SignUp = () => {
   
 
   const handleSignUp = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     if (validateForm()) {
       try {
         const userCredential = await createUserWithEmailAndPassword(my_auth, email, pinCode);
@@ -73,8 +73,7 @@ const SignUp = () => {
         const userData = {
           name,
           email,
-          userType: userType || "",  // Set to empty string if userType is not provided
-
+          userType: userType || "",  // Ensure userType is defined
           createdAt: new Date(),
         };
   
@@ -92,14 +91,14 @@ const SignUp = () => {
   
         alert(t('Account Created Successfully'));
         router.replace({ pathname: '/SignIn', params: { userType } });
-      } catch (error) {
+      } catch (error: any) {
         showToast(error.message);
         console.error('Error creating user:', error);
       } finally {
-        setLoading(false); // Stop loading
+        setLoading(false);
       }
     } else {
-      setLoading(false); // Stop loading if validation fails
+      setLoading(false);
     }
   };
   

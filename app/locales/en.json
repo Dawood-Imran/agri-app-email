@@ -46,8 +46,8 @@
   "Confirm Pin Code": "Confirm Pin Code",
   "Pin Code Required": "Pin code is required",
   "Pin Code Must Be 4 Digits": "Pin code must be 4 digits",
-  "agricultureSchemes":"Agriculture Schemes",
-  "windspeed":"Wind Speed",
+  "agricultureSchemes": "Agriculture Schemes",
+  "windspeed": "Wind Speed",
   "Forgot PIN": "Forgot PIN",
   "Forgot PIN?": "Forgot PIN?",
   "Enter your registered phone number": "Enter your registered phone number",
@@ -123,5 +123,246 @@
   "Reorder": "Reorder",
   "Payment Method": "Payment Method",
   "Shipping Address": "Shipping Address",
-  "Billing Address": "Billing Address"
+  "Billing Address": "Billing Address",
+  
+  "landing": {
+    "title": "Welcome to AgriBot",
+    "options": {
+      "plantDiseases": "🌱 Identify Plant Diseases",
+      "cropAdvice": "🌾 Get Crop Advice",
+      "fertilizerRecommendations": "💧 Fertilizer Recommendations",
+      "pestControl": "🐛 Pest Control Solutions",
+      "fieldManagement": "🚜 Field Management Tips"
+    }
+  },
+  "plantDiseases": {
+    "title": "Identify Plant Diseases",
+    "cropType": "Select Crop Type",
+    "affectedPart": "Select Affected Part",
+    "symptoms": "Select Symptoms",
+    "uploadImage": "Upload Image",
+    "submit": "Submit",
+    "cropOptions": {
+      "wheat": "Wheat (گندم)",
+      "rice": "Rice (چاول)",
+      "sugarcane": "Sugarcane (گنا)",
+      "maize": "Maize (مکئی)",
+      "cotton": "Cotton (کپاس)",
+      "potato": "Potato (آلو)",
+      "tomato": "Tomato (ٹماٹر)",
+      "peas": "Peas (مٹر)",
+      "chilies": "Chilies (مرچ)",
+      "onion": "Onion (پیاز)",
+      "garlic": "Garlic (لہسن)",
+      "mustard": "Mustard (سرسوں)",
+      "sunflower": "Sunflower (سورج مکھی)",
+      "other": "Other (دیگر)"
+    },
+    "affectedPartOptions": {
+      "leaves": "Leaves (پتے)",
+      "stem": "Stem (تنا)",
+      "roots": "Roots (جڑیں)"
+    },
+    "symptomOptions": {
+      "yellowSpots": "Yellow Spots (زرد دھبے)",
+      "wilting": "Wilting (پتے مرجھا رہے ہیں)",
+      "holesInLeaves": "Holes in Leaves (پتوں میں سوراخ)",
+      "brownSpots": "Brown Spots (بھورے دھبے)",
+      "blackSpots": "Black Spots (کالے دھبے)",
+      "curling": "Curling (پتے مڑ رہے ہیں)"
+    }
+  },
+  "cropAdvice": {
+    "title": "Crop Advice",
+    "labels": {
+      "Select_Crop": "Select Crop",
+      "Select_Growth_Stage": "Select Growth Stage",
+      "Select_Soil_Type": "Select Soil Type",
+      "Select_Issue": "Select Issue"
+    },
+    "placeholders": {
+      "Select_Crop": "Select Crop",
+      "Select_Growth_Stage": "Select Growth Stage",
+      "Select_Soil_Type": "Select Soil Type",
+      "Select_Issue": "Select Issue"
+    },
+    "options": {
+      "cropType": [
+        "Maize (مکئی)",
+        "Potato (آلو)",
+        "Wheat (گندم)",
+        "Rice (چاول)",
+        "Sugarcane (گنا)",
+        "Cotton (کپاس)",
+        "Other (دیگر)"
+      ],
+      "growthStage": [
+        "Sowing (بیج بونا)",
+        "Growing (پودوں کی نشوونما)",
+        "Flowering (پھول آنا)",
+        "Harvesting (کٹائی)"
+      ],
+      "soilType": [
+        "Sandy (ریتلی مٹی)",
+        "Loamy (میرا مٹی)",
+        "Clay (چکنی مٹی)"
+      ],
+      "issue": [
+        "Low Yield (کم پیداوار)",
+        "Irrigation Problems (سیچائی کے مسائل)",
+        "Pests/Diseases (کیڑے/بیماریاں)",
+        "Soil Fertility (مٹی کی اہلیت)"
+      ]
+    },
+    "submit": "Submit"
+  },
+  "pestControl": {
+    "title": "Pest Control Solutions",
+    "labels": {
+      "pestIdentification": "Pest Identification",
+      "cropAffected": "Crop Affected",
+      "infestationSeverity": "Infestation Severity",
+      "chemicalPreference": "Chemical Preference",
+      "budget": "Budget"
+    },
+    "options": {
+      "pestIdentification": [
+        "Chewed leaves",
+        "Spots on plants",
+        "Flying insects",
+        "Worms in soil",
+        "Other"
+      ],
+      "cropAffected": [
+        "Wheat",
+        "Rice",
+        "Cotton",
+        "Vegetables",
+        "Fruits"
+      ],
+      "infestationSeverity": [
+        "A few plants",
+        "Half the field",
+        "Almost all crops"
+      ],
+      "chemicalPreference": [
+        "Chemical spray",
+        "Organic/natural",
+        "Not sure"
+      ],
+      "budget": [
+        "Low (basic solutions)",
+        "Medium",
+        "High (advanced solutions)"
+      ]
+    },
+    "submit": "Submit"
+  },
+  "fieldManagement": {
+    "title": "Field Management Tips",
+    "categories": {
+      "waterManagement": {
+        "title": "Water Management",
+        "tips": [
+          {
+            "title": "Use Drip Irrigation",
+            "description": "Delivers water directly to roots, reducing evaporation and saving up to 50% water."
+          },
+          {
+            "title": "Collect Rainwater",
+            "description": "Harvest rainwater to supplement irrigation during dry periods."
+          },
+          {
+            "title": "Use Mobile Apps for Weather Updates",
+            "description": "Stay informed about weather conditions to optimize irrigation schedules."
+          }
+        ]
+      },
+      "soilHealth": {
+        "title": "Soil Health",
+        "tips": [
+          {
+            "title": "Test Your Soil Annually",
+            "description": "Regular testing helps apply the right fertilizers and maintain soil health."
+          },
+          {
+            "title": "Use Organic Fertilizers",
+            "description": "Improves soil structure and fertility while reducing dependency on chemicals."
+          },
+          {
+            "title": "Practice Crop Rotation",
+            "description": "Rotating crops prevents soil depletion and pest buildup."
+          }
+        ]
+      },
+      "pestAndDiseaseManagement": {
+        "title": "Pest and Disease Management",
+        "tips": [
+          {
+            "title": "Use Bio-Pesticides",
+            "description": "Environmentally friendly and effective for pest control."
+          },
+          {
+            "title": "Scout Your Fields Regularly",
+            "description": "Early detection of pests and diseases reduces crop losses."
+          },
+          {
+            "title": "Implement IPM Strategies",
+            "description": "Combine biological, cultural, and chemical methods for sustainable pest control."
+          }
+        ]
+      },
+      "cropSelectionAndRotation": {
+        "title": "Crop Selection and Rotation",
+        "tips": [
+          {
+            "title": "Choose Climate-Resilient Varieties",
+            "description": "Select crops that can withstand local climate conditions."
+          },
+          {
+            "title": "Rotate Crops to Prevent Depletion",
+            "description": "Different crops disrupt pest life cycles and improve soil health."
+          },
+          {
+            "title": "Diversify Your Crops",
+            "description": "Growing a variety of crops mitigates risks from market fluctuations."
+          }
+        ]
+      },
+      "technologyAndInnovation": {
+        "title": "Technology and Innovation",
+        "tips": [
+          {
+            "title": "Use Mobile Apps for Advice",
+            "description": "Stay updated with the latest agricultural practices and market trends."
+          },
+          {
+            "title": "Implement Precision Farming",
+            "description": "Optimize resource use and increase efficiency with GPS or drones."
+          },
+          {
+            "title": "Use Solar-Powered Equipment",
+            "description": "Reduce dependency on traditional energy sources and lower costs."
+          }
+        ]
+      },
+      "financialManagement": {
+        "title": "Financial Management",
+        "tips": [
+          {
+            "title": "Access Government Credit Schemes",
+            "description": "Take advantage of financial assistance programs designed for farmers."
+          },
+          {
+            "title": "Join Cooperatives for Market Access",
+            "description": "Cooperatives provide better bargaining power and access to markets."
+          },
+          {
+            "title": "Keep Records of Expenses and Yields",
+            "description": "Proper record-keeping helps make informed financial decisions."
+          }
+        ]
+      }
+    }
+  }
 }
