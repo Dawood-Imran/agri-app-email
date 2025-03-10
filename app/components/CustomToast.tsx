@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
-import { Animated, StyleSheet, View , Text} from 'react-native';
+import { Animated, StyleSheet, View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-interface ToastProps {
+interface CustomToastProps {
   visible: boolean;
   message: string;
-  type?: 'success' | 'error' | 'info' | 'custom';
-  color?: string;
+  type?: 'success' | 'error' | 'info';
+  color?: string; // New prop for custom color
   onHide?: () => void;
 }
 
-export const Toast: React.FC<ToastProps> = ({ 
+export const CustomToast: React.FC<CustomToastProps> = ({ 
   visible, 
   message, 
   type = 'error',
-  color,
+  color, // Use the custom color prop
   onHide 
 }) => {
   const opacity = new Animated.Value(0);
@@ -51,8 +51,6 @@ export const Toast: React.FC<ToastProps> = ({
         return 'alert-circle';
       case 'info':
         return 'information';
-      case 'custom':
-        return 'information'; // Default icon for custom type
       default:
         return 'alert-circle';
     }
@@ -75,7 +73,7 @@ export const Toast: React.FC<ToastProps> = ({
         size={24} 
         color="#FFFFFF" 
       />
-      <  Text style={styles.message}>{message}</  Text>
+      <Text style={styles.message}>{message}</Text>
     </Animated.View>
   );
 };
@@ -86,7 +84,6 @@ const styles = StyleSheet.create({
     bottom: 70,
     left: 20,
     right: 20,
-    backgroundColor: '#FF5252',
     padding: 16,
     borderRadius: 12,
     flexDirection: 'row',
@@ -109,4 +106,4 @@ const styles = StyleSheet.create({
   },
 }); 
 
-export default Toast;
+export default CustomToast;

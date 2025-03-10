@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image , TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { Input, Button } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig'; // Adjust the import based on your file structure
 import { router } from 'expo-router';
-import { Input } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
-
+import { CustomToast } from '../components/CustomToast';
+import { Toast } from '../components/Toast';
 const NewUserForm = () => {
   const { t } = useTranslation();
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
-  
-
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -25,13 +26,16 @@ const NewUserForm = () => {
 
         console.log('User details saved successfully');
         alert('User details saved successfully');
+        setToastMessage(t('User details saved successfully'));
         router.replace('/farmer/dashboard'); // Redirect to profile
       } else {
         console.log('User not authenticated');
+        setToastMessage(t('User not authenticated'));
         alert('User not authenticated');
       }
     } catch (error) {
       console.error('Error saving user details:', error);
+      setToastMessage(t('An error occurred while saving user details.'));
     } finally {
       setLoading(false);
     }
@@ -74,62 +78,48 @@ const NewUserForm = () => {
           titleStyle={styles.buttonTitle}
         />
       </View>
+      <Toast
+        visible={toastVisible}
+        message={toastMessage || ''}
+        type="custom"
+        color="#FFC107"
+        onHide={() => setToastVisible(false)}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
     backgroundColor: '#61B15A',
-  },
-  welcometxt: {
-    fontSize: 32,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    
   },
   titleContainer: {
     flexDirection: 'row',
     marginTop: 20,
-    
     marginBottom: 20,
+    alignItems: 'center',
   },
-
-  userType: {
-    fontSize: 32,
+  titleMain: {
+    fontSize: 36,
     color: '#FFFFFF',
     fontWeight: 'bold',
-    flexDirection: 'column',
-    marginLeft: 10,
-    top: 50,
+    marginBottom: 5,
+    lineHeight: 42,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    marginLeft: 20,
   },
   labeltxt: {
     color: '#FFC107',
     fontSize: 18,
     marginBottom: 20,
     marginLeft: 5,
-  
-  },
-  
-  titleMain: {
-    fontSize: 32,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    flexDirection: 'row',
-  },
-  titleHighlight: {
-    
-    fontWeight: 'bold',
-    marginLeft: 10,
-    color: '#FFC107',
-  },
-  titleImage: {
-    width: 80,
-    height: 80,
-    right: 80,
-    
   },
   form: {
     width: '100%',
@@ -141,14 +131,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 5,
   },
-  input: {
-    borderWidth: 0,
+  inputField: {
+    borderBottomWidth: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 15,
     paddingHorizontal: 15,
     marginBottom: 10,
     height: 45,
     width: '100%',
+  },
+  inputText: {
     color: '#FFFFFF',
     paddingLeft: 20,
     fontSize: 16,
@@ -167,26 +159,6 @@ const styles = StyleSheet.create({
     color: '#1B5E20',
     fontWeight: 'bold',
     fontSize: 20,
-    textAlign: 'center',
-  },
-  image: {
-    width: 80,
-    height: 80,
-    marginLeft: 20,
-  },
-  inputField: {
-    borderBottomWidth: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 15,
-    paddingHorizontal: 15,
-    marginBottom: 10,
-    height: 45,
-    width: '100%',
-  },
-  inputText: {
-    color: '#FFFFFF',
-    paddingLeft: 20,
-    fontSize: 16,
   },
 });
 

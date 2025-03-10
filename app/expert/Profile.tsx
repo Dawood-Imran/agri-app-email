@@ -1,8 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Image , Text} from 'react-native';
-
+import { StyleSheet, View, Image, Text, TouchableOpacity, Alert } from 'react-native';
+import { router } from 'expo-router';
+import { getAuth, signOut } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
+  const { t } = useTranslation();
   const expertDetails = {
     name: 'Dr. Ahmed Khan',
     specialization: 'Agricultural Scientist',
@@ -14,46 +18,60 @@ const Profile = () => {
     consultations: '250+'
   };
 
+  const handleLogout = async () => {
+    try {
+      const auth = getAuth();
+      await signOut(auth);
+      await AsyncStorage.clear(); // Clear all stored data
+      router.replace('/'); // Navigate to root/auth screen
+    } catch (error) {
+      console.error('Logout error:', error);
+      Alert.alert(t('Error'), t('Failed to logout. Please try again.'));
+    }
+  };
+
   return (
-    <  View style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.profileSection}>
         <View style={styles.imageContainer}>
-         
-          <  Text style={styles.name}>Dr. {expertDetails.name}</  Text>
-          <  Text style={styles.specialization}>{expertDetails.specialization}</  Text>
+          <Text style={styles.name}>Dr. {expertDetails.name}</Text>
+          <Text style={styles.specialization}>{expertDetails.specialization}</Text>
         </View>
       </View>
 
       <View style={styles.detailsCard}>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <  Text style={styles.statValue}>{expertDetails.rating}</  Text>
-            <  Text style={styles.statLabel}>Rating</  Text>
+            <Text style={styles.statValue}>{expertDetails.rating}</Text>
+            <Text style={styles.statLabel}>Rating</Text>
           </View>
           <View style={styles.statItem}>
-            <  Text style={styles.statValue}>{expertDetails.consultations}</  Text>
-            <  Text style={styles.statLabel}>Consultations</  Text>
+            <Text style={styles.statValue}>{expertDetails.consultations}</Text>
+            <Text style={styles.statLabel}>Consultations</Text>
           </View>
           <View style={styles.statItem}>
-            <  Text style={styles.statValue}>{expertDetails.experience}</  Text>
-            <  Text style={styles.statLabel}>Experience</  Text>
+            <Text style={styles.statValue}>{expertDetails.experience}</Text>
+            <Text style={styles.statLabel}>Experience</Text>
           </View>
         </View>
 
         <View style={styles.detailRow}>
-          <  Text style={styles.label}>Education</  Text>
-          <  Text style={styles.value}>{expertDetails.education}</  Text>
+          <Text style={styles.label}>Education</Text>
+          <Text style={styles.value}>{expertDetails.education}</Text>
         </View>
         <View style={styles.detailRow}>
-          <  Text style={styles.label}>Phone</  Text>
-          <  Text style={styles.value}>{expertDetails.phone}</  Text>
+          <Text style={styles.label}>Phone</Text>
+          <Text style={styles.value}>{expertDetails.phone}</Text>
         </View>
         <View style={styles.detailRow}>
-          <  Text style={styles.label}>Email</  Text>
-          <  Text style={styles.value}>{expertDetails.email}</  Text>
+          <Text style={styles.label}>Email</Text>
+          <Text style={styles.value}>{expertDetails.email}</Text>
         </View>
       </View>
-    </  View>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutText}>{t('Logout')}</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -135,6 +153,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     fontWeight: '500',
+  },
+  logoutButton: {
+    backgroundColor: '#FFC107',
+    padding: 15,
+    borderRadius: 25,
+    width: '80%',
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  logoutText: {
+    color: '#1B5E20',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

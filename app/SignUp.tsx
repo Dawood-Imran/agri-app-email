@@ -5,11 +5,10 @@ import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'; // Correct import for MaterialCommunityIcons
 import { Toast } from './components/Toast';
-import {useAuth} from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import { my_auth, db } from '@/firebaseConfig';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore"; 
-
 
 const { width } = Dimensions.get('window'); // Get screen width
 
@@ -60,8 +59,6 @@ const SignUp = () => {
     return true;
   };
 
-  
-
   const handleSignUp = async () => {
     setLoading(true);
     if (validateForm()) {
@@ -92,8 +89,18 @@ const SignUp = () => {
         alert(t('Account Created Successfully'));
         router.replace({ pathname: '/SignIn', params: { userType } });
       } catch (error: any) {
-        showToast(error.message);
         console.error('Error creating user:', error);
+        let errMsg = t('An unexpected error occurred');
+        if (error.code === 'auth/email-already-in-use') {
+          errMsg = t('Email already in use');
+        } else if (error.code === 'auth/invalid-email') {
+          errMsg = t('Invalid email address');
+        } else if (error.code === 'auth/weak-password') {
+          errMsg = t('Weak password, please choose a stronger password');
+        } else {
+          errMsg = error.message || t('An unexpected error occurred');
+        }
+        showToast(errMsg);
       } finally {
         setLoading(false);
       }
@@ -102,25 +109,24 @@ const SignUp = () => {
     }
   };
   
-  
-
   const handleBack = () => {
     router.push({ pathname: '/SignIn', params: { userType } });
   };
 
   return (
-    <  View style={styles.container}>
+    <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Icon name="arrow-back" type="material" color="#FFC107" size={30} />
       </TouchableOpacity>
       <View style={styles.titleContainer}>
-        <  Text style={styles.titleMain}>{t('Create Account')}</  Text>
+        <Text style={styles.titleMain}>{t('Create Account')}</Text>
         {userType && (
-          <  Text style={styles.titleSub}>
-            {t('as')} <  Text style={styles.userType}>
+          <Text style={styles.titleSub}>
+            {t('as')}{' '}
+            <Text style={styles.userType}>
               {t(userType.toLowerCase())}
-            </  Text>
-          </  Text>
+            </Text>
+          </Text>
         )}
       </View>
       <View style={styles.form}>
@@ -140,16 +146,37 @@ const SignUp = () => {
           inputStyle={styles.inputText}
           placeholderTextColor="#E0E0E0"
         />
-        {/* <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Phone Number')}</Text>
+        {/* 
+          Uncomment and update phone number input if needed
+          <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Phone Number')}</Text>
+          <Input
+            placeholder="3XXXXXXXXX"
+            onChangeText={validatePhoneNumber}
+            value={phoneNumber}
+            keyboardType="numeric"
+            leftIcon={
+              <View style={[styles.iconContainer, { flexDirection: 'row', alignItems: 'center' }]}>
+                <Image source={require('../assets/pakistan-flag.jpg')} style={styles.flagIcon} />
+                <Text style={styles.countryCode}>+92</Text>
+                <View style={styles.separator} />
+              </View>
+            }
+            containerStyle={styles.inputWrapper}
+            inputContainerStyle={styles.inputContainer}
+            inputStyle={styles.inputText}
+            placeholderTextColor="#E0E0E0"
+            errorMessage={errorMessage}
+            errorStyle={styles.errorText}
+          />
+        */}
+        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Email')}</Text>
         <Input
-          placeholder="3XXXXXXXXX"
-          onChangeText={validatePhoneNumber}
-          value={phoneNumber}
-          keyboardType="numeric"
+          placeholder={t('Enter Email')}
+          onChangeText={setEmail}
+          value={email}
           leftIcon={
-            <View style={[styles.iconContainer, { flexDirection: 'row', alignItems: 'center' }]}>
-              <Image source={require('../assets/pakistan-flag.jpg')} style={styles.flagIcon} />
-              <  Text style={styles.countryCode}>+92</  Text>
+            <View style={styles.iconContainer}>
+              <Icon name="email" type="material" color="#FFFFFF" />
               <View style={styles.separator} />
             </View>
           }
@@ -157,31 +184,8 @@ const SignUp = () => {
           inputContainerStyle={styles.inputContainer}
           inputStyle={styles.inputText}
           placeholderTextColor="#E0E0E0"
-          errorMessage={errorMessage}
-          errorStyle={styles.errorText}
-        /> */}
-      
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Email')}</Text>
-              <Input
-                placeholder={t('Enter Email')}
-                onChangeText={setEmail}
-                value={email}
-                leftIcon={
-                  <View style={styles.iconContainer}>
-                    <Icon name="email" type="material" color="#FFFFFF" />
-                    <View style={styles.separator} />
-                  </View>
-                }
-                containerStyle={styles.inputWrapper}
-                inputContainerStyle={styles.inputContainer}
-                inputStyle={styles.inputText}
-                placeholderTextColor="#E0E0E0"
-                underlineColorAndroid="transparent"
-                
-              />
-
-
-
+          underlineColorAndroid="transparent"
+        />
         <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Pin Code')}</Text>
         <Input
           placeholder={t("Enter Pin Code")}
@@ -238,9 +242,10 @@ const SignUp = () => {
         />
       </View>
       <TouchableOpacity onPress={() => router.push({ pathname: '/SignIn', params: { userType } })}>
-        <  Text style={styles.signInText}>
-          {t('Already Have Account')} <  Text style={styles.signInHighlight}>{t('Sign In')}</  Text>
-        </  Text>
+        <Text style={styles.signInText}>
+          {t('Already Have Account')}{' '}
+          <Text style={styles.signInHighlight}>{t('Sign In')}</Text>
+        </Text>
       </TouchableOpacity>
       <Toast 
         visible={toastVisible}
@@ -248,7 +253,7 @@ const SignUp = () => {
         type="error"
         onHide={() => setToastVisible(false)}
       />
-    </  View>
+    </View>
   );
 };
 
@@ -261,7 +266,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#61B15A',
   },
   titleContainer: {
-    
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingTop: 30,
@@ -270,7 +274,6 @@ const styles = StyleSheet.create({
     fontSize: 36,
     color: '#FFFFFF',
     fontWeight: 'bold',
-    
     lineHeight: 42,
   },
   titleSub: {
@@ -380,7 +383,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     marginBottom: 0,
-    marginLeft:5
+    marginLeft: 5,
   },
 });
 

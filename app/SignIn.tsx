@@ -9,7 +9,7 @@ import { db, my_auth } from '@/firebaseConfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDoc, doc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { CustomToast } from './components/CustomToast';
 
 const { width } = Dimensions.get('window'); // Get screen width
 
@@ -21,10 +21,10 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
   const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
-
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  
   const isRTL = i18n.language === 'ur';
 
   const showToast = (message: string) => {
@@ -50,15 +50,18 @@ const SignIn = () => {
     try {
       if (!email.trim() || !pinCode.trim()) {
         showToast(t('All Fields Required'));
+        setLoading(false);
         return;
       }
 
       if (!userType) {
-        Alert.alert(t('error'), 'Please select user type');
+        showToast(t('Please select user type'));
+        setLoading(false);
         return;
       }
 
       const response = await signInWithEmailAndPassword(my_auth, email, pinCode);
+      showToast(t('Sign-in successful'));
       console.log("Sign-in successful:", response.user.uid);
 
       // Check user document first
@@ -66,6 +69,7 @@ const SignIn = () => {
       
       if (!userDoc.exists()) {
         showToast(t('User document not found'));
+        setLoading(false);
         return;
       }
 
@@ -90,6 +94,7 @@ const SignIn = () => {
           break;
         default:
           showToast(t('Invalid user type'));
+          setLoading(false);
           return;
       }
 
@@ -102,12 +107,29 @@ const SignIn = () => {
 
     } catch (error: any) {
       console.error('Error:', error);
-      showToast(error.message || 'An unexpected error occurred');
-    } finally {
+      let errMsg = t('An unexpected error occurred');
+
+      if (error.code === 'auth/invalid-email') {
+        errMsg = t('Invalid email address');
+      } else if (error.code === 'auth/user-not-found') {
+        errMsg = t('User not found');
+      } else if (error.code === 'auth/wrong-password') {
+        errMsg = t('Incorrect password');
+      } else if (error.code === 'auth/invalid-credential') {
+        errMsg = t('Invalid credentials');
+      } else {
+        errMsg = error.message || t('An unexpected error occurred');
+      }
+
+      showToast(errMsg);
+    }
+    finally {
       setLoading(false);
     }
   };
 
+  {toastMessage && <CustomToast visible={true} message={toastMessage} type="error" />}
+  
   const handleFormSubmit = () => {
     if (validateForm()) {
       handleSignIn();
@@ -117,19 +139,16 @@ const SignIn = () => {
   const validateForm = () => {
     setErrorMessage(''); // Reset error message
     if (!email.trim()) {
-      
       setToastVisible(true);
       setToastMessage(t('Email Required'));
       return false;
     }
     if (!/\S+@\S+\.\S+/.test(email.trim())) {
-      
       setToastVisible(true);
       setToastMessage(t('Invalid Email Address'));
       return false;
     }
     if (pinCode.length !== 6 || !/^\d+$/.test(pinCode)) {
-      
       setToastVisible(true);
       setToastMessage(t('Pin Code Must Be 6 Digits'));
       return false;
@@ -146,48 +165,23 @@ const SignIn = () => {
   };
 
   return (
-  
-    < View style={styles.container}>
+    <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Icon name="arrow-back" type="material" color="#FFC107" size={30} />
       </TouchableOpacity>
       <View style={styles.titleContainer}>
-        <  Text style={styles.titleMain}>{t('Sign In')}</  Text>
+        <Text style={styles.titleMain}>{t('Sign In')}</Text>
         {userType && (
-          <  Text style={styles.titleSub}>
-            {t('as')} <  Text style={styles.userType}>
+          <Text style={styles.titleSub}>
+            {t('as')}{' '}
+            <Text style={styles.userType}>
               {t(userType.toLowerCase())}
-            </  Text>
-          </  Text>
+            </Text>
+          </Text>
         )}
       </View>
       <View style={styles.form} >
-        
-        {/* <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Phone Number')}</Text>
-        <View style={styles.inputContainer}>
-          <Input
-            placeholder="3XXXXXXXXX"
-            onChangeText={validatePhoneNumber}
-            value={phoneNumber}
-            keyboardType="numeric"
-            leftIcon={
-              <View style={[styles.iconContainer, { flexDirection: 'row', alignItems: 'center' }]}>
-                <Image source={require('../assets/pakistan-flag.jpg')} style={styles.flagIcon} />
-                <  Text style={styles.countryCode}>+92</  Text>
-                <View style={styles.separator} />
-              </View>
-            }
-            inputStyle={styles.inputText}
-            placeholderTextColor="#E0E0E0"
-            containerStyle={styles.inputField}
-            underlineColorAndroid="transparent"
-            inputContainerStyle={{ borderBottomWidth: 0 }}
-            errorMessage={errorMessage}
-            errorStyle={styles.errorText}
-          />
-        </View> */}
-
-    <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Email')}</Text>
+        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Email')}</Text>
         <Input
           placeholder={t('Enter Email')}
           onChangeText={setEmail}
@@ -203,13 +197,7 @@ const SignIn = () => {
           inputStyle={styles.inputText}
           placeholderTextColor="#E0E0E0"
           underlineColorAndroid="transparent"
-          
         />
-
-
-
-
-
 
         <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Pin Code')}</Text>
         <View style={styles.inputContainer}>
@@ -240,9 +228,9 @@ const SignIn = () => {
             onPress={handleForgotPin} 
             style={styles.forgotPinContainer}
           >
-            <  Text style={styles.forgotPinText}>
+            <Text style={styles.forgotPinText}>
               {t('Forgot PIN?')}
-            </  Text>
+            </Text>
           </TouchableOpacity>
         </View>
         <Button
@@ -255,18 +243,18 @@ const SignIn = () => {
         />
       </View>
       <TouchableOpacity onPress={() => router.push({ pathname: '/SignUp', params: { userType } })}>
-        <  Text style={styles.signUpText}>
-          {t("Don't Have Account")} <  Text style={styles.signUpHighlight}>{t('Create Account')}</  Text>
-        </  Text>
+        <Text style={styles.signUpText}>
+          {t("Don't Have Account")} <Text style={styles.signUpHighlight}>{t('Create Account')}</Text>
+        </Text>
       </TouchableOpacity>
       <Toast 
         visible={toastVisible}
-        message={toastMessage}
-        type="error"
+        message={toastMessage || ''}
+        type="custom"
+        color="#FFC107"
         onHide={() => setToastVisible(false)}
       />
-    </  View>
-    
+    </View>
   );
 };
 
@@ -308,7 +296,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     minWidth: 150,
     borderRadius: 10,
-    
   },
   form: {
     width: '100%',
@@ -418,8 +405,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     marginBottom: 5,
-    marginLeft:5
-
+    marginLeft: 5
   },
   labelRTL: {
     textAlign: 'right', // Align text to the right for Urdu
