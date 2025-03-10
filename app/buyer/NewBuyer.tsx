@@ -1,37 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image , TouchableOpacity} from 'react-native';
-import { getAuth } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig'; // Adjust the import based on your file structure
-import { router } from 'expo-router';
-import { Input } from 'react-native-elements';
+import { StyleSheet, View, Text, Image, Alert } from 'react-native';
+import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
+import { db } from '@/firebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from 'firebase/auth';
+import { router } from 'expo-router';
 
-const NewUserForm = () => {
+const NewBuyer = () => {
   const { t } = useTranslation();
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
-  
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const auth = getAuth();
       const user = auth.currentUser;
-      if (user) {
-        const userTypeRef = doc(db, 'farmer', user.uid); // Adjust the collection name based on userType
-        await setDoc(userTypeRef, { city, address, isNewUser: false }, { merge: true });
+      
+      if (!city || !address) {
+        Alert.alert(t('error'), t('All fields are required'));
+        return;
+      }
 
-        console.log('User details saved successfully');
-        alert('User details saved successfully');
-        router.replace('/farmer/dashboard'); // Redirect to profile
-      } else {
-        console.log('User not authenticated');
-        alert('User not authenticated');
+      if (user) {
+        const userTypeRef = doc(db, 'buyer', user.uid);
+        await setDoc(userTypeRef, {
+          city,
+          address,
+          isNewUser: false,
+          createdAt: new Date(),
+        }, { merge: true });
+
+        Alert.alert(t('Success'), t('Information saved successfully!'));
+        router.replace('/buyer/dashboard');
       }
     } catch (error) {
-      console.error('Error saving user details:', error);
+      console.error('Error saving information:', error);
+      Alert.alert(t('error'), t('An error occurred while saving your information.'));
     } finally {
       setLoading(false);
     }
@@ -40,8 +48,8 @@ const NewUserForm = () => {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleMain}>{t('New Farmer')}</Text>
-        <Image source={require('../../assets/images/farmer.png')} style={styles.image} />
+        <Text style={styles.titleMain}>{t('New Buyer')}</Text>
+        <Image source={require('../../assets/images/investor.png')} style={styles.image} />
       </View>
       <Text style={styles.labeltxt}>{t('Please fill in the details below')}</Text>
       <View style={styles.form}>
@@ -80,56 +88,35 @@ const NewUserForm = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
     backgroundColor: '#61B15A',
-  },
-  welcometxt: {
-    fontSize: 32,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    
   },
   titleContainer: {
     flexDirection: 'row',
     marginTop: 20,
-    
     marginBottom: 20,
+    alignItems: 'center',
   },
-
-  userType: {
-    fontSize: 32,
+  titleMain: {
+    fontSize: 36,
     color: '#FFFFFF',
     fontWeight: 'bold',
-    flexDirection: 'column',
-    marginLeft: 10,
-    top: 50,
+    marginBottom: 5,
+    lineHeight: 42,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    marginLeft: 20,
   },
   labeltxt: {
     color: '#FFC107',
     fontSize: 18,
     marginBottom: 20,
     marginLeft: 5,
-  
-  },
-  
-  titleMain: {
-    fontSize: 32,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    flexDirection: 'row',
-  },
-  titleHighlight: {
-    
-    fontWeight: 'bold',
-    marginLeft: 10,
-    color: '#FFC107',
-  },
-  titleImage: {
-    width: 80,
-    height: 80,
-    right: 80,
-    
   },
   form: {
     width: '100%',
@@ -141,14 +128,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: 5,
   },
-  input: {
-    borderWidth: 0,
+  inputField: {
+    borderBottomWidth: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 15,
     paddingHorizontal: 15,
     marginBottom: 10,
     height: 45,
     width: '100%',
+  },
+  inputText: {
     color: '#FFFFFF',
     paddingLeft: 20,
     fontSize: 16,
@@ -167,27 +156,8 @@ const styles = StyleSheet.create({
     color: '#1B5E20',
     fontWeight: 'bold',
     fontSize: 20,
-    textAlign: 'center',
-  },
-  image: {
-    width: 80,
-    height: 80,
-    marginLeft: 20,
-  },
-  inputField: {
-    borderBottomWidth: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 15,
-    paddingHorizontal: 15,
-    marginBottom: 10,
-    height: 45,
-    width: '100%',
-  },
-  inputText: {
-    color: '#FFFFFF',
-    paddingLeft: 20,
-    fontSize: 16,
   },
 });
 
-export default NewUserForm;
+export default NewBuyer;
+

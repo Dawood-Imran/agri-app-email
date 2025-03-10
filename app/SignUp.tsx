@@ -282,8 +282,7 @@ const styles = StyleSheet.create({
   userType: {
     color: '#FFC107',
     fontWeight: 'bold',
-    fontSize: 32,
-    
+    fontSize: 32, 
     paddingVertical: 10,
     lineHeight: 45,
     paddingHorizontal: 15,
@@ -291,15 +290,13 @@ const styles = StyleSheet.create({
   },
   form: {
     width: '100%',
-    
   },
   inputContainer: {
     borderBottomWidth: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 15,
     paddingHorizontal: 15,
-    
-    height: 45,
+    height: 50,
     width: '100%',
   },
   inputText: {
@@ -309,8 +306,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    width: '80%',
-    left: '10%',
+    width: '60%',
+    left: '20%',
   },
   button: {
     backgroundColor: '#FFC107',
@@ -382,7 +379,7 @@ const styles = StyleSheet.create({
   label: {
     color: '#FFFFFF',
     fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 0,
     marginLeft:5
   },
 });

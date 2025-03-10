@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig'; // Adjust the import based on your file structure
 import { router } from 'expo-router';
+import { Input, Icon } from 'react-native-elements';
+import { useTranslation } from 'react-i18next';
 
 const NewExpert = () => {
+  const { t } = useTranslation();
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [experienceYears, setExperienceYears] = useState(0);
   const [loading, setLoading] = useState(false);
-
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -35,32 +37,54 @@ const NewExpert = () => {
     }
   };
   
-
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>City</Text>
-      <TextInput
-        style={styles.input}
-        value={city}
-        onChangeText={setCity}
-        placeholder="Enter your city"
-      />
-      <Text style={styles.label}>Complete Address</Text>
-      <TextInput
-        style={styles.input}
-        value={address}
-        onChangeText={setAddress}
-        placeholder="Enter your complete address"
-      />
-
-    <Text style={styles.label}>Experience Years</Text>
-      <TextInput
-        style={styles.input}
-        value={experienceYears}
-        onChangeText={setExperienceYears}
-        placeholder="Enter your Experience Years"
-      />
-      <Button title="Submit" onPress={handleSubmit} disabled={loading} />
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleMain}>{t('New Expert')}</Text>
+        <Image source={require('../../assets/images/badge.png')} style={styles.image} />
+      </View>
+      <Text style={styles.labeltxt}>{t('Please fill in the details below')}</Text>
+      <View style={styles.form}>
+        <Text style={styles.label}>{t('City')}</Text>
+        <Input
+          placeholder={t('Enter your city')}
+          value={city}
+          onChangeText={setCity}
+          containerStyle={styles.inputField}
+          inputStyle={styles.inputText}
+          placeholderTextColor="#E0E0E0"
+          inputContainerStyle={{ borderBottomWidth: 0 }}
+        />
+        <Text style={styles.label}>{t('Address')}</Text>
+        <Input
+          placeholder={t('Enter your complete address')}
+          value={address}
+          onChangeText={setAddress}
+          containerStyle={styles.inputField}
+          inputStyle={styles.inputText}
+          placeholderTextColor="#E0E0E0"
+          inputContainerStyle={{ borderBottomWidth: 0 }}
+        />
+        <Text style={styles.label}>{t('Experience Years')}</Text>
+        <Input
+          placeholder={t('Enter your years of experience')}
+          value={experienceYears.toString()}
+          onChangeText={(text) => setExperienceYears(parseInt(text) || 0)}
+          keyboardType="numeric"
+          containerStyle={styles.inputField}
+          inputStyle={styles.inputText}
+          placeholderTextColor="#E0E0E0"
+          inputContainerStyle={{ borderBottomWidth: 0 }}
+        />
+        <Button
+          title={t('Submit')}
+          onPress={handleSubmit}
+          loading={loading}
+          containerStyle={styles.buttonContainer}
+          buttonStyle={styles.button}
+          titleStyle={styles.buttonTitle}
+        />
+      </View>
     </View>
   );
 };
@@ -72,16 +96,68 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#F5F5F5',
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
+  titleContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
     marginBottom: 20,
-    borderRadius: 5,
+    alignItems: 'center',
+  },
+  titleMain: {
+    fontSize: 36,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    marginBottom: 5,
+    lineHeight: 42,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    marginLeft: 20,
+  },
+  labeltxt: {
+    color: '#FFC107',
+    fontSize: 18,
+    marginBottom: 20,
+    marginLeft: 5,
+  },
+  form: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  label: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginBottom: 5,
+    marginLeft: 5,
+  },
+  inputField: {
+    borderBottomWidth: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 15,
+    paddingHorizontal: 15,
+    marginBottom: 10,
+    height: 45,
+    width: '100%',
+  },
+  inputText: {
+    color: '#FFFFFF',
+    paddingLeft: 20,
+    fontSize: 16,
+  },
+  buttonContainer: {
+    marginTop: 10,
+    width: '80%',
+    left: '10%',
+  },
+  button: {
+    backgroundColor: '#FFC107',
+    paddingVertical: 15,
+    borderRadius: 25,
+  },
+  buttonTitle: {
+    color: '#1B5E20',
+    fontWeight: 'bold',
+    fontSize: 20,
   },
 });
 

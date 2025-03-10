@@ -9,15 +9,7 @@ const AuctionSystemTab = () => {
   return (
       <View  style={styles.container}>
       <ScrollView>
-        {auctionItems.length > 0 ? (
-          auctionItems.map((item, index) => (
-            <Card key={index} containerStyle={styles.auctionCard}>
-              {/* Auction item details will go here */}
-            </Card>
-          ))
-        ) : (
-          <Text style={styles.noItemsText}>No auction items available at the moment.</Text>
-        )}
+      <Text style={styles.title}>Auction System</Text>
       </ScrollView>
     </View>
   );
@@ -28,7 +20,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
   },
+
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+  },
   auctionCard: {
+
     borderRadius: 10,
     marginBottom: 10,
   },

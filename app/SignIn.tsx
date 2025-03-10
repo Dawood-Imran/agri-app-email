@@ -331,13 +331,13 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     paddingHorizontal: 15,
     marginBottom: 10,
-    height: 45,
+    height: 53,
     width: '100%',
   },
   buttonContainer: {
     marginTop: 10,
-    width: '80%',
-    left: '10%',
+    width: '60%',
+    left: '20%',
   },
   button: {
     backgroundColor: '#FFC107',
