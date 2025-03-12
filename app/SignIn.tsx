@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#61B15A',
+    backgroundColor: '#4CAF50',
   },
   titleContainer: {
     marginBottom: 20,
@@ -274,21 +274,21 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   titleMain: {
-    fontSize: 36,
+    fontSize: 40,
     color: '#FFFFFF',
     fontWeight: 'bold',
     marginBottom: 5,
-    lineHeight: 42,
+    lineHeight: 44,
   },
   titleSub: {
-    fontSize: 28,
+    fontSize: 30,
     color: '#FFFFFF',
     paddingVertical: 10,
   },
   userType: {
     color: '#FFC107',
     fontWeight: 'bold',
-    fontSize: 32,
+    fontSize: 34,
     marginTop: 5,
     paddingVertical: 15,
     lineHeight: 45,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   inputText: {
     color: '#FFFFFF',
     paddingLeft: 20,
-    fontSize: 16,
+    fontSize: 18,
   },
   inputField: {
     borderBottomWidth: 0,
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     marginLeft: 5
   },
   labelRTL: {
-    textAlign: 'right', // Align text to the right for Urdu
+    textAlign: 'right',
     marginRight: 10,
   },
 });

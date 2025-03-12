@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#61B15A',
+    backgroundColor: '#4CAF50',
     padding: 20,
   },
   languagePickerContainer: {

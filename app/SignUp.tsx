@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#61B15A',
+    backgroundColor: '#4CAF50',
   },
   titleContainer: {
     alignItems: 'center',
@@ -271,13 +271,13 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
   titleMain: {
-    fontSize: 36,
+    fontSize: 40,
     color: '#FFFFFF',
     fontWeight: 'bold',
-    lineHeight: 42,
+    lineHeight: 44,
   },
   titleSub: {
-    fontSize: 28,
+    fontSize: 30,
     color: '#FFFFFF',
     marginTop: 5,
     paddingVertical: 10,
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   userType: {
     color: '#FFC107',
     fontWeight: 'bold',
-    fontSize: 32, 
+    fontSize: 34,
     paddingVertical: 10,
     lineHeight: 45,
     paddingHorizontal: 15,
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   inputText: {
     color: '#FFFFFF',
     paddingLeft: 20,
-    fontSize: 16,
+    fontSize: 18,
   },
   buttonContainer: {
     marginTop: 10,
