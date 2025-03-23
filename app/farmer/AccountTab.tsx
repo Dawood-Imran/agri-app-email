@@ -1,27 +1,75 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity , Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Alert } from 'react-native';
 import { useUser } from '../context/UserProvider';
 import { Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { getAuth, signOut } from 'firebase/auth';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const AccountTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { userName, userType, email , city , address  } = useUser();
-  
+  const { userName, userType, email, city, address } = useUser();
 
   const handleLogout = async () => {
     const auth = getAuth();
     try {
+      // Sign out from Firebase
       await signOut(auth);
-      console.log('User signed out');
-      router.replace('/UserSelectionScreen');
+
+      // Clear AsyncStorage data
+      await AsyncStorage.multiRemove([
+        'authToken',
+        'userData',
+        'userPreferences'
+      ]);
+
+      // Clear SecureStore data
+      await SecureStore.deleteItemAsync('userAuthenticated');
+      await SecureStore.deleteItemAsync('userType');
+      await SecureStore.deleteItemAsync('userToken');
+      await SecureStore.deleteItemAsync('userEmail');
+
+      Alert.alert(
+        t('Logout Successful'),
+        t('You have been logged out successfully'),
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              router.replace('/UserSelectionScreen');
+            }
+          }
+        ]
+      );
     } catch (error) {
       console.error('Error signing out:', error);
+      Alert.alert(
+        t('Error'),
+        t('Failed to logout. Please try again.'),
+        [{ text: 'OK' }]
+      );
     }
+  };
+
+  const confirmLogout = () => {
+    Alert.alert(
+      t('Confirm Logout'),
+      t('Are you sure you want to logout?'),
+      [
+        {
+          text: t('Cancel'),
+          style: 'cancel'
+        },
+        {
+          text: t('Logout'),
+          onPress: handleLogout,
+          style: 'destructive'
+        }
+      ]
+    );
   };
 
   const menuItems = [
@@ -29,10 +77,9 @@ const AccountTab = () => {
       title: t('Profile'),
       icon: 'person-outline',
       onPress: () => router.push({
-        pathname:'/farmer/Profile',
-        params:  { userName, userType, email , city , address }
-      }
-      ),
+        pathname: '/farmer/Profile',
+        params: { userName, userType, email, city, address }
+      }),
       color: '#4CAF50', // Green
     },
     {
@@ -53,7 +100,7 @@ const AccountTab = () => {
     <View style={styles.container}>
       <TouchableOpacity 
         style={styles.logoutButton}
-        onPress={handleLogout}
+        onPress={confirmLogout}
       >
         <Icon name="logout" type="material" color="#FF4444" size={24} />
         <Text style={styles.logoutText}>{t('Logout')}</Text>
@@ -80,7 +127,7 @@ const AccountTab = () => {
               type="material" 
               color={item.color} 
               size={24}
-              style={styles.chevron}
+              style={styles.chevronIcon}
             />
           </TouchableOpacity>
         ))}
@@ -96,7 +143,7 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     padding: 20,
-    paddingTop: 60, // To account for logout button
+    paddingTop: 60,
   },
   menuCard: {
     flexDirection: 'row',
@@ -105,7 +152,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 15,
     margin: 15,
-    
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -125,25 +171,13 @@ const styles = StyleSheet.create({
   },
   menuText: {
     flex: 1,
-    justifyContent: 'space-between',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
     fontSize: 16,
+    fontWeight: '500',
     color: '#333',
   },
-  menuItemContent: {
-    
-    flexDirection: 'row',
-    alignItems: 'center',
-    
-
+  chevronIcon: {
+    opacity: 0.7,
   },
-  menuIcon: {
-    marginRight: 15,
-  },
-  
   logoutButton: {
     position: 'absolute',
     top: 20,

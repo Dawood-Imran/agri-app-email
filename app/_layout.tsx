@@ -83,6 +83,42 @@ export default function RootLayout() {
             <Stack.Screen name="farmer/SchemesList" options={{ ...commonHeaderOptions, title: t('agricultureSchemes') }} />
             <Stack.Screen name="farmer/SchemeDetails" options={{ ...commonHeaderOptions, title: t('schemeDetails') }} />
             <Stack.Screen name="farmer/Agribot/LandingPage" options={{ ...commonHeaderOptions, title: t('AgriBot') }} />
+            <Stack.Screen 
+              name="farmer/Agribot/PlantDiseases" 
+              options={{ 
+                ...commonHeaderOptions, 
+                title: t('agribot.plantDiseases.title') 
+              }} 
+            />
+            <Stack.Screen 
+              name="farmer/Agribot/CropAdvice" 
+              options={{ 
+                ...commonHeaderOptions, 
+                title: t('agribot.cropAdvice.title') 
+              }} 
+            />
+            <Stack.Screen 
+              name="farmer/Agribot/PestControl" 
+              options={{ 
+                ...commonHeaderOptions, 
+                title: t('agribot.pestControl.title') 
+              }} 
+            />
+            <Stack.Screen 
+              name="farmer/Agribot/FieldManagement" 
+              options={{ 
+                ...commonHeaderOptions, 
+                title: t('agribot.fieldManagement.title') 
+              }} 
+            />
+
+<Stack.Screen 
+              name="farmer/Agribot/Help" 
+              options={{ 
+                ...commonHeaderOptions, 
+                title: t('agribot.help.title') 
+              }} 
+            />
 
             {/* Expert Screens */}
             <Stack.Screen name="expert/dashboard" options={{ headerShown: false }} />

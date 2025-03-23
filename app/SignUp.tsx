@@ -87,8 +87,27 @@ const SignUp = () => {
           });
         }
   
-        showToast(t('Account Created Successfully'));
-        router.replace({ pathname: '/SignIn', params: { userType } });
+        Alert.alert(
+          t('Success'),
+          t('Account Created Successfully'),
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Clear form data
+                setName('');
+                setEmail('');
+                setPinCode('');
+                setConfirmPinCode('');
+                // Navigate to SignIn with the same userType
+                router.replace({ 
+                  pathname: '/SignIn', 
+                  params: { userType } 
+                });
+              }
+            }
+          ]
+        );
       } catch (error: any) {
         console.error('Error creating user:', error);
         let errMsg = t('An unexpected error occurred');

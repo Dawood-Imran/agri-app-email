@@ -132,5 +132,153 @@
   "Reorder": "دوبارہ آرڈر کریں",
   "Payment Method": "ادائیگی کا طریقہ",
   "Shipping Address": "شپنگ ایڈریس",
-  "Billing Address": "بلنگ ایڈریس"
-}
+  "Billing Address": "بلنگ ایڈریس",
+    "agribot": {
+      "title": "اگری بوٹ میں خوش آمدید",
+      "description": "آپ کا ہوشیار زراعت کا معاون۔ اپنی زرعی ضروریات کے لیے ماہر مشورے اور حل حاصل کریں۔",
+      "help": "مدد چاہیے؟",
+      "loading": "لوڈ ہو رہا ہے...",
+      "submit": "جمع کرائیں",
+      "options": {
+        "plantDiseases": "🌱 پودوں کی بیماریوں کی شناخت",
+        "cropAdvice": "🌾 فصل کے مشورے حاصل کریں",
+        "pestControl": "🐛 کیڑے مار ادویات کے حل",
+        "fieldManagement": "🚜 کھیت کی دیکھ بھال کے نکات"
+      },
+      "plantDiseases": {
+        "title": "پودوں کی بیماری کی شناخت",
+        "cropType": "فصل کی قسم منتخب کریں",
+        "selectCrop": "فصل کا انتخاب کریں",
+        "affectedPart": "متاثرہ پودے کا حصہ",
+        "selectPart": "متاثرہ حصہ منتخب کریں",
+        "symptoms": "علامات منتخب کریں",
+        "cropOptions": {
+          "wheat": "گندم",
+          "rice": "چاول",
+          "cotton": "کپاس",
+          "maize": "مکئی",
+          "sugarcane": "گنا"
+        },
+        "affectedPartOptions": {
+          "leaves": "پتے",
+          "stem": "تنا",
+          "roots": "جڑیں",
+          "fruits": "پھل",
+          "flowers": "پھول"
+        },
+        "symptomOptions": {
+          "yellowSpots": "پیلے دھبے",
+          "brownSpots": "بھورے دھبے",
+          "wilting": "مرجھانا",
+          "dryness": "خشکی",
+          "rotting": "سڑن",
+          "stunted": "رکی ہوئی نشوونما",
+          "discoloration": "رنگ کی تبدیلی"
+        },
+        "errors": {
+          "allFieldsRequired": "براہ کرم تمام مطلوبہ فیلڈز کو پُر کریں",
+          "submissionFailed": "جمع کرانے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔"
+        },
+        "success": "بیماری کی شناخت کی درخواست کامیابی سے جمع کرا دی گئی"
+      },
+      "cropAdvice": {
+        "title": "فصل کے مشورے",
+        "cropType": "فصل کی قسم منتخب کریں",
+        "growthStage": "نشوونما کا مرحلہ",
+        "soilType": "مٹی کی قسم",
+        "issue": "مسئلہ منتخب کریں",
+        "description": "تفصیل درج کریں",
+        "cropOptions": {
+          "wheat": "گندم",
+          "rice": "چاول",
+          "cotton": "کپاس",
+          "maize": "مکئی",
+          "sugarcane": "گنا"
+        },
+        "growthStageOptions": {
+          "sowing": "بیج بوائی",
+          "germination": "انکور پھوٹنا",
+          "vegetative": "سبزہ کی نشوونما",
+          "flowering": "پھول آنا",
+          "maturity": "پختگی"
+        },
+        "soilTypeOptions": {
+          "clay": "چکنی مٹی",
+          "sandy": "ریتلی مٹی",
+          "loam": "دومٹ مٹی",
+          "silt": "گاد والی مٹی"
+        },
+        "issueOptions": {
+          "nutrient": "غذائی اجزاء کی کمی",
+          "water": "پانی کا انتظام",
+          "growth": "کمزور نشوونما",
+          "yield": "کم پیداوار",
+          "other": "دیگر"
+        },
+        "errors": {
+          "allFieldsRequired": "براہ کرم تمام مطلوبہ فیلڈز کو پُر کریں",
+          "submissionFailed": "جمع کرانے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔"
+        },
+        "success": "مشورے کی درخواست کامیابی سے جمع کرا دی گئی"
+      },
+      "pestControl": {
+        "title": "کیڑے مار ادویات کے حل",
+        "pestType": "کیڑے کی قسم",
+        "severity": "نقصان کی شدت",
+        "area": "متاثرہ رقبہ",
+        "cropStage": "فصل کا مرحلہ",
+        "pestOptions": {
+          "insects": "کیڑے",
+          "rodents": "چوہے",
+          "birds": "پرندے",
+          "weeds": "خودرو پودے",
+          "fungi": "پھپھوندی"
+        },
+        "severityOptions": {
+          "low": "کم",
+          "medium": "درمیانہ",
+          "high": "زیادہ",
+          "severe": "شدید"
+        },
+        "areaOptions": {
+          "small": "چھوٹا حصہ",
+          "quarter": "چوتھائی کھیت",
+          "half": "آدھا کھیت",
+          "full": "پورا کھیت"
+        },
+        "errors": {
+          "allFieldsRequired": "براہ کرم تمام مطلوبہ فیلڈز کو پُر کریں",
+          "submissionFailed": "جمع کرانے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔"
+        },
+        "success": "کیڑے مار ادویات کی درخواست کامیابی سے جمع کرا دی گئی"
+      },
+      "fieldManagement": {
+        "title": "کھیت کی دیکھ بھال کے نکات",
+        "categories": {
+          "water": "پانی کا انتظام",
+          "soil": "مٹی کی صحت",
+          "fertilizer": "کھاد کا استعمال",
+          "weather": "موسم سے تحفظ",
+          "machinery": "مشینری کا استعمال"
+        },
+        "tips": {
+          "water": [
+            "قطرہ آبپاشی کا نظام نافذ کریں",
+            "مٹی کی نمی کی نگرانی کریں",
+            "پانی دینے کا شیڈول بنائیں"
+          ],
+          "soil": [
+            "باقاعدہ مٹی کی جانچ",
+            "فصل کی تبدیلی",
+            "نامیاتی مادہ کا اضافہ"
+          ],
+          "fertilizer": [
+            "متوازن این پی کے کا استعمال",
+            "استعمال کا درست وقت",
+            "استعمال کا طریقہ"
+          ]
+        }
+      }
+    }
+  }
+

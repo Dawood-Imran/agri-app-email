@@ -1,15 +1,68 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity , Text} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Alert } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const AccountTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const handleLogout = () => {
-    router.replace('/');
+  const handleLogout = async () => {
+    try {
+      // Clear AsyncStorage data
+      await AsyncStorage.multiRemove([
+        'authToken',
+        'userData',
+        'userPreferences'
+      ]);
+
+      // Clear SecureStore data
+      await SecureStore.deleteItemAsync('userAuthenticated');
+      await SecureStore.deleteItemAsync('userType');
+      await SecureStore.deleteItemAsync('userToken');
+      
+      // Show success message
+      Alert.alert(
+        t('Logout Successful'),
+        t('You have been logged out successfully'),
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Navigate to language selection or initial screen
+              router.replace('/LanguageSelection');
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      Alert.alert(
+        t('Error'),
+        t('Failed to logout. Please try again.'),
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const confirmLogout = () => {
+    Alert.alert(
+      t('Confirm Logout'),
+      t('Are you sure you want to logout?'),
+      [
+        {
+          text: t('Cancel'),
+          style: 'cancel'
+        },
+        {
+          text: t('Logout'),
+          onPress: handleLogout,
+          style: 'destructive'
+        }
+      ]
+    );
   };
 
   const menuItems = [
@@ -38,7 +91,7 @@ const AccountTab = () => {
     <  View style={styles.container}>
       <TouchableOpacity 
         style={styles.logoutButton}
-        onPress={handleLogout}
+        onPress={confirmLogout}
       >
         <Icon name="logout" type="material" color="#FF4444" size={24} />
         <  Text style={styles.logoutText}>{t('Logout')}</  Text>

@@ -364,5 +364,153 @@
         ]
       }
     }
-  }
+  },
+    "agribot": {
+      "title": "Welcome to AgriBot",
+      "description": "Your smart farming assistant. Get expert advice and solutions for your agricultural needs.",
+      "help": "Need Help?",
+      "loading": "Loading...",
+      "submit": "Submit",
+      "options": {
+        "plantDiseases": "🌱 Identify Plant Diseases",
+        "cropAdvice": "🌾 Get Crop Advice",
+        "pestControl": "🐛 Pest Control Solutions",
+        "fieldManagement": "🚜 Field Management Tips"
+      },
+      "plantDiseases": {
+        "title": "Plant Disease Detection",
+        "cropType": "Select Crop Type",
+        "selectCrop": "Choose a crop",
+        "affectedPart": "Affected Plant Part",
+        "selectPart": "Choose affected part",
+        "symptoms": "Select Symptoms",
+        "cropOptions": {
+          "wheat": "Wheat",
+          "rice": "Rice",
+          "cotton": "Cotton",
+          "maize": "Maize",
+          "sugarcane": "Sugarcane"
+        },
+        "affectedPartOptions": {
+          "leaves": "Leaves",
+          "stem": "Stem",
+          "roots": "Roots",
+          "fruits": "Fruits",
+          "flowers": "Flowers"
+        },
+        "symptomOptions": {
+          "yellowSpots": "Yellow Spots",
+          "brownSpots": "Brown Spots",
+          "wilting": "Wilting",
+          "dryness": "Dryness",
+          "rotting": "Rotting",
+          "stunted": "Stunted Growth",
+          "discoloration": "Discoloration"
+        },
+        "errors": {
+          "allFieldsRequired": "Please fill in all required fields",
+          "submissionFailed": "Failed to submit. Please try again."
+        },
+        "success": "Disease detection request submitted successfully"
+      },
+      "cropAdvice": {
+        "title": "Crop Advice",
+        "cropType": "Select Crop Type",
+        "growthStage": "Growth Stage",
+        "soilType": "Soil Type",
+        "issue": "Select Issue",
+        "description": "Enter Description",
+        "cropOptions": {
+          "wheat": "Wheat",
+          "rice": "Rice",
+          "cotton": "Cotton",
+          "maize": "Maize",
+          "sugarcane": "Sugarcane"
+        },
+        "growthStageOptions": {
+          "sowing": "Sowing",
+          "germination": "Germination",
+          "vegetative": "Vegetative Growth",
+          "flowering": "Flowering",
+          "maturity": "Maturity"
+        },
+        "soilTypeOptions": {
+          "clay": "Clay",
+          "sandy": "Sandy",
+          "loam": "Loam",
+          "silt": "Silt"
+        },
+        "issueOptions": {
+          "nutrient": "Nutrient Deficiency",
+          "water": "Water Management",
+          "growth": "Poor Growth",
+          "yield": "Low Yield",
+          "other": "Other"
+        },
+        "errors": {
+          "allFieldsRequired": "Please fill in all required fields",
+          "submissionFailed": "Failed to submit. Please try again."
+        },
+        "success": "Advice request submitted successfully"
+      },
+      "pestControl": {
+        "title": "Pest Control Solutions",
+        "pestType": "Type of Pest",
+        "severity": "Infestation Severity",
+        "area": "Affected Area",
+        "cropStage": "Crop Stage",
+        "pestOptions": {
+          "insects": "Insects",
+          "rodents": "Rodents",
+          "birds": "Birds",
+          "weeds": "Weeds",
+          "fungi": "Fungi"
+        },
+        "severityOptions": {
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High",
+          "severe": "Severe"
+        },
+        "areaOptions": {
+          "small": "Small Patch",
+          "quarter": "Quarter Field",
+          "half": "Half Field",
+          "full": "Entire Field"
+        },
+        "errors": {
+          "allFieldsRequired": "Please fill in all required fields",
+          "submissionFailed": "Failed to submit. Please try again."
+        },
+        "success": "Pest control request submitted successfully"
+      },
+      "fieldManagement": {
+        "title": "Field Management Tips",
+        "categories": {
+          "water": "Water Management",
+          "soil": "Soil Health",
+          "fertilizer": "Fertilizer Application",
+          "weather": "Weather Protection",
+          "machinery": "Machinery Usage"
+        },
+        "tips": {
+          "water": [
+            "Implement drip irrigation",
+            "Monitor soil moisture",
+            "Schedule watering times"
+          ],
+          "soil": [
+            "Regular soil testing",
+            "Crop rotation",
+            "Organic matter addition"
+          ],
+          "fertilizer": [
+            "Balanced NPK application",
+            "Timing of application",
+            "Method of application"
+          ]
+        }
+      }
+    }
+  
 }

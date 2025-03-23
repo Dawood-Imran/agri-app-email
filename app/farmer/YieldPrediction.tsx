@@ -30,10 +30,10 @@ const YieldPrediction = () => {
         </View>
 
         {/* Days Remaining Section */}
-        <Card containerStyle={styles.daysCard}>
+        <View style={styles.daysCard}>
           <Text style={styles.daysLabel}>{t('Days Remaining for Prediction')}</Text>
           <Text style={styles.daysValue}>5 {t('Days Remaining')}</Text>
-        </Card>
+        </View>
 
         {/* Make Prediction Button */}
         <Button
@@ -45,16 +45,16 @@ const YieldPrediction = () => {
         />
 
         {/* Previous Predictions Section */}
-        <Card containerStyle={styles.predictionsCard}>
+        <View style={styles.predictionsCard}>
           <Text style={styles.sectionTitle}>{t('Previous Predictions')}</Text>
           {previousPredictions.map((prediction) => (
-            <Card key={prediction.id} containerStyle={styles.predictionItem}>
+            <View key={prediction.id} style={styles.predictionItem}>
               <Text style={styles.predictionDate}>{prediction.date}</Text>
               <Text style={styles.predictionEstimate}>{prediction.estimate}</Text>
               <Text style={styles.predictionNotes}>{prediction.notes}</Text>
-            </Card>
+            </View>
           ))}
-        </Card>
+        </View>
       </ScrollView>
     </View>
   );
