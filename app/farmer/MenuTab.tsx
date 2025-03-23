@@ -110,18 +110,13 @@ const fetchWeather = async () => {
       route: '/farmer/AuctionSystem' 
     },
     { 
-      name: t('fieldDetails'), 
-      icon: require('../../assets/images/farmer-icons/wheat.png'), 
-      route: '/farmer/FieldDetails' 
-    },
-    { 
       name: t('agricultureSchemes'), 
       icon: require('../../assets/images/farmer-icons/manager.png'), 
       route: '/farmer/SchemesList' 
     },
     { 
       name: t('Agri Bot'),
-      icon: require('../../assets/images/farmer-icons/Chatbot.jpg'),
+      icon: require('../../assets/images/farmer-icons/chatbot-logo.png'),
       route: '/farmer/Agribot/LandingPage'
     }
   ];

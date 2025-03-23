@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image} from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -8,13 +8,17 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { CustomToast } from '../components/CustomToast';
 import { Toast } from '../components/Toast';
+import { Picker} from '@react-native-picker/picker';
+
 const NewUserForm = () => {
   const { t } = useTranslation();
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -22,7 +26,7 @@ const NewUserForm = () => {
       const user = auth.currentUser;
       if (user) {
         const userTypeRef = doc(db, 'farmer', user.uid); // Adjust the collection name based on userType
-        await setDoc(userTypeRef, { city, address, isNewUser: false }, { merge: true });
+        await setDoc(userTypeRef, { city, address, phoneNumber, isNewUser: false }, { merge: true });
 
         console.log('User details saved successfully');
         alert('User details saved successfully');
@@ -49,16 +53,35 @@ const NewUserForm = () => {
       </View>
       <Text style={styles.labeltxt}>{t('Please fill in the details below')}</Text>
       <View style={styles.form}>
-        <Text style={styles.label}>{t('City')}</Text>
+        <Text style={styles.label}>{t('Phone Number')}</Text>
         <Input
-          placeholder={t('Enter your city')}
-          value={city}
-          onChangeText={setCity}
+          placeholder="3XXXXXXXXX"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          keyboardType="numeric"
+          leftIcon={<Text style={styles.countryCode}>+92</Text>}
           containerStyle={styles.inputField}
           inputStyle={styles.inputText}
           placeholderTextColor="#E0E0E0"
           inputContainerStyle={{ borderBottomWidth: 0 }}
         />
+        <Text style={styles.label}>{t('City')}</Text>
+        <Picker
+          selectedValue={city}
+          style={styles.picker}
+          onValueChange={(itemValue: string) => setCity(itemValue)}
+        >
+          <Picker.Item label="Select City" value="" />
+          <Picker.Item label="Lahore" value="Lahore" />
+          <Picker.Item label="Faisalabad" value="Faisalabad" />
+          <Picker.Item label="Rawalpindi" value="Rawalpindi" />
+          <Picker.Item label="Gujranwala" value="Gujranwala" />
+          <Picker.Item label="Multan" value="Multan" />
+          <Picker.Item label="Sargodha" value="Sargodha" />
+          <Picker.Item label="Sialkot" value="Sialkot" />
+          <Picker.Item label="Bahawalpur" value="Bahawalpur" />
+          <Picker.Item label="Sahiwal" value="Sahiwal" />
+        </Picker>
         <Text style={styles.label}>{t('Address')}</Text>
         <Input
           placeholder={t('Enter your complete address')}
@@ -95,7 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#61B15A',
+    backgroundColor: '#4CAF50',
   },
   titleContainer: {
     flexDirection: 'row',
@@ -104,11 +127,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleMain: {
-    fontSize: 36,
+    fontSize: 40,
     color: '#FFFFFF',
     fontWeight: 'bold',
     marginBottom: 5,
-    lineHeight: 42,
+    lineHeight: 44,
   },
   image: {
     width: 80,
@@ -143,7 +166,7 @@ const styles = StyleSheet.create({
   inputText: {
     color: '#FFFFFF',
     paddingLeft: 20,
-    fontSize: 16,
+    fontSize: 18,
   },
   buttonContainer: {
     marginTop: 10,
@@ -159,6 +182,19 @@ const styles = StyleSheet.create({
     color: '#1B5E20',
     fontWeight: 'bold',
     fontSize: 20,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    color: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 15,
+    marginBottom: 10,
+  },
+  countryCode: {
+    color: '#FFFFFF',
+    marginRight: 8,
+    fontSize: 16,
   },
 });
 

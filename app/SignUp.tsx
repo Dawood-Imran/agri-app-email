@@ -8,7 +8,8 @@ import { Toast } from './components/Toast';
 import { useAuth } from './context/AuthContext';
 import { my_auth, db } from '@/firebaseConfig';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; 
+import { doc, setDoc } from "firebase/firestore";
+import * as SecureStore from 'expo-secure-store';
 
 const { width } = Dimensions.get('window'); // Get screen width
 
@@ -86,7 +87,7 @@ const SignUp = () => {
           });
         }
   
-        alert(t('Account Created Successfully'));
+        showToast(t('Account Created Successfully'));
         router.replace({ pathname: '/SignIn', params: { userType } });
       } catch (error: any) {
         console.error('Error creating user:', error);

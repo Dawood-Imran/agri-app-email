@@ -1,6 +1,6 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack, Slot } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { color } from 'react-native-elements/dist/helpers';
 import CustomHeader from '../app/components/CustomHeader';
 import { UserProvider } from './context/UserProvider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { AuthProvider } from './context/AuthContext';
 
 
@@ -34,39 +34,17 @@ export default function RootLayout() {
   });
   const router = useRouter();
   const { t } = useTranslation();
-  const [isReady, setIsReady] = useState(false);
+  const [isLayoutReady, setIsLayoutReady] = useState(false);
 
   useEffect(() => {
-    async function initializeApp() {
-      try {
-        if (!loaded) return;
-
-        const userAuthenticated = await AsyncStorage.getItem('userAuthenticated');
-        const userType = await AsyncStorage.getItem('userType');
-
-        if (userAuthenticated === 'true' && userType) {
-          const route = {
-            pathname: `/${userType.toLowerCase()}/dashboard`
-          };
-          
-          // Delay navigation
-          setTimeout(() => {
-            router.replace(route as any);
-          }, 100);
-        }
-      } catch (error) {
-        console.error('Preparation error:', error);
-      } finally {
-        setIsReady(true);
-        await SplashScreen.hideAsync();
-      }
+    if (loaded) {
+      setIsLayoutReady(true);
+      SplashScreen.hideAsync();
     }
-
-    initializeApp();
   }, [loaded]);
 
-  if (!loaded || !isReady) {
-    return <View style={{ flex: 1 }} />;
+  if (!isLayoutReady) {
+    return null;
   }
 
   const commonHeaderOptions = {

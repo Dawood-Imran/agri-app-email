@@ -8,7 +8,7 @@ import {useAuth} from './context/AuthContext';
 import { db, my_auth } from '@/firebaseConfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDoc, doc } from 'firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { CustomToast } from './components/CustomToast';
 
 const { width } = Dimensions.get('window'); // Get screen width
@@ -74,9 +74,9 @@ const SignIn = () => {
       }
 
       // Store auth state
-      await AsyncStorage.setItem('userAuthenticated', 'true');
-      await AsyncStorage.setItem('userType', userType);
-      await AsyncStorage.setItem('userEmail', email);
+      await SecureStore.setItemAsync('userAuthenticated', 'true');
+      await SecureStore.setItemAsync('userType', userType);
+      await SecureStore.setItemAsync('userEmail', email);
 
       // Determine navigation based on user type and new user status
       let navigationTarget;

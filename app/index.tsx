@@ -1,5 +1,8 @@
-import { Redirect } from 'expo-router';
+import { View } from 'react-native';
+import { useInitialNavigation } from './hooks/useInitialNavigation';
 
 export default function Index() {
-  return <Redirect href="/SplashScreen" />;
+  useInitialNavigation();
+  
+  return <View />;
 }
