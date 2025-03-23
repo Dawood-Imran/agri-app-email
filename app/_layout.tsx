@@ -75,13 +75,14 @@ export default function RootLayout() {
             <Stack.Screen name="farmer/Settings" options={{ ...commonHeaderOptions, title: t('Settings') }} />
             <Stack.Screen name="farmer/Help" options={{ ...commonHeaderOptions, title: t('Help') }} />
             <Stack.Screen name="farmer/CoinScreen" options={{ ...commonHeaderOptions, title: t('Coins') }} />
-            <Stack.Screen name="farmer/YieldPrediction" options={{ ...commonHeaderOptions, title: t('yieldPrediction') }} />
+            <Stack.Screen name="farmer/YieldPrediction" options={{ ...commonHeaderOptions, title: t('Yield Prediction') }} />
             <Stack.Screen name="farmer/ExpertConsultation" options={{ ...commonHeaderOptions, title: t('expertConsultation') }} />
             <Stack.Screen name="farmer/BuyCoins" options={{ ...commonHeaderOptions, title: t('buyCoins') }} />
             <Stack.Screen name="farmer/AuctionSystem" options={{ ...commonHeaderOptions, title: t('auctionSystem') }} />
             <Stack.Screen name="farmer/FieldDetails" options={{ ...commonHeaderOptions, title: t('fieldDetails') }} />
             <Stack.Screen name="farmer/SchemesList" options={{ ...commonHeaderOptions, title: t('agricultureSchemes') }} />
             <Stack.Screen name="farmer/SchemeDetails" options={{ ...commonHeaderOptions, title: t('schemeDetails') }} />
+            <Stack.Screen name="farmer/Agribot/LandingPage" options={{ ...commonHeaderOptions, title: t('AgriBot') }} />
 
             {/* Expert Screens */}
             <Stack.Screen name="expert/dashboard" options={{ headerShown: false }} />

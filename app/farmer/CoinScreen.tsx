@@ -1,12 +1,12 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity , Text } from 'react-native';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { Button, ListItem, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 const CoinScreen = () => {
   const { t, i18n } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
   const [balance, setBalance] = React.useState(100); // Example balance
   const [transactions, setTransactions] = React.useState([
     { id: 1, type: 'Spent', amount: 10, service: 'Yield Prediction', date: '2023-05-01' },
@@ -14,23 +14,13 @@ const CoinScreen = () => {
     { id: 3, type: 'Earned', amount: 50, service: 'Crop Sale (Auction)', date: '2023-04-28' },
   ]);
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Icon 
-          name="arrow-back" 
-          type="material" 
-          color="#FFC107" 
-          size={30} 
-          onPress={() => navigation.navigate('farmer/dashboard')} 
-          containerStyle={{ marginLeft: 10 }}
-        />
-      ),
-    });
-  }, [navigation]);
+  const handleBack = () => {
+    router.back();
+  };
 
   return (
     <View style={styles.container}>
+    
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.balanceCard}>
           <Text style={styles.balanceTitle}>
@@ -48,7 +38,7 @@ const CoinScreen = () => {
           containerStyle={styles.buttonContainer}
         />
         <View style={styles.card}>
-              <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionTitle}>
             {i18n.language === 'ur' ? 'لین دین کی تاریخ' : t('Transaction History')}
           </Text>
           {transactions.map((item, i) => (
@@ -79,8 +69,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
   },
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    zIndex: 1,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   scrollViewContent: {
     padding: 20,
+    paddingTop: 60, // Add padding to account for back button
   },
   balanceCard: {
     borderRadius: 10,
