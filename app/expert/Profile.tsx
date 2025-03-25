@@ -1,29 +1,22 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Image, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { getAuth, signOut } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { useUser } from '../context/UserProvider';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const Profile = () => {
-  const { t } = useTranslation();
-  const expertDetails = {
-    name: 'Dr. Ahmed Khan',
-    specialization: 'Agricultural Scientist',
-    experience: '15 years',
-    phone: '995-057-5065',
-    email: 'dr.ahmed@agroboost.com',
-    education: 'PhD in Agricultural Sciences',
-    rating: '4.8',
-    consultations: '250+'
-  };
+  const { t, i18n } = useTranslation();
+  const { userName, email, city, experienceYears } = useUser();
 
   const handleLogout = async () => {
     try {
       const auth = getAuth();
       await signOut(auth);
-      await AsyncStorage.clear(); // Clear all stored data
-      router.replace('/'); // Navigate to root/auth screen
+      await AsyncStorage.clear();
+      router.replace('/');
     } catch (error) {
       console.error('Logout error:', error);
       Alert.alert(t('Error'), t('Failed to logout. Please try again.'));
@@ -31,47 +24,71 @@ const Profile = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.profileSection}>
         <View style={styles.imageContainer}>
-          <Text style={styles.name}>Dr. {expertDetails.name}</Text>
-          <Text style={styles.specialization}>{expertDetails.specialization}</Text>
+          <View style={styles.avatarContainer}>
+            <MaterialCommunityIcons name="account-circle" size={100} color="#FFFFFF" />
+          </View>
+          <Text style={[styles.name, i18n.language === 'ur' && styles.urduText]}>
+            Dr. {userName}
+          </Text>
+          <Text style={[styles.specialization, i18n.language === 'ur' && styles.urduText]}>
+            {t('Agricultural Expert')}
+          </Text>
         </View>
       </View>
 
       <View style={styles.detailsCard}>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{expertDetails.rating}</Text>
-            <Text style={styles.statLabel}>Rating</Text>
+            <Text style={styles.statValue}>{experienceYears}</Text>
+            <Text style={styles.statLabel}>{t('Years Experience')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{expertDetails.consultations}</Text>
-            <Text style={styles.statLabel}>Consultations</Text>
+            <Text style={styles.statValue}>4.8</Text>
+            <Text style={styles.statLabel}>{t('Rating')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{expertDetails.experience}</Text>
-            <Text style={styles.statLabel}>Experience</Text>
+            <Text style={styles.statValue}>250+</Text>
+            <Text style={styles.statLabel}>{t('Consultations')}</Text>
           </View>
         </View>
 
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Education</Text>
-          <Text style={styles.value}>{expertDetails.education}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Phone</Text>
-          <Text style={styles.value}>{expertDetails.phone}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.label}>Email</Text>
-          <Text style={styles.value}>{expertDetails.email}</Text>
+        <View style={styles.infoSection}>
+          <View style={styles.infoItem}>
+            <MaterialCommunityIcons name="email-outline" size={24} color="#4CAF50" />
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoLabel}>{t('Email')}</Text>
+              <Text style={styles.infoValue}>{email}</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoItem}>
+            <MaterialCommunityIcons name="map-marker-outline" size={24} color="#4CAF50" />
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoLabel}>{t('City')}</Text>
+              <Text style={styles.infoValue}>{city}</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoItem}>
+            <MaterialCommunityIcons name="certificate-outline" size={24} color="#4CAF50" />
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoLabel}>{t('Specialization')}</Text>
+              <Text style={styles.infoValue}>{t('Agricultural Sciences')}</Text>
+            </View>
+          </View>
         </View>
       </View>
+
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>{t('Logout')}</Text>
+        <MaterialCommunityIcons name="logout" size={24} color="#1B5E20" />
+        <Text style={[styles.logoutText, i18n.language === 'ur' && styles.urduText]}>
+          {t('Logout')}
+        </Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -79,40 +96,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
-    padding: 15,
   },
   profileSection: {
-    alignItems: 'center',
     padding: 20,
-    backgroundColor: '#61B15A',
-    borderRadius: 15,
-    marginBottom: 20,
+    backgroundColor: '#4CAF50',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   imageContainer: {
     alignItems: 'center',
+    paddingVertical: 20,
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-    backgroundColor: '#FFFFFF',
+  avatarContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   name: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginTop: 10,
   },
   specialization: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    opacity: 0.9,
+    fontSize: 18,
+    color: '#E8F5E9',
     marginTop: 5,
   },
   detailsCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 15,
+    borderRadius: 20,
+    margin: 16,
     padding: 20,
     elevation: 3,
     shadowColor: '#000',
@@ -125,48 +148,62 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: '#E0E0E0',
     marginBottom: 20,
   },
   statItem: {
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#61B15A',
+    color: '#4CAF50',
   },
   statLabel: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: 14,
+    color: '#666666',
     marginTop: 5,
   },
-  detailRow: {
+  infoSection: {
+    marginTop: 10,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
   },
-  label: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
+  infoTextContainer: {
+    marginLeft: 15,
+    flex: 1,
   },
-  value: {
+  infoLabel: {
+    fontSize: 14,
+    color: '#666666',
+  },
+  infoValue: {
     fontSize: 16,
-    color: '#333',
+    color: '#333333',
     fontWeight: '500',
+    marginTop: 2,
   },
   logoutButton: {
     backgroundColor: '#FFC107',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 15,
     borderRadius: 25,
-    width: '80%',
-    alignSelf: 'center',
-    marginTop: 20,
+    margin: 16,
   },
   logoutText: {
     color: '#1B5E20',
     fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginLeft: 8,
+  },
+  urduText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
 });
 

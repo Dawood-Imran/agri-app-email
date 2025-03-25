@@ -1,23 +1,61 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, Platform } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig'; // Adjust the import based on your file structure
+import { db } from '../../firebaseConfig';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { CustomToast } from '../components/CustomToast';
 import { Toast } from '../components/Toast';
-import { Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
+import * as Location from 'expo-location';
 
 const NewUserForm = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setToastMessage('Permission to access location was denied');
+        return;
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation(currentLocation);
+      
+      // Get address from coordinates
+      if (currentLocation) {
+        try {
+          let [addressObj] = await Location.reverseGeocodeAsync({
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude,
+          });
+          if (addressObj) {
+            setAddress(`${addressObj.street}, ${addressObj.city}, ${addressObj.region}`);
+          }
+        } catch (error) {
+          console.error('Error getting address:', error);
+        }
+      }
+    })();
+  }, []);
+
+  const handlePhoneNumberChange = (text: string) => {
+    // Only allow numbers and limit to 10 digits
+    const cleaned = text.replace(/[^0-9]/g, '');
+    if (cleaned.length <= 10) {
+      setPhoneNumber(cleaned);
+    }
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -25,17 +63,22 @@ const NewUserForm = () => {
       const auth = getAuth();
       const user = auth.currentUser;
       if (user) {
-        const userTypeRef = doc(db, 'farmer', user.uid); // Adjust the collection name based on userType
-        await setDoc(userTypeRef, { city, address, phoneNumber, isNewUser: false }, { merge: true });
+        const userTypeRef = doc(db, 'farmer', user.uid);
+        await setDoc(userTypeRef, {
+          city,
+          address,
+          phoneNumber: `+92${phoneNumber}`,
+          location: location ? {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          } : null,
+          isNewUser: false
+        }, { merge: true });
 
-        console.log('User details saved successfully');
-        alert('User details saved successfully');
         setToastMessage(t('User details saved successfully'));
-        router.replace('/farmer/dashboard'); // Redirect to profile
+        router.replace('/farmer/dashboard');
       } else {
-        console.log('User not authenticated');
         setToastMessage(t('User not authenticated'));
-        alert('User not authenticated');
       }
     } catch (error) {
       console.error('Error saving user details:', error);
@@ -48,49 +91,57 @@ const NewUserForm = () => {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleMain}>{t('New Farmer')}</Text>
+        <Text style={[styles.titleMain, i18n.language === 'ur' && styles.urduTitle]}>{t('New Farmer')}</Text>
         <Image source={require('../../assets/images/farmer.png')} style={styles.image} />
       </View>
-      <Text style={styles.labeltxt}>{t('Please fill in the details below')}</Text>
+      <Text style={[styles.labeltxt, i18n.language === 'ur' && styles.urduText]}>{t('Please fill in the details below')}</Text>
       <View style={styles.form}>
-        <Text style={styles.label}>{t('Phone Number')}</Text>
+        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('Phone Number')}</Text>
         <Input
           placeholder="3XXXXXXXXX"
           value={phoneNumber}
-          onChangeText={setPhoneNumber}
+          onChangeText={handlePhoneNumberChange}
           keyboardType="numeric"
           leftIcon={<Text style={styles.countryCode}>+92</Text>}
           containerStyle={styles.inputField}
-          inputStyle={styles.inputText}
+          inputStyle={[styles.inputText, i18n.language === 'ur' && styles.urduInput]}
           placeholderTextColor="#E0E0E0"
           inputContainerStyle={{ borderBottomWidth: 0 }}
         />
-        <Text style={styles.label}>{t('City')}</Text>
-        <Picker
-          selectedValue={city}
-          style={styles.picker}
-          onValueChange={(itemValue: string) => setCity(itemValue)}
-        >
-          <Picker.Item label="Select City" value="" />
-          <Picker.Item label="Lahore" value="Lahore" />
-          <Picker.Item label="Faisalabad" value="Faisalabad" />
-          <Picker.Item label="Rawalpindi" value="Rawalpindi" />
-          <Picker.Item label="Gujranwala" value="Gujranwala" />
-          <Picker.Item label="Multan" value="Multan" />
-          <Picker.Item label="Sargodha" value="Sargodha" />
-          <Picker.Item label="Sialkot" value="Sialkot" />
-          <Picker.Item label="Bahawalpur" value="Bahawalpur" />
-          <Picker.Item label="Sahiwal" value="Sahiwal" />
-        </Picker>
-        <Text style={styles.label}>{t('Address')}</Text>
+        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('City')}</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={city}
+            style={[styles.picker, i18n.language === 'ur' && styles.urduPicker]}
+            onValueChange={(itemValue: string) => setCity(itemValue)}
+          >
+            <Picker.Item label={t('Select City')} value="" />
+            <Picker.Item label="Lahore" value="Lahore" />
+            <Picker.Item label="Faisalabad" value="Faisalabad" />
+            <Picker.Item label="Rawalpindi" value="Rawalpindi" />
+            <Picker.Item label="Gujranwala" value="Gujranwala" />
+            <Picker.Item label="Multan" value="Multan" />
+            <Picker.Item label="Sargodha" value="Sargodha" />
+            <Picker.Item label="Sialkot" value="Sialkot" />
+            <Picker.Item label="Bahawalpur" value="Bahawalpur" />
+            <Picker.Item label="Sahiwal" value="Sahiwal" />
+            <Picker.Item label="Sheikhupura" value="Sheikhupura" />
+            <Picker.Item label="Jhang" value="Jhang" />
+            <Picker.Item label="Rahim Yar Khan" value="Rahim Yar Khan" />
+            <Picker.Item label="Kasur" value="Kasur" />
+            <Picker.Item label="Okara" value="Okara" />
+          </Picker>
+        </View>
+        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('Address')}</Text>
         <Input
           placeholder={t('Enter your complete address')}
           value={address}
           onChangeText={setAddress}
           containerStyle={styles.inputField}
-          inputStyle={styles.inputText}
+          inputStyle={[styles.inputText, i18n.language === 'ur' && styles.urduInput]}
           placeholderTextColor="#E0E0E0"
           inputContainerStyle={{ borderBottomWidth: 0 }}
+          multiline
         />
         <Button
           title={t('Submit')}
@@ -98,7 +149,7 @@ const NewUserForm = () => {
           loading={loading}
           containerStyle={styles.buttonContainer}
           buttonStyle={styles.button}
-          titleStyle={styles.buttonTitle}
+          titleStyle={[styles.buttonTitle, i18n.language === 'ur' && styles.urduText]}
         />
       </View>
       <Toast
@@ -183,19 +234,38 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
   },
+  pickerContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 15,
+    marginBottom: 10,
+    overflow: 'hidden',
+  },
   picker: {
     height: 50,
     width: '100%',
     color: '#FFFFFF',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 15,
-    marginBottom: 10,
   },
   countryCode: {
     color: '#FFFFFF',
     marginRight: 8,
     fontSize: 16,
   },
+  urduText: {
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
+  urduTitle: {
+    textAlign: 'right',
+  },
+  urduInput: {
+    textAlign: 'right',
+    paddingRight: 20,
+    paddingLeft: 0,
+  },
+  urduPicker: {
+    textAlign: 'right',
+    direction: 'rtl',
+  }
 });
 
 export default NewUserForm;

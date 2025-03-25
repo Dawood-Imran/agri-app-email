@@ -83,7 +83,7 @@ const PlantDiseases = () => {
 
   return (
     <View style={styles.container}>
-      <CustomHeader />
+      
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>{t('agribot.plantDiseases.title')}</Text>
         
