@@ -57,8 +57,27 @@ export const CustomToast: React.FC<CustomToastProps> = ({
   };
 
   const getBackgroundColor = () => {
-    // If a custom color is provided, use it; otherwise, use the default based on type
-    return color || (type === 'success' ? '#4CAF50' : type === 'error' ? '#FF5252' : '#2196F3');
+    // If a custom color is provided, use it
+    if (color) return color;
+    
+    // Otherwise use type-based colors
+    switch (type) {
+      case 'success':
+        return '#4CAF50';
+      case 'error':
+        return '#FF5252';
+      case 'info':
+        return '#2196F3';
+      default:
+        return '#FF5252';
+    }
+  };
+
+  const getIconColor = () => {
+    // If using a custom background color, return white
+    if (color) return '#FFFFFF';
+    
+    return '#FFFFFF';
   };
 
   return (
@@ -71,7 +90,7 @@ export const CustomToast: React.FC<CustomToastProps> = ({
       <MaterialCommunityIcons 
         name={getIconName()} 
         size={24} 
-        color="#FFFFFF" 
+        color={getIconColor()} 
       />
       <Text style={styles.message}>{message}</Text>
     </Animated.View>

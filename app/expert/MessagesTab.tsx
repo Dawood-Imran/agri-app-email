@@ -52,7 +52,7 @@ const MessagesTab = () => {
         }
       });
 
-      // Listen for recent consultations
+
       const consultationsRef = collection(db, 'consultations');
       const q = query(
         consultationsRef,

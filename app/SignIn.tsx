@@ -24,11 +24,13 @@ const SignIn = () => {
   const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('error');
   
   const isRTL = i18n.language === 'ur';
 
-  const showToast = (message: string) => {
+  const showToast = (message: string, toastType: 'success' | 'error' | 'info' = 'error') => {
     setToastMessage(message);
+    setToastType(toastType);
     setToastVisible(true);
   };
 
@@ -49,26 +51,26 @@ const SignIn = () => {
     setLoading(true);
     try {
       if (!email.trim() || !pinCode.trim()) {
-        showToast(t('All Fields Required'));
+        showToast(t('All Fields Required'), 'error');
         setLoading(false);
         return;
       }
 
       if (!userType) {
-        showToast(t('Please select user type'));
+        showToast(t('Please select user type'), 'error');
         setLoading(false);
         return;
       }
 
       const response = await signInWithEmailAndPassword(my_auth, email, pinCode);
-      showToast(t('Sign-in successful'));
+      showToast(t('Sign-in successful'), 'success');
       console.log("Sign-in successful:", response.user.uid);
 
       // Check user document first
       const userDoc = await getDoc(doc(db, userType.toLowerCase(), response.user.uid));
       
       if (!userDoc.exists()) {
-        showToast(t('User document not found'));
+        showToast(t('User document not found'), 'error');
         setLoading(false);
         return;
       }
@@ -93,7 +95,7 @@ const SignIn = () => {
           navigationTarget = isNewUser ? '/buyer/NewBuyer' : '/buyer/dashboard';
           break;
         default:
-          showToast(t('Invalid user type'));
+          showToast(t('Invalid user type'), 'error');
           setLoading(false);
           return;
       }
@@ -121,7 +123,7 @@ const SignIn = () => {
         errMsg = error.message || t('An unexpected error occurred');
       }
 
-      showToast(errMsg);
+      showToast(errMsg, 'error');
     }
     finally {
       setLoading(false);
@@ -250,8 +252,7 @@ const SignIn = () => {
       <Toast 
         visible={toastVisible}
         message={toastMessage || ''}
-        type="custom"
-        color="#FFC107"
+        type={toastType}
         onHide={() => setToastVisible(false)}
       />
     </View>
