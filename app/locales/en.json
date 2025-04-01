@@ -260,108 +260,122 @@
   },
   "fieldManagement": {
     "title": "Field Management Tips",
+    "subtitle": "Select the topics where you need help and get expert advice tailored for your region",
+    "getTips": "Get Tips",
+    "yourAdvice": "Your Personalized Advice",
+    "noTipsSelected": "Please select at least one topic to get advice",
+    "loading": "Getting expert advice...",
+    "error": "Error getting advice. Please try again.",
     "categories": {
-      "waterManagement": {
-        "title": "Water Management",
-        "tips": [
-          {
-            "title": "Use Drip Irrigation",
-            "description": "Delivers water directly to roots, reducing evaporation and saving up to 50% water."
+      "soilPreparation": {
+        "title": "Soil Preparation Tips",
+        "description": "Learn about soil types and preparation methods",
+        "subOptions": {
+          "soilType": {
+            "title": "Best soil type for my crop",
+            "description": "What soil composition works best?"
           },
-          {
-            "title": "Collect Rainwater",
-            "description": "Harvest rainwater to supplement irrigation during dry periods."
+          "fertilizerChoice": {
+            "title": "Organic vs. chemical fertilizers",
+            "description": "Which is more effective for my soil?"
           },
-          {
-            "title": "Use Mobile Apps for Weather Updates",
-            "description": "Stay informed about weather conditions to optimize irrigation schedules."
+          "plowingTechniques": {
+            "title": "Plowing and tilling techniques",
+            "description": "Recommended methods for preparing land"
+          },
+          "soilTesting": {
+            "title": "Soil testing and amendments",
+            "description": "How to test soil health and improve fertility"
           }
-        ]
+        }
       },
-      "soilHealth": {
-        "title": "Soil Health",
-        "tips": [
-          {
-            "title": "Test Your Soil Annually",
-            "description": "Regular testing helps apply the right fertilizers and maintain soil health."
+      "irrigation": {
+        "title": "Irrigation Management",
+        "description": "Water management and irrigation techniques",
+        "subOptions": {
+          "methods": {
+            "title": "Irrigation methods for water conservation",
+            "description": "Drip, flood, or sprinkler systems"
           },
-          {
-            "title": "Use Organic Fertilizers",
-            "description": "Improves soil structure and fertility while reducing dependency on chemicals."
+          "scheduling": {
+            "title": "Scheduling and timing",
+            "description": "Best times of day or seasons to irrigate"
           },
-          {
-            "title": "Practice Crop Rotation",
-            "description": "Rotating crops prevents soil depletion and pest buildup."
+          "waterShortage": {
+            "title": "Water shortage management",
+            "description": "Tips on managing irrigation during drought"
+          },
+          "waterlogging": {
+            "title": "Preventing waterlogging",
+            "description": "How to avoid over-irrigation and crop damage"
           }
-        ]
+        }
       },
-      "pestAndDiseaseManagement": {
-        "title": "Pest and Disease Management",
-        "tips": [
-          {
-            "title": "Use Bio-Pesticides",
-            "description": "Environmentally friendly and effective for pest control."
+      "pestControl": {
+        "title": "Pest Control",
+        "description": "Pest management and prevention strategies",
+        "subOptions": {
+          "identification": {
+            "title": "Identifying common pests",
+            "description": "What pests are prevalent in my region?"
           },
-          {
-            "title": "Scout Your Fields Regularly",
-            "description": "Early detection of pests and diseases reduces crop losses."
+          "pesticides": {
+            "title": "Organic vs. chemical pesticides",
+            "description": "Advantages and disadvantages"
           },
-          {
-            "title": "Implement IPM Strategies",
-            "description": "Combine biological, cultural, and chemical methods for sustainable pest control."
+          "ipm": {
+            "title": "Integrated Pest Management (IPM)",
+            "description": "A sustainable, multi-pronged approach"
+          },
+          "prevention": {
+            "title": "Preventative measures",
+            "description": "Techniques to reduce pest infestation before it starts"
           }
-        ]
+        }
       },
-      "cropSelectionAndRotation": {
-        "title": "Crop Selection and Rotation",
-        "tips": [
-          {
-            "title": "Choose Climate-Resilient Varieties",
-            "description": "Select crops that can withstand local climate conditions."
+      "cropRotation": {
+        "title": "Crop Rotation & Selection",
+        "description": "Strategic crop planning and rotation",
+        "subOptions": {
+          "seasonalPlanning": {
+            "title": "Seasonal crop planning",
+            "description": "Which crops to plant each season"
           },
-          {
-            "title": "Rotate Crops to Prevent Depletion",
-            "description": "Different crops disrupt pest life cycles and improve soil health."
+          "intercropping": {
+            "title": "Intercropping strategies",
+            "description": "Benefits of growing multiple crops together"
           },
-          {
-            "title": "Diversify Your Crops",
-            "description": "Growing a variety of crops mitigates risks from market fluctuations."
+          "nutrientRotation": {
+            "title": "Nutrient management through rotation",
+            "description": "How rotation can help restore soil health"
+          },
+          "marketDemand": {
+            "title": "Market demand considerations",
+            "description": "Choosing crops that yield higher returns locally"
           }
-        ]
+        }
       },
-      "technologyAndInnovation": {
-        "title": "Technology and Innovation",
-        "tips": [
-          {
-            "title": "Use Mobile Apps for Advice",
-            "description": "Stay updated with the latest agricultural practices and market trends."
+      "fertilizerManagement": {
+        "title": "Fertilizer & Nutrient Management",
+        "description": "Effective fertilizer application and nutrient management",
+        "subOptions": {
+          "fertilizerChoice": {
+            "title": "Choosing the right fertilizer",
+            "description": "Organic versus synthetic options"
           },
-          {
-            "title": "Implement Precision Farming",
-            "description": "Optimize resource use and increase efficiency with GPS or drones."
+          "application": {
+            "title": "Application techniques",
+            "description": "How to apply fertilizers effectively"
           },
-          {
-            "title": "Use Solar-Powered Equipment",
-            "description": "Reduce dependency on traditional energy sources and lower costs."
+          "timing": {
+            "title": "Determining dosage and timing",
+            "description": "Best practices for fertilizer use"
+          },
+          "deficiencies": {
+            "title": "Identifying nutrient deficiencies",
+            "description": "Recognizing signs in crops and addressing them"
           }
-        ]
-      },
-      "financialManagement": {
-        "title": "Financial Management",
-        "tips": [
-          {
-            "title": "Access Government Credit Schemes",
-            "description": "Take advantage of financial assistance programs designed for farmers."
-          },
-          {
-            "title": "Join Cooperatives for Market Access",
-            "description": "Cooperatives provide better bargaining power and access to markets."
-          },
-          {
-            "title": "Keep Records of Expenses and Yields",
-            "description": "Proper record-keeping helps make informed financial decisions."
-          }
-        ]
+        }
       }
     }
   },
@@ -485,7 +499,7 @@
         "success": "Pest control request submitted successfully"
       },
       "fieldManagement": {
-        "title": "Field Management Tips",
+        "title": "Tips & Techniques",
         "categories": {
           "water": "Water Management",
           "soil": "Soil Health",

@@ -119,7 +119,6 @@ const CropAdvice = () => {
   if (showResponse) {
     return (
       <View style={styles.container}>
-        <CustomHeader />
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.title}>{t('agribot.cropAdvice.title')}</Text>
           
@@ -162,7 +161,7 @@ const CropAdvice = () => {
 
   return (
     <View style={styles.container}>
-      <CustomHeader />
+      
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>{t('agribot.cropAdvice.title')}</Text>
         
