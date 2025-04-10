@@ -139,15 +139,9 @@ const SignUp = () => {
         <Icon name="arrow-back" type="material" color="#FFC107" size={30} />
       </TouchableOpacity>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleMain}>{t('Create Account')}</Text>
-        {userType && (
-          <Text style={styles.titleSub}>
-            {t('as')}{' '}
-            <Text style={styles.userType}>
-              {t(userType.toLowerCase())}
-            </Text>
-          </Text>
-        )}
+      <Text style={styles.titleMain}>
+          {t('Sign Up')} {t('as')} {userType && <Text style={styles.userType}> {t(userType.toLowerCase())}</Text>}
+        </Text>
       </View>
       <View style={styles.form}>
         <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Name')}</Text>
@@ -197,7 +191,7 @@ const SignUp = () => {
           leftIcon={
             <View style={styles.iconContainer}>
               <Icon name="email" type="material" color="#FFFFFF" />
-              <View style={styles.separator} />
+              <View style={styles.separator} /> 
             </View>
           }
           containerStyle={styles.inputWrapper}
@@ -291,22 +285,23 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
   titleMain: {
-    fontSize: 40,
+    fontSize: 28,
     color: '#FFFFFF',
     fontWeight: 'bold',
-    lineHeight: 44,
+    lineHeight: 48,
+    marginBottom: 15,
   },
   titleSub: {
     fontSize: 30,
     color: '#FFFFFF',
-    marginTop: 5,
+    marginTop: 10,
     paddingVertical: 10,
   },
   userType: {
     color: '#FFC107',
     fontWeight: 'bold',
-    fontSize: 34,
-    paddingVertical: 10,
+    fontSize: 40,
+    paddingVertical: 10, 
     lineHeight: 45,
     paddingHorizontal: 15,
     borderRadius: 10,
@@ -372,7 +367,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginTop: 5,
+    marginTop: 0,
   },
   flagIcon: {
     width: 24,
@@ -402,7 +397,7 @@ const styles = StyleSheet.create({
   label: {
     color: '#FFFFFF',
     fontSize: 16,
-    marginBottom: 0,
+    
     marginLeft: 5,
   },
 });

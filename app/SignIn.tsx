@@ -171,16 +171,11 @@ const SignIn = () => {
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Icon name="arrow-back" type="material" color="#FFC107" size={30} />
       </TouchableOpacity>
+      
       <View style={styles.titleContainer}>
-        <Text style={styles.titleMain}>{t('Sign In')}</Text>
-        {userType && (
-          <Text style={styles.titleSub}>
-            {t('as')}{' '}
-            <Text style={styles.userType}>
-              {t(userType.toLowerCase())}
-            </Text>
-          </Text>
-        )}
+      <Text style={styles.titleMain}>
+          {t('Sign In')} {t('as')} {userType && <Text style={styles.userType}> {t(userType.toLowerCase())}</Text>}
+        </Text>
       </View>
       <View style={styles.form} >
         <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Email')}</Text>
@@ -202,7 +197,7 @@ const SignIn = () => {
         />
 
         <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Pin Code')}</Text>
-        <View style={styles.inputContainer}>
+        
           <Input
             placeholder={t("Enter Pin Code")}
             onChangeText={(text) => {
@@ -234,7 +229,7 @@ const SignIn = () => {
               {t('Forgot PIN?')}
             </Text>
           </TouchableOpacity>
-        </View>
+        
         <Button
           title={t('Sign In')}
           onPress={handleFormSubmit}
@@ -275,7 +270,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   titleMain: {
-    fontSize: 40,
+    fontSize: 28,
     color: '#FFFFFF',
     fontWeight: 'bold',
     marginBottom: 5,
@@ -289,7 +284,7 @@ const styles = StyleSheet.create({
   userType: {
     color: '#FFC107',
     fontWeight: 'bold',
-    fontSize: 34,
+    fontSize: 40,
     marginTop: 5,
     paddingVertical: 15,
     lineHeight: 45,
@@ -318,7 +313,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 15,
     paddingHorizontal: 15,
-    marginBottom: 10,
+    marginBottom: 15,
     height: 53,
     width: '100%',
   },
@@ -343,6 +338,13 @@ const styles = StyleSheet.create({
   },
   signUpHighlight: {
     color: '#FFC107',
+  },
+  logoContainer: {
+    
+  },
+  logo: {
+    width: 180,
+    height: 150,
   },
   backButton: {
     position: 'absolute',
