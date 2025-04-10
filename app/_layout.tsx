@@ -79,7 +79,7 @@ export default function RootLayout() {
             <Stack.Screen name="farmer/ExpertConsultation" options={{ ...commonHeaderOptions, title: t('expertConsultation') }} />
             <Stack.Screen name="farmer/BuyCoins" options={{ ...commonHeaderOptions, title: t('buyCoins') }} />
             <Stack.Screen name="farmer/AuctionSystem" options={{ ...commonHeaderOptions, title: t('auctionSystem') }} />
-            <Stack.Screen name="farmer/FieldDetails" options={{ ...commonHeaderOptions, title: t('fieldDetails') }} />
+            <Stack.Screen name="farmer/FieldDetails" options={{ ...commonHeaderOptions, title: t('Field Details') }} />
             <Stack.Screen name="farmer/SchemesList" options={{ ...commonHeaderOptions, title: t('agricultureSchemes') }} />
             <Stack.Screen name="farmer/SchemeDetails" options={{ ...commonHeaderOptions, title: t('schemeDetails') }} />
             <Stack.Screen name="farmer/Agribot/LandingPage" options={{ ...commonHeaderOptions, title: t('AgriBot') }} />

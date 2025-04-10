@@ -62,7 +62,7 @@ const NewExpert = () => {
           },
           isNewUser: false
         }, { merge: true });
-
+  
         console.log('User details saved successfully');
         router.replace('/expert/dashboard');
       } else {

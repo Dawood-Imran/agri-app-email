@@ -110,6 +110,11 @@ const fetchWeather = async () => {
       route: '/farmer/AuctionSystem' 
     },
     { 
+      name: t('Field Details'), 
+      icon: require('../../assets/images/farmer-icons/wheat.png'), 
+      route: '/farmer/FieldDetails'
+    },
+    { 
       name: t('agricultureSchemes'), 
       icon: require('../../assets/images/farmer-icons/manager.png'), 
       route: '/farmer/SchemesList' 

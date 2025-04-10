@@ -82,7 +82,17 @@ const CropAdvice = () => {
   ];
 
   const handleSubmit = async () => {
-    if (!formData.cropType || !formData.growthStage || !formData.soilType || !formData.issue || formData.selectedQuestions.length === 0) {
+    // Check if any required field is empty
+    const isFormValid = 
+      formData.cropType !== '' && 
+      formData.growthStage !== '' && 
+      formData.soilType !== '' && 
+      formData.issue !== '';
+
+    // Only check for selected questions if an issue is selected
+    const areQuestionsSelected = formData.issue ? formData.selectedQuestions.length > 0 : true;
+
+    if (!isFormValid || !areQuestionsSelected) {
       Alert.alert(
         t('Error'),
         t('agribot.cropAdvice.errors.allFieldsRequired'),

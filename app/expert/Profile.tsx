@@ -151,8 +151,8 @@ const Profile = () => {
               <Text style={styles.infoValue}>
                 {profileData.preferredLanguage === 'ur' ? t('Urdu') : t('English')}
               </Text>
-            </View>
-          </View>
+        </View>
+        </View>
         </View>
       </View>
     </ScrollView>
