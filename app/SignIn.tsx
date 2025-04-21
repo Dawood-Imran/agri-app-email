@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Alert, ImageBackground , Text} from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Alert, ImageBackground, Text, I18nManager } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import * as SecureStore from 'expo-secure-store';
 import { CustomToast } from './components/CustomToast';
 
 const { width } = Dimensions.get('window'); // Get screen width
+
 
 const SignIn = () => {
   const { userType } = useLocalSearchParams<{ userType: string }>();
@@ -168,9 +169,17 @@ const SignIn = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-        <Icon name="arrow-back" type="material" color="#FFC107" size={30} />
+      <TouchableOpacity style={[styles.backButton, isRTL && { right: 20, left: 'auto' }]} onPress={handleBack}>
+        <Icon name={isRTL ? "arrow-forward" : "arrow-back"} type="material" color="#FFC107" size={30} />
       </TouchableOpacity>
+
+      <View style={styles.logoContainer}>
+        <Image 
+          source={require('../assets/app-logo-wo-text.png')} 
+          style={styles.logoImage} 
+          resizeMode="cover"
+        />
+      </View>
       
       <View style={styles.titleContainer}>
       <Text style={styles.titleMain}>
@@ -178,57 +187,90 @@ const SignIn = () => {
         </Text>
       </View>
       <View style={styles.form} >
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Email')}</Text>
         <Input
-          placeholder={t('Enter Email')}
+          placeholder={t('Email')}
           onChangeText={setEmail}
           value={email}
           leftIcon={
-            <View style={styles.iconContainer}>
-              <Icon name="email" type="material" color="#FFFFFF" />
-              <View style={styles.separator} />
-            </View>
+            isRTL ? null : (
+              <View style={styles.iconContainer}>
+                <Icon name="email" type="material" color="#FFFFFF" />
+                <View style={styles.separator} />
+              </View>
+            )
+          }
+          rightIcon={
+            isRTL ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.separator} />
+                <Icon name="email" type="material" color="#FFFFFF" />
+              </View>
+            ) : null
           }
           containerStyle={styles.inputField}
           inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.inputText}
+          inputStyle={[
+            styles.inputText, 
+            isRTL && { 
+              textAlign: 'right', 
+              paddingRight: 20, 
+              paddingLeft: 0 
+            }
+          ]}
           placeholderTextColor="#E0E0E0"
           underlineColorAndroid="transparent"
+          textContentType="emailAddress"
+          keyboardType={isRTL ? "default" : "email-address"}
         />
 
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Pin Code')}</Text>
-        
-          <Input
-            placeholder={t("Enter Pin Code")}
-            onChangeText={(text) => {
-              if (text.length <= 6) {
-                setPinCode(text);
-              }
-            }}
-            value={pinCode}
-            keyboardType="numeric"
-            secureTextEntry
-            maxLength={6}
-            leftIcon={
+        <Input
+          placeholder={t("Pin Code")}
+          onChangeText={(text) => {
+            if (text.length <= 6) {
+              setPinCode(text);
+            }
+          }}
+          value={pinCode}
+          keyboardType="numeric"
+          secureTextEntry
+          maxLength={6}
+          leftIcon={
+            isRTL ? null : (
               <View style={styles.iconContainer}>
                 <Icon name="lock" type="material" color="#FFFFFF" />
                 <View style={styles.separator} />
               </View>
+            )
+          }
+          rightIcon={
+            isRTL ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.separator} />
+                <Icon name="lock" type="material" color="#FFFFFF" />
+              </View>
+            ) : null
+          }
+          inputStyle={[
+            styles.inputText, 
+            isRTL && { 
+              textAlign: 'right', 
+              paddingRight: 20, 
+              paddingLeft: 0 
             }
-            inputStyle={styles.inputText}
-            placeholderTextColor="#E0E0E0"
-            containerStyle={styles.inputField}
-            underlineColorAndroid="transparent"
-            inputContainerStyle={{ borderBottomWidth: 0 }}
-          />
-          <TouchableOpacity 
-            onPress={handleForgotPin} 
-            style={styles.forgotPinContainer}
-          >
-            <Text style={styles.forgotPinText}>
-              {t('Forgot PIN?')}
-            </Text>
-          </TouchableOpacity>
+          ]}
+          placeholderTextColor="#E0E0E0"
+          containerStyle={styles.inputField}
+          underlineColorAndroid="transparent"
+          inputContainerStyle={{ borderBottomWidth: 0 }}
+        />
+        <TouchableOpacity 
+          onPress={handleForgotPin} 
+          style={[styles.forgotPinContainer, isRTL && { alignItems: 'flex-start', paddingLeft: 15, paddingRight: 0 }]}
+        >
+          <Text style={styles.forgotPinText}>
+            {t('Forgot PIN?')}
+          </Text>
+        </TouchableOpacity>
         
         <Button
           title={t('Sign In')}
@@ -262,12 +304,21 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#4CAF50',
   },
+  logoContainer: {
+    marginTop: -60,
+  },
+
+  logoImage: {
+    width: 130,
+    height: 180,
+  },
   titleContainer: {
+    marginTop: -30,
     marginBottom: 20,
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingTop: 30,
-    marginTop: 20,
+    
   },
   titleMain: {
     fontSize: 28,
@@ -339,13 +390,7 @@ const styles = StyleSheet.create({
   signUpHighlight: {
     color: '#FFC107',
   },
-  logoContainer: {
-    
-  },
-  logo: {
-    width: 180,
-    height: 150,
-  },
+  
   backButton: {
     position: 'absolute',
     top: 40,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Alert , Text} from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Alert, Text, I18nManager } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Input, Button, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
@@ -135,29 +135,54 @@ const SignUp = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-        <Icon name="arrow-back" type="material" color="#FFC107" size={30} />
+      <TouchableOpacity style={[styles.backButton, isRTL && { right: 20, left: 'auto' }]} onPress={handleBack}>
+        <Icon name={isRTL ? "arrow-forward" : "arrow-back"} type="material" color="#FFC107" size={30} />
       </TouchableOpacity>
+
+      <View style={styles.logoContainer}>
+        <Image 
+          source={require('../assets/app-logo-wo-text.png')} 
+          style={styles.logoImage} 
+          resizeMode="cover"
+        />
+      </View>
+        
       <View style={styles.titleContainer}>
-      <Text style={styles.titleMain}>
+        <Text style={styles.titleMain}>
           {t('Sign Up')} {t('as')} {userType && <Text style={styles.userType}> {t(userType.toLowerCase())}</Text>}
         </Text>
       </View>
       <View style={styles.form}>
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Name')}</Text>
         <Input
           placeholder={t('Name')}
           onChangeText={setName}
           value={name}
           leftIcon={
-            <View style={styles.iconContainer}>
-              <Icon name="person" type="material" color="#FFFFFF" />
-              <View style={styles.separator} />
-            </View>
+            isRTL ? null : (
+              <View style={styles.iconContainer}>
+                <Icon name="person" type="material" color="#FFFFFF" />
+                <View style={styles.separator} />
+              </View>
+            )
+          }
+          rightIcon={
+            isRTL ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.separator} />
+                <Icon name="person" type="material" color="#FFFFFF" />
+              </View>
+            ) : null
           }
           containerStyle={styles.inputWrapper}
           inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.inputText}
+          inputStyle={[
+            styles.inputText, 
+            isRTL && { 
+              textAlign: 'right', 
+              paddingRight: 20, 
+              paddingLeft: 0 
+            }
+          ]}
           placeholderTextColor="#E0E0E0"
         />
         {/* 
@@ -183,24 +208,41 @@ const SignUp = () => {
             errorStyle={styles.errorText}
           />
         */}
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Email')}</Text>
         <Input
           placeholder={t('Enter Email')}
           onChangeText={setEmail}
           value={email}
           leftIcon={
-            <View style={styles.iconContainer}>
-              <Icon name="email" type="material" color="#FFFFFF" />
-              <View style={styles.separator} /> 
-            </View>
+            isRTL ? null : (
+              <View style={styles.iconContainer}>
+                <Icon name="email" type="material" color="#FFFFFF" />
+                <View style={styles.separator} /> 
+              </View>
+            )
+          }
+          rightIcon={
+            isRTL ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.separator} />
+                <Icon name="email" type="material" color="#FFFFFF" />
+              </View>
+            ) : null
           }
           containerStyle={styles.inputWrapper}
           inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.inputText}
+          inputStyle={[
+            styles.inputText, 
+            isRTL && { 
+              textAlign: 'right', 
+              paddingRight: 20, 
+              paddingLeft: 0 
+            }
+          ]}
           placeholderTextColor="#E0E0E0"
           underlineColorAndroid="transparent"
+          textContentType="emailAddress"
+          keyboardType={isRTL ? "default" : "email-address"}
         />
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Pin Code')}</Text>
         <Input
           placeholder={t("Enter Pin Code")}
           onChangeText={(text) => {
@@ -213,17 +255,33 @@ const SignUp = () => {
           secureTextEntry
           maxLength={6}
           leftIcon={
-            <View style={styles.iconContainer}>
-              <Icon name="lock" type="material" color="#FFFFFF" />
-              <View style={styles.separator} />
-            </View>
+            isRTL ? null : (
+              <View style={styles.iconContainer}>
+                <Icon name="lock" type="material" color="#FFFFFF" />
+                <View style={styles.separator} />
+              </View>
+            )
+          }
+          rightIcon={
+            isRTL ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.separator} />
+                <Icon name="lock" type="material" color="#FFFFFF" />
+              </View>
+            ) : null
           }
           containerStyle={styles.inputWrapper}
           inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.inputText}
+          inputStyle={[
+            styles.inputText, 
+            isRTL && { 
+              textAlign: 'right', 
+              paddingRight: 20, 
+              paddingLeft: 0 
+            }
+          ]}
           placeholderTextColor="#E0E0E0"
         />
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>{t('Confirm Pin Code')}</Text>
         <Input
           placeholder={t("Confirm Pin Code")}
           onChangeText={(text) => {
@@ -236,14 +294,31 @@ const SignUp = () => {
           secureTextEntry
           maxLength={6}
           leftIcon={
-            <View style={styles.iconContainer}>
-              <Icon name="lock" type="material" color="#FFFFFF" />
-              <View style={styles.separator} />
-            </View>
+            isRTL ? null : (
+              <View style={styles.iconContainer}>
+                <Icon name="lock" type="material" color="#FFFFFF" />
+                <View style={styles.separator} />
+              </View>
+            )
+          }
+          rightIcon={
+            isRTL ? (
+              <View style={styles.iconContainer}>
+                <View style={styles.separator} />
+                <Icon name="lock" type="material" color="#FFFFFF" />
+              </View>
+            ) : null
           }
           containerStyle={styles.inputWrapper}
           inputContainerStyle={styles.inputContainer}
-          inputStyle={styles.inputText}
+          inputStyle={[
+            styles.inputText, 
+            isRTL && { 
+              textAlign: 'right', 
+              paddingRight: 20, 
+              paddingLeft: 0 
+            }
+          ]}
           placeholderTextColor="#E0E0E0"
         />
         <Button
@@ -284,12 +359,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 30,
   },
+  logoContainer: {
+    marginTop: -40,
+  },
+
+  logoImage: {
+    width: 130,
+    height: 180,
+  },
   titleMain: {
     fontSize: 28,
     color: '#FFFFFF',
     fontWeight: 'bold',
     lineHeight: 48,
-    marginBottom: 15,
+    marginBottom: 25,
+    marginTop: -40,
   },
   titleSub: {
     fontSize: 30,
@@ -397,7 +481,6 @@ const styles = StyleSheet.create({
   label: {
     color: '#FFFFFF',
     fontSize: 16,
-    
     marginLeft: 5,
   },
 });
