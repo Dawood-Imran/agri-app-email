@@ -10,6 +10,7 @@ import { CustomToast } from '../components/CustomToast';
 import { Toast } from '../components/Toast';
 import { Picker } from '@react-native-picker/picker';
 import * as Location from 'expo-location';
+import { useUser } from '../context/UserProvider';
 
 const NewUserForm = () => {
   const { t, i18n } = useTranslation();
@@ -20,6 +21,11 @@ const NewUserForm = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const { userName, userType, email , isLoading , reloadUser} = useUser(); 
+
+  useEffect(() => {
+    
+  })
 
   useEffect(() => {
     (async () => {
@@ -65,8 +71,14 @@ const NewUserForm = () => {
       if (user) {
         const userTypeRef = doc(db, 'farmer', user.uid);
         await setDoc(userTypeRef, {
+          name: userName,
+          userType,
+          email,
           city,
           address,
+          consultations: 0,
+          coins: 0,
+          profilePicture: '',
           phoneNumber: `+92${phoneNumber}`,
           location: location ? {
             latitude: location.coords.latitude,

@@ -3,37 +3,215 @@ import { StyleSheet, ScrollView, Text, View, Dimensions, ActivityIndicator } fro
 import { Card, Button } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import CustomHeader from '../components/CustomHeader';
-import MapView from 'react-native-maps';
+import { LineChart } from 'react-native-chart-kit';
+import MapView, { Marker } from 'react-native-maps';
+import { collection, doc, getDoc, setDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 import { FieldData, useFields } from '../hooks/useFields';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Toast from '../components/Toast';
+import { getAuth } from 'firebase/auth';
+
+interface YieldPredictionData {
+  fieldSize: number;
+  cropType: string;
+  sowingDate: Date;
+  latitude: number;
+  longitude: number;
+  daysRemaining: number;
+  currentRound: number;
+  predictedYield: number;
+  predictionHistory: {
+    round: number;
+    date: Date;
+    predictedYield: number;
+    weatherConditions: string;
+    yieldChange: 'Increased' | 'Decreased' | 'N/A';
+  }[];
+}
 
 const YieldPrediction = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { fields, loading } = useFields();
-  const [wheatFields, setWheatFields] = useState([]);
-  const [sowingDate, setSowingDate] = useState(new Date());
-  const [soilType, setSoilType] = useState('');
-  const [latitude, setLatitude] = useState(0);
-  const [longitude, setLongitude] = useState(0);
-  const [previousPredictions] = React.useState([
-    { id: 1, date: '2024-03-15', estimate: '2.5 tons/acre', notes: 'Good weather conditions' },
-    { id: 2, date: '2024-02-15', estimate: '2.3 tons/acre', notes: 'Moderate rainfall' },
-  ]);
+  const [wheatFields, setWheatFields] = useState<FieldData[]>([]);
+  const [predictionData, setPredictionData] = useState<YieldPredictionData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [toastConfig, setToastConfig] = useState<{
+    visible: boolean;
+    message: string;
+    type: 'success' | 'error' | 'info';
+  }>({
+    visible: false,
+    message: '',
+    type: 'error'
+  });
 
   useEffect(() => {
     if (fields) {
       const wheatFieldsData = fields.filter(field => field.cropType === 'Wheat');
-      setWheatFields(wheatFieldsData as any);  
+      setWheatFields(wheatFieldsData);
+      if (wheatFieldsData.length > 0) {
+        fetchYieldPrediction(wheatFieldsData[0].id);
+      } else {
+        setIsLoading(false);
+      }
     }
   }, [fields]);
 
-  const navigateToFieldDetails = () => {
-    router.push('/farmer/FieldDetails');
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'error') => {
+    setToastConfig({
+      visible: true,
+      message,
+      type
+    });
   };
 
-  if (loading) {
+  const hideToast = () => {
+    setToastConfig(prev => ({ ...prev, visible: false }));
+  };
+
+  const fetchYieldPrediction = async (fieldId: string) => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (!user) {
+        throw new Error('Please sign in to view predictions');
+      }
+
+      // Use the correct path: users/{userId}/fields/{fieldId}/predictions/current
+      const predictionRef = doc(db, 'users', user.uid, 'fields', fieldId, 'predictions', 'current');
+      
+      try {
+        const predictionDoc = await getDoc(predictionRef);
+
+        if (predictionDoc.exists()) {
+          const data = predictionDoc.data() as YieldPredictionData;
+          setPredictionData({
+            ...data,
+            sowingDate: data.sowingDate instanceof Timestamp ? data.sowingDate.toDate() : data.sowingDate,
+            predictionHistory: data.predictionHistory.map(history => ({
+              ...history,
+              date: history.date instanceof Timestamp ? history.date.toDate() : history.date
+            }))
+          });
+        } else {
+          // Initialize with sample data for new users
+          if (!wheatFields[0]) {
+            throw new Error('No wheat field data available');
+          }
+
+          const sampleData: YieldPredictionData = {
+            fieldSize: Number(wheatFields[0].areaInAcres),
+            cropType: 'Wheat',
+            sowingDate: wheatFields[0].sowingDate,
+            latitude: wheatFields[0].latitude || 0,
+            longitude: wheatFields[0].longitude || 0,
+            daysRemaining: 15,
+            currentRound: 1,
+            predictedYield: 1250,
+            predictionHistory: [{
+              round: 1,
+              date: new Date(),
+              predictedYield: 1250,
+              weatherConditions: 'Sunny',
+              yieldChange: 'N/A'
+            }]
+          };
+
+          try {
+            await setDoc(predictionRef, {
+              ...sampleData,
+              sowingDate: Timestamp.fromDate(sampleData.sowingDate),
+              predictionHistory: sampleData.predictionHistory.map(history => ({
+                ...history,
+                date: Timestamp.fromDate(history.date)
+              }))
+            });
+            setPredictionData(sampleData);
+            showToast('Initial prediction data created successfully', 'success');
+          } catch (error) {
+            console.error('Error creating initial prediction:', error);
+            if (error instanceof Error && error.message.includes('permission')) {
+              showToast('Permission denied. Please check your access rights.', 'error');
+            } else {
+              showToast('Failed to create initial prediction data', 'error');
+            }
+            throw error;
+          }
+        }
+      } catch (error) {
+        console.error('Error accessing prediction document:', error);
+        if (error instanceof Error && error.message.includes('permission')) {
+          showToast('Permission denied. Please check your access rights.', 'error');
+        } else {
+          showToast('Error accessing prediction data', 'error');
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error in fetchYieldPrediction:', error);
+      showToast(
+        error instanceof Error 
+          ? error.message.includes('permission')
+            ? 'Permission denied. Please check your access rights.'
+            : error.message
+          : 'Error fetching yield prediction'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePrediction = async () => {
+    if (!predictionData || !wheatFields.length) {
+      showToast('No field data available for prediction');
+      return;
+    }
+
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      const newPrediction = {
+        round: predictionData.currentRound + 1,
+        date: new Date(),
+        predictedYield: predictionData.predictedYield + Math.floor(Math.random() * 100),
+        weatherConditions: 'Sunny',
+        yieldChange: predictionData.predictionHistory[predictionData.predictionHistory.length - 1].predictedYield < predictionData.predictedYield ? 'Increased' as const : 'Decreased' as const
+      };
+
+      const updatedData = {
+        ...predictionData,
+        daysRemaining: 15,
+        currentRound: predictionData.currentRound + 1,
+        predictedYield: newPrediction.predictedYield,
+        predictionHistory: [...predictionData.predictionHistory, newPrediction]
+      };
+
+      // Use the correct path for updating predictions
+      const predictionRef = doc(db, 'users', user.uid, 'fields', wheatFields[0].id, 'predictions', 'current');
+      await updateDoc(predictionRef, {
+        ...updatedData,
+        predictionHistory: updatedData.predictionHistory.map(history => ({
+          ...history,
+          date: Timestamp.fromDate(history.date)
+        }))
+      });
+      setPredictionData(updatedData);
+      showToast('Prediction updated successfully', 'success');
+    } catch (error) {
+      console.error('Error updating prediction:', error);
+      showToast('Failed to update prediction');
+    }
+  };
+
+  if (loading || isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#61B15A" />
@@ -44,7 +222,6 @@ const YieldPrediction = () => {
   if (wheatFields.length === 0) {
     return (
       <View style={styles.container}>
-        
         <View style={styles.emptyStateContainer}>
           <MaterialCommunityIcons name="sprout-outline" size={64} color="#CCCCCC" />
           <Text style={styles.emptyStateTitle}>{t('No Wheat Fields Found')}</Text>
@@ -53,7 +230,7 @@ const YieldPrediction = () => {
           </Text>
           <Button
             title={t('Add Wheat Field')}
-            onPress={navigateToFieldDetails}
+            onPress={() => router.push('/farmer/FieldDetails')}
             buttonStyle={styles.addFieldButton}
             titleStyle={styles.addFieldButtonTitle}
             containerStyle={styles.addFieldButtonContainer}
@@ -73,71 +250,173 @@ const YieldPrediction = () => {
 
   return (
     <View style={styles.container}>
-      
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Map Section */}
         <View style={styles.mapContainer}>
           <MapView
             style={styles.map}
             initialRegion={{
-              latitude: wheatFields[0]?.latitude || 37.78825 ,
-              longitude: wheatFields[0]?.longitude|| -122.4324 ,
+              latitude: wheatFields[0]?.latitude || 31.5204,
+              longitude: wheatFields[0]?.longitude || 74.3587,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
-          />
+          >
+            {wheatFields.map((field, index) => (
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: field.latitude || 31.5204,
+                  longitude: field.longitude || 74.3587
+                }}
+                title={`Field ${index + 1}`}
+                description={`${field.areaInAcres} acres`}
+              />
+            ))}
+          </MapView>
         </View>
 
-        {/* Wheat Fields Summary */}
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>{t('Your Wheat Fields')}</Text>
-          <Text style={styles.summaryText}>
-            {t('Total Fields')}: {wheatFields.length}
-          </Text>
-          <Text style={styles.summaryText}>
-            {t('Total Area')}: {wheatFields.reduce((sum, field) => sum + Number(field.areaInAcres), 0)} acres
-          </Text>
-          <Text style={styles.summaryText}>
-            {t('Sowing Date')}: {wheatFields[0]?.sowingDate.toLocaleDateString()}
-          </Text>
-          <Text style={styles.summaryText}>
-            {t('Soil Type')}: {wheatFields[0]?.soilType}
-          </Text>
-          <Text style={styles.summaryText}>
-            {t('Latitude')}: {wheatFields[0]?.latitude}
-          </Text>
-          <Text style={styles.summaryText}>
-            {t('Longitude')}: {wheatFields[0]?.longitude}
-          </Text>
-        </View>
+        {
+        predictionData && wheatFields[0] && (
+          <View style={[styles.predictionCard, styles.cardShadow]}>
+            <Text style={styles.cardTitle}>{t('Field Details')}</Text>
+            <View style={styles.fieldDetailsContainer}>
+              <View style={styles.detailRow}>
+                <MaterialCommunityIcons name="ruler" size={20} color="#666" />
+                <Text style={styles.detailLabel}>Area:</Text>
+                <Text style={styles.detailValue}>{wheatFields[0].areaInAcres} acres</Text>
+              </View>
 
-        {/* Days Remaining Section */}
-        <View style={styles.daysCard}>
-          <Text style={styles.daysLabel}>{t('Days Remaining for Prediction')}</Text>
-          <Text style={styles.daysValue}>5 {t('Days Remaining')}</Text>
-        </View>
+              <View style={styles.detailRow}>
+                <MaterialCommunityIcons name="sprout" size={20} color="#666" />
+                <Text style={styles.detailLabel}>Crop Type:</Text>
+                <Text style={styles.detailValue}>{wheatFields[0].cropType}</Text>
+              </View>
 
-        {/* Make Prediction Button */}
-        <Button
-          title={t('Make Prediction')}
-          onPress={() => {/* Implement prediction logic */}}
-          buttonStyle={styles.button}
-          titleStyle={styles.buttonTitle}
-          containerStyle={styles.buttonContainer}
-        />
+              <View style={styles.detailRow}>
+                <MaterialCommunityIcons name="water" size={20} color="#666" />
+                <Text style={styles.detailLabel}>Soil Type:</Text>
+                <Text style={styles.detailValue}>{wheatFields[0].soilType}</Text>
+              </View>
 
-        {/* Previous Predictions Section */}
-        <View style={styles.predictionsCard}>
-          <Text style={styles.sectionTitle}>{t('Previous Predictions')}</Text>
-          {previousPredictions.map((prediction) => (
-            <View key={prediction.id} style={styles.predictionItem}>
-              <Text style={styles.predictionDate}>{prediction.date}</Text>
-              <Text style={styles.predictionEstimate}>{prediction.estimate}</Text>
-              <Text style={styles.predictionNotes}>{prediction.notes}</Text>
+              <View style={styles.detailRow}>
+                <MaterialCommunityIcons name="calendar" size={20} color="#666" />
+                <Text style={styles.detailLabel}>Sowing Date:</Text>
+                <Text style={styles.detailValue}>
+                  {wheatFields[0].sowingDate.toLocaleDateString()}
+                </Text>
+              </View>
+
+              {wheatFields[0].latitude && wheatFields[0].longitude && (
+                <View style={styles.detailRow}>
+                  <MaterialCommunityIcons name="map-marker" size={20} color="#666" />
+                  <Text style={styles.detailLabel}>Location:</Text>
+                  <Text style={styles.detailValue}>
+                    {wheatFields[0].latitude.toFixed(4)}, {wheatFields[0].longitude.toFixed(4)}
+                  </Text>
+                </View>
+              )}
             </View>
-          ))}
-        </View>
+          </View>
+        )}
+
+        {/* Yield Prediction Card */}
+        {predictionData && (
+        
+          <View style={[styles.predictionCard, styles.cardShadow]}>
+            <Text style={styles.cardTitle}>{t('Estimated Yield')}</Text>
+            <View style={styles.yieldContainer}>
+              <Text style={styles.yieldValue}>
+                {predictionData.predictedYield} kg/hectare
+              </Text>
+              <Text style={styles.yieldComparison}>
+                5% higher than regional average
+              </Text>
+              <Text style={styles.trendText}>
+                {t('Trend')}: {t('Increasing')}
+              </Text>
+              <Text style={styles.conditionsText}>
+                {t('Based on current conditions')}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* 15-Day Forecast Graph */}
+        {predictionData && (
+          <View style={[styles.graphCard, styles.cardShadow]}>
+            <Text style={styles.cardTitle}>{t('15-Day Yield Forecast')}</Text>
+            <LineChart
+              data={{
+                labels: predictionData.predictionHistory.map(p => p.round.toString()),
+                datasets: [{
+                  data: predictionData.predictionHistory.map(p => p.predictedYield)
+                }]
+              }}
+              width={Dimensions.get('window').width - 40}
+              height={220}
+              chartConfig={{
+                backgroundColor: '#ffffff',
+                backgroundGradientFrom: '#ffffff',
+                backgroundGradientTo: '#ffffff',
+                decimalPlaces: 0,
+                color: (opacity = 1) => `rgba(97, 177, 90, ${opacity})`,
+                style: {
+                  borderRadius: 16
+                }
+              }}
+              bezier
+              style={styles.chart}
+            />
+          </View>
+        )}
+
+        {/* Days Remaining and Prediction Button */}
+        {predictionData && (
+          <View style={[styles.daysCard, styles.cardShadow]}>
+            <Text style={styles.daysText}>
+              {t('Days Remaining')}: {predictionData.daysRemaining}
+            </Text>
+            {predictionData.daysRemaining === 0 && (
+              <Button
+                title={t('Predict Again')}
+                onPress={handlePrediction}
+                buttonStyle={styles.predictButton}
+                titleStyle={styles.buttonTitle}
+              />
+            )}
+          </View>
+        )}
+
+        {/* Previous Predictions */}
+        {predictionData && (
+          <View style={[styles.historyCard, styles.cardShadow]}>
+            <Text style={styles.cardTitle}>{t('Previous Predictions')}</Text>
+            {predictionData.predictionHistory.map((prediction, index) => (
+              <View key={index} style={styles.historyItem}>
+                <Text style={styles.historyDate}>
+                  {prediction.date.toLocaleDateString()}
+                </Text>
+                <Text style={styles.historyYield}>
+                  {prediction.predictedYield} kg/hectare
+                </Text>
+                <Text style={[
+                  styles.historyTrend,
+                  { color: prediction.yieldChange === 'Increased' ? '#61B15A' : '#FF6B6B' }
+                ]}>
+                  {prediction.yieldChange}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
+      <Toast
+        visible={toastConfig.visible}
+        message={toastConfig.message}
+        type={toastConfig.type}
+        onHide={hideToast}
+      />
     </View>
   );
 };
@@ -151,6 +430,115 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  scrollContent: {
+    paddingBottom: 20,
+  },
+  mapContainer: {
+    height: 200,
+    marginBottom: 20,
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  predictionCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginHorizontal: 10,
+    marginBottom:20,
+    padding: 16,
+  },
+  cardTitle: {
+    fontSize: 18,
+    color: '#333333',
+  },
+  yieldContainer: {
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  yieldValue: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#61B15A',
+    marginBottom: 5,
+  },
+  yieldComparison: {
+    fontSize: 16,
+    color: '#61B15A',
+    marginBottom: 5,
+  },
+  trendText: {
+    fontSize: 16,
+    color: '#666666',
+    marginBottom: 5,
+  },
+  conditionsText: {
+    fontSize: 14,
+    color: '#999999',
+  },
+  graphCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    padding: 16,
+  },
+  chart: {
+    marginVertical: 8,
+    borderRadius: 16,
+  },
+  daysCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    padding: 16,
+  },
+  daysText: {
+    fontSize: 18,
+    color: '#333333',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  predictButton: {
+    backgroundColor: '#61B15A',
+    borderRadius: 25,
+    paddingVertical: 12,
+  },
+  buttonTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  historyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    padding: 16,
+  },
+  historyItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
+  },
+  historyDate: {
+    flex: 1,
+    fontSize: 14,
+    color: '#666666',
+  },
+  historyYield: {
+    flex: 1,
+    fontSize: 14,
+    color: '#333333',
+    textAlign: 'center',
+  },
+  historyTrend: {
+    flex: 1,
+    fontSize: 14,
+    textAlign: 'right',
   },
   emptyStateContainer: {
     flex: 1,
@@ -188,125 +576,40 @@ const styles = StyleSheet.create({
     width: '80%',
     marginTop: 16,
   },
-  scrollContent: {
-    paddingBottom: 20,
-  },
-  mapContainer: {
-    height: Dimensions.get('window').height * 0.5,
-    width: '100%',
-    marginBottom: 20,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  summaryCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    marginHorizontal: 15,
-    elevation: 3,
-    shadowColor: "#000",
+  cardShadow: {
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    elevation: 5,
   },
-  summaryTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 12,
-  },
-  summaryText: {
-    fontSize: 16,
-    color: '#666666',
-    marginBottom: 8,
-  },
-  daysCard: {
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    backgroundColor: '#61B15A',
-    marginHorizontal: 15,
-  },
-  daysLabel: {
-    fontSize: 16,
-    color: 'white',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  daysValue: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: '#FFC107',
-    borderRadius: 25,
-    height: 50,
-    marginHorizontal: 15,
-  },
-  buttonTitle: {
-    color: '#1B5E20',
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  buttonContainer: {
-    marginBottom: 20,
-  },
-  predictionsCard: {
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    marginHorizontal: 15,
-    backgroundColor: '#FFFFFF',
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-  },
-  predictionItem: {
+  fieldDetailsContainer: {
+    marginTop: 10,
+    backgroundColor: '#F8F8F8',
     borderRadius: 8,
-    padding: 15,
-    marginBottom: 10,
-    backgroundColor: 'white',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
+    padding: 12,
   },
-  predictionDate: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    paddingVertical: 4,
   },
-  predictionEstimate: {
-    fontSize: 18,
-    color: '#61B15A',
-    marginBottom: 5,
-  },
-  predictionNotes: {
+  detailLabel: {
+    marginLeft: 8,
     fontSize: 14,
-    color: '#666',
+    color: '#666666',
+    width: 100,
+    fontWeight: '500',
+  },
+  detailValue: {
+    flex: 1,
+    fontSize: 14,
+    color: '#333333',
+    marginLeft: 8,
   },
 });
 

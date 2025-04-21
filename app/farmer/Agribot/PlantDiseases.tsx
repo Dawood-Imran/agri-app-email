@@ -8,28 +8,50 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  TextInput,
+  Modal,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
 import { Button } from 'react-native-elements';
 import CustomHeader from '../../components/CustomHeader';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+
+// Update API URL to use your machine's IP address instead of localhost
+const API_BASE_URL = 'http://192.168.1.5:8000'; // Replace with your machine's IP address
 
 interface FormData {
   cropType: string;
   affectedPart: string;
-  symptoms: string[];
+  farmerObservation: string;
   image?: string;
+  language: string;
+  soilType: string;
+  growthStage: string;
+}
+
+interface DiseaseResult {
+  disease_name: string;
+  description: string;
+  disease_management: string[];
+  preventive_measures: string[];
+  local_context: string[];
 }
 
 const PlantDiseases = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     cropType: '',
     affectedPart: '',
-    symptoms: [],
+    farmerObservation: '',
+    language: i18n.language || 'English',
+    soilType: 'Loamy',
+    growthStage: 'Mature',
   });
+  const [diseaseResult, setDiseaseResult] = useState<DiseaseResult | null>(null);
+  const [resultModalVisible, setResultModalVisible] = useState(false);
 
   const handleImagePick = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -52,7 +74,7 @@ const PlantDiseases = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.cropType || !formData.affectedPart || formData.symptoms.length === 0) {
+    if (!formData.cropType || !formData.affectedPart || !formData.farmerObservation || !formData.image) {
       Alert.alert(
         t('Error'),
         t('agribot.plantDiseases.errors.allFieldsRequired'),
@@ -63,17 +85,61 @@ const PlantDiseases = () => {
 
     setLoading(true);
     try {
-      // Here you would make the API call to your backend
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulated API call
-      Alert.alert(
-        t('Success'),
-        t('agribot.plantDiseases.success'),
-        [{ text: 'OK' }]
-      );
-    } catch (error) {
+      // Create a form data object to send to the API
+      const apiFormData = new FormData();
+      
+      // Add the image file
+      const fileInfo = await FileSystem.getInfoAsync(formData.image);
+      if (fileInfo.exists) {
+        const fileNameParts = formData.image.split('/');
+        const fileName = fileNameParts[fileNameParts.length - 1];
+        
+        // Get the file extension
+        const extension = fileName.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileType = `image/${extension === 'jpg' ? 'jpeg' : extension}`;
+        
+        apiFormData.append('image', {
+          uri: formData.image,
+          name: fileName,
+          type: fileType,
+        } as any);
+      } else {
+        throw new Error('Selected image file does not exist');
+      }
+      
+      // Add other form fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== 'image' && value) {
+          apiFormData.append(key, value);
+        }
+      });
+
+      console.log('Sending request to:', `${API_BASE_URL}/identify-disease`);
+      
+      // Make the API call
+      const response = await fetch(`${API_BASE_URL}/identify-disease`, {
+        method: 'POST',
+        body: apiFormData,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Network response was not ok' }));
+        throw new Error(errorData.detail);
+      }
+
+      const result = await response.json();
+      setDiseaseResult(result);
+      setResultModalVisible(true);
+      
+    } catch (error: unknown) {
+      console.error('API Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       Alert.alert(
         t('Error'),
-        t('agribot.plantDiseases.errors.submissionFailed'),
+        t('agribot.plantDiseases.errors.submissionFailed') + `: ${errorMessage}`,
         [{ text: 'OK' }]
       );
     } finally {
@@ -81,9 +147,50 @@ const PlantDiseases = () => {
     }
   };
 
+  const renderResultModal = () => {
+    if (!diseaseResult) return null;
+    
+    return (
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={resultModalVisible}
+        onRequestClose={() => setResultModalVisible(false)}
+      >
+        <ScrollView contentContainerStyle={styles.modalContent}>
+          <Text style={styles.modalTitle}>{diseaseResult.disease_name}</Text>
+          
+          <Text style={styles.sectionTitle}>{t('agribot.plantDiseases.results.description')}</Text>
+          <Text style={styles.descriptionText}>{diseaseResult.description}</Text>
+          
+          <Text style={styles.sectionTitle}>{t('agribot.plantDiseases.results.diseaseManagement')}</Text>
+          {diseaseResult.disease_management.map((item, index) => (
+            <Text key={`management-${index}`} style={styles.listItem}>• {item}</Text>
+          ))}
+          
+          <Text style={styles.sectionTitle}>{t('agribot.plantDiseases.results.preventiveMeasures')}</Text>
+          {diseaseResult.preventive_measures.map((item, index) => (
+            <Text key={`preventive-${index}`} style={styles.listItem}>• {item}</Text>
+          ))}
+          
+          <Text style={styles.sectionTitle}>{t('agribot.plantDiseases.results.localContext')}</Text>
+          {diseaseResult.local_context.map((item, index) => (
+            <Text key={`local-${index}`} style={styles.listItem}>• {item}</Text>
+          ))}
+          
+          <Button
+            title={t('agribot.plantDiseases.results.close')}
+            onPress={() => setResultModalVisible(false)}
+            buttonStyle={styles.closeButton}
+            containerStyle={styles.closeButtonContainer}
+          />
+        </ScrollView>
+      </Modal>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.title}>{t('agribot.plantDiseases.title')}</Text>
         
@@ -129,35 +236,32 @@ const PlantDiseases = () => {
           </View>
         </View>
 
-        {/* Symptoms Selection */}
+        {/* Farmer Observation */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>{t('agribot.plantDiseases.symptoms')}</Text>
-          <View style={styles.symptomsContainer}>
-            {Object.entries(t('agribot.plantDiseases.symptomOptions', { returnObjects: true }))
-              .map(([key, value]) => (
-                <TouchableOpacity
-                  key={key}
-                  style={[
-                    styles.symptomButton,
-                    formData.symptoms.includes(key) && styles.symptomButtonSelected,
-                  ]}
-                  onPress={() => {
-                    const symptoms = formData.symptoms.includes(key)
-                      ? formData.symptoms.filter(s => s !== key)
-                      : [...formData.symptoms, key];
-                    setFormData({ ...formData, symptoms });
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.symptomText,
-                      formData.symptoms.includes(key) && styles.symptomTextSelected,
-                    ]}
-                  >
-                    {value}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+          <Text style={styles.label}>{t('agribot.plantDiseases.farmerObservation')}</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder={t('agribot.plantDiseases.farmerObservationPlaceholder')}
+            value={formData.farmerObservation}
+            onChangeText={(text) => setFormData({ ...formData, farmerObservation: text })}
+            multiline={true}
+            numberOfLines={4}
+          />
+        </View>
+
+        {/* Language Selection */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>{t('agribot.plantDiseases.language')}</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={formData.language}
+              onValueChange={(value) => setFormData({ ...formData, language: value })}
+              style={styles.picker}
+            >
+              <Picker.Item label="English" value="English" />
+              <Picker.Item label="Urdu" value="Urdu" />
+              <Picker.Item label="Punjabi" value="Punjabi" />
+            </Picker>
           </View>
         </View>
 
@@ -190,6 +294,8 @@ const PlantDiseases = () => {
         />
         {loading && <ActivityIndicator style={styles.loader} color="#4CAF50" />}
       </ScrollView>
+      
+      {renderResultModal()}
     </View>
   );
 };
@@ -231,28 +337,14 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
   },
-  symptomsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  symptomButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
+  textInput: {
     backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    minHeight: 100,
+    textAlignVertical: 'top',
     borderWidth: 1,
-    borderColor: '#4CAF50',
-  },
-  symptomButtonSelected: {
-    backgroundColor: '#4CAF50',
-  },
-  symptomText: {
-    color: '#4CAF50',
-    fontSize: 14,
-  },
-  symptomTextSelected: {
-    color: 'white',
+    borderColor: '#E0E0E0',
   },
   imageUploadButton: {
     backgroundColor: 'white',
@@ -292,6 +384,45 @@ const styles = StyleSheet.create({
   loader: {
     marginTop: 20,
   },
+  modalContent: {
+    padding: 20,
+    paddingTop: 40,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2E7D32',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1B5E20',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  descriptionText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#333',
+  },
+  listItem: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 8,
+    paddingLeft: 10,
+    color: '#333',
+  },
+  closeButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 25,
+    height: 50,
+    marginTop: 30,
+  },
+  closeButtonContainer: {
+    marginBottom: 40,
+  },
 });
 
-export default PlantDiseases; 
+export default PlantDiseases;

@@ -1,46 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, ScrollView , ActivityIndicator} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../context/UserProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfilePicture from '../components/ProfilePicture';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db, my_auth } from '../../firebaseConfig';
+import { useFarmer } from '../hooks/fetch_farmer';
+import { use } from 'i18next';
+
 
 const Profile = () => {
   const { t, i18n } = useTranslation();
   const { userName, email, city } = useUser();
-  const [profileData, setProfileData] = useState({
-    cropTypes: [],
-    landSize: '',
-    consultations: 0,
-    coins: 0,
-    profilePicture: '',
-    preferredLanguage: 'en',
-    phoneNumber: ''
-  });
+  const { farmerData , loading: farmerLoading} = useFarmer();
+  
 
   useEffect(() => {
-    const user = my_auth.currentUser;
-    if (!user) return;
+    console.log('Farmer Data:', farmerData);
+  }, [farmerData]);
 
-    const unsubscribe = onSnapshot(doc(db, 'farmer', user.uid), (doc) => {
-      if (doc.exists()) {
-        const data = doc.data();
-        setProfileData({
-          cropTypes: data.cropTypes || [],
-          landSize: data.landSize || '',
-          consultations: data.consultations || 0,
-          coins: data.coins || 0,
-          profilePicture: data.profilePicture || '',
-          preferredLanguage: data.preferredLanguage || 'en',
-          phoneNumber: data.phoneNumber || ''
-        });
-      }
-    });
 
-    return () => unsubscribe();
-  }, []);
+  if (farmerLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color="#FFC107" />
+      </View>
+    );
+  }
+
+  if(!farmerData) {
+    return (
+      <View style={styles.loaderContainer}>
+        <Text>{t('No farmer data found')}</Text>
+      </View>
+    );
+  }
+
 
   const handleImageUpdated = (url: string) => {
     setProfileData(prev => ({ ...prev, profilePicture: url }));
@@ -51,13 +47,13 @@ const Profile = () => {
       <View style={styles.profileSection}>
         <View style={styles.imageContainer}>
           <ProfilePicture
-            imageUrl={profileData.profilePicture}
+            imageUrl={farmerData?.profilePicture || ''}
             userId={my_auth.currentUser?.uid || ''}
             userType="farmer"
             onImageUpdated={handleImageUpdated}
           />
           <Text style={[styles.name, i18n.language === 'ur' && styles.urduText]}>
-            {userName}
+            {farmerData?.name || ''}
           </Text>
           <Text style={[styles.role, i18n.language === 'ur' && styles.urduText]}>
             {t('Farmer')}
@@ -68,17 +64,14 @@ const Profile = () => {
       <View style={styles.detailsCard}>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{profileData.coins}</Text>
+            <Text style={styles.statValue}>{farmerData?.coins || 0}</Text>
             <Text style={styles.statLabel}>{t('Coins')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{profileData.consultations}</Text>
+            <Text style={styles.statValue}>{farmerData?.consultations || 0}</Text>
             <Text style={styles.statLabel}>{t('Consultations')}</Text>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{profileData.cropTypes.length}</Text>
-            <Text style={styles.statLabel}>{t('Crops')}</Text>
-          </View>
+          
         </View>
 
         <View style={styles.infoSection}>
@@ -86,7 +79,7 @@ const Profile = () => {
             <MaterialCommunityIcons name="phone" size={24} color="#4CAF50" />
             <View style={styles.infoTextContainer}>
               <Text style={styles.infoLabel}>{t('Phone')}</Text>
-              <Text style={styles.infoValue}>{profileData.phoneNumber}</Text>
+              <Text style={styles.infoValue}>{farmerData?.phoneNumber || ''}</Text>
             </View>
           </View>
 
@@ -94,7 +87,7 @@ const Profile = () => {
             <MaterialCommunityIcons name="email-outline" size={24} color="#4CAF50" />
             <View style={styles.infoTextContainer}>
               <Text style={styles.infoLabel}>{t('Email')}</Text>
-              <Text style={styles.infoValue}>{email}</Text>
+              <Text style={styles.infoValue}>{farmerData?.email}</Text>
             </View>
           </View>
 
@@ -102,39 +95,11 @@ const Profile = () => {
             <MaterialCommunityIcons name="map-marker-outline" size={24} color="#4CAF50" />
             <View style={styles.infoTextContainer}>
               <Text style={styles.infoLabel}>{t('City')}</Text>
-              <Text style={styles.infoValue}>{city}</Text>
+              <Text style={styles.infoValue}>{farmerData?.city || ''}</Text>
             </View>
           </View>
 
-          <View style={styles.infoItem}>
-            <MaterialCommunityIcons name="grass" size={24} color="#4CAF50" />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>{t('Land Size')}</Text>
-              <Text style={styles.infoValue}>{profileData.landSize || t('Not specified')}</Text>
-            </View>
-          </View>
 
-          <View style={styles.infoItem}>
-            <MaterialCommunityIcons name="sprout" size={24} color="#4CAF50" />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>{t('Crop Types')}</Text>
-              <Text style={styles.infoValue}>
-                {profileData.cropTypes.length > 0 
-                  ? profileData.cropTypes.join(', ') 
-                  : t('No crops specified')}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.infoItem}>
-            <MaterialCommunityIcons name="translate" size={24} color="#4CAF50" />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>{t('Preferred Language')}</Text>
-              <Text style={styles.infoValue}>
-                {profileData.preferredLanguage === 'ur' ? t('Urdu') : t('English')}
-              </Text>
-            </View>
-          </View>
         </View>
       </View>
     </ScrollView>
@@ -230,6 +195,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E0E0E0',
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   infoTextContainer: {
     marginLeft: 15,

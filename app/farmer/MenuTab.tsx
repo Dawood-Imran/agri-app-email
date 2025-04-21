@@ -5,6 +5,7 @@ import { Card, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useUser } from '../context/UserProvider';
+import { useFarmer } from '../hooks/fetch_farmer';
 
 
 const API_KEY = "33e96491c93c4bb88bc130136241209";  // Replace with your WeatherAPI key
@@ -33,16 +34,16 @@ const MenuTab = () => {
   const [loading, setLoading] = useState(true);
   
   const { userName, userType, email , city , isLoading , reloadUser} = useUser(); 
+  const { farmerData, loading: farmerLoading, reloadFarmerData } = useFarmer();
 
 
 
-useEffect(() => {
-  if (!isLoading && city) {
-    fetchWeather();
-    console.log('Farmer Data Menu Tab:', userName, userType, email, city);
-  }
-}, [isLoading, city]);
-
+  useEffect(() => {
+    if (!farmerLoading && farmerData?.city) {
+      fetchWeather();
+      console.log('Farmer Data Menu Tab:', farmerData);
+    }
+  }, [farmerLoading, farmerData]);
 
 
 
@@ -120,8 +121,9 @@ const fetchWeather = async () => {
       route: '/farmer/SchemesList' 
     },
     { 
-      name: t('Agri Bot'),
-      icon: require('../../assets/images/farmer-icons/chatbot-logo.png'),
+      name: t('AgriBot'),
+      styles:{ size: 30 },
+      icon: require('../../assets/bot-logo.png'),
       route: '/farmer/Agribot/LandingPage'
     }
   ];
@@ -157,11 +159,11 @@ const fetchWeather = async () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.greeting}>Hello, {userName}</Text>
+            <Text style={styles.greeting}>Hello, {farmerData?.name}</Text>
             <View style={styles.locationContainer}>
       
           <Image source={require('../../assets/images/farmer-icons/weather-icons/map.png')} style={styles.locationIcon} />
-          <Text style={styles.locationText}>{city}</Text>
+          <Text style={styles.locationText}>{farmerData?.city}</Text>
         </View>
             <Text style={styles.subGreeting}>
               {weatherData ? `It's a ${weatherData.current.condition.text} day!` : 'Loading...'}
