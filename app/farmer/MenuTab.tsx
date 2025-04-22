@@ -50,7 +50,7 @@ const MenuTab = () => {
 const fetchWeather = async () => {
   setLoading(true);
   try {
-    const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${city}&aqi=no`);
+    const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${farmerData?.city}&aqi=no`);
     if (!response.ok) {
       throw new Error(`API returned status: ${response.status}`);
     }

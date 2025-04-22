@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, addDoc, Timestamp, query, where } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
@@ -15,6 +15,7 @@ export interface FieldData {
   latitude: number | null;
   longitude: number | null;
   createdAt: Date;
+  userId: string;
 }
 
 export const useFields = () => {
@@ -32,8 +33,10 @@ export const useFields = () => {
         return;
       }
 
-      const fieldsRef = collection(db, 'users', user.uid, 'fields');
-      const querySnapshot = await getDocs(fieldsRef);
+      // Query the root "fields" collection for fields with matching userId
+      const fieldsRef = collection(db, 'fields');
+      const fieldsQuery = query(fieldsRef, where('userId', '==', user.uid));
+      const querySnapshot = await getDocs(fieldsQuery);
       
       const fieldsList = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -51,17 +54,18 @@ export const useFields = () => {
     }
   };
 
-  const addField = async (fieldData: Omit<FieldData, 'id' | 'createdAt'>) => {
+  const addField = async (fieldData: Omit<FieldData, 'id' | 'createdAt' | 'userId'>) => {
     setLoading(true);
     setError(null);
     try {
       const user = auth.currentUser;
       if (!user) {
         setError('Please sign in to save field data');
-        return;
+        return false;
       }
 
-      const fieldsRef = collection(db, 'users', user.uid, 'fields');
+      // Add to the root "fields" collection instead of a nested collection
+      const fieldsRef = collection(db, 'fields');
       await addDoc(fieldsRef, {
         ...fieldData,
         createdAt: Timestamp.now(),
@@ -92,4 +96,4 @@ export const useFields = () => {
     fetchFields,
     addField,
   };
-}; 
+};

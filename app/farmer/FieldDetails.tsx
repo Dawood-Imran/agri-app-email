@@ -17,7 +17,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Button } from 'react-native-elements';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-
+import { db, my_auth } from '../../firebaseConfig';
 
 import { useFields, FieldData } from '../hooks/useFields';
 import Toast from '../components/Toast';
@@ -283,21 +283,21 @@ const FieldDetails = () => {
                   </View>
                 </View>
 
-                        <View style={styles.inputGroup}>
-          <Text style={styles.label}>{t('fieldDetails.sowingDate')}</Text>
-          <TextInput
-            style={styles.input}
-            value={field.sowingDate.toLocaleDateString()}
-            onChangeText={(text) => {
-              // Simple date validation could be added here
-              const date = new Date(text);
-              if (!isNaN(date.getTime())) {
-                updateFieldForm(index, 'sowingDate', date);
-              }
-            }}
-            placeholder="MM/DD/YYYY"
-          />
-          </View>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>{t('fieldDetails.sowingDate')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={field.sowingDate.toLocaleDateString()}
+                    onChangeText={(text) => {
+                      // Simple date validation could be added here
+                      const date = new Date(text);
+                      if (!isNaN(date.getTime())) {
+                        updateFieldForm(index, 'sowingDate', date);
+                      }
+                    }}
+                    placeholder="MM/DD/YYYY"
+                  />
+                </View>
 
                 <View style={styles.inputGroup}>
                   <Text style={styles.label}>{t('fieldDetails.areaInAcres')}</Text>
@@ -327,7 +327,14 @@ const FieldDetails = () => {
               </View>
             ))}
 
-            
+            <Button
+              title={t('fieldDetails.addAnotherField')}
+              onPress={addFieldForm}
+              buttonStyle={styles.addAnotherButton}
+              titleStyle={styles.addAnotherButtonText}
+              containerStyle={styles.addAnotherButtonContainer}
+              icon={<MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" style={{ marginRight: 5 }} />}
+            />
 
             <View style={styles.buttonContainer}>
               <Button
