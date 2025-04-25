@@ -1,24 +1,33 @@
 "use client"
 
 import { useState } from "react"
-import { StyleSheet, TouchableOpacity, View, Alert, Text } from "react-native"
-import { useRouter } from "expo-router"
+import { StyleSheet, TouchableOpacity, View, Text, ActivityIndicator } from "react-native"
+import { useRouter, useLocalSearchParams } from "expo-router"
 import { Input, Button, Icon } from "react-native-elements"
 import { useTranslation } from "react-i18next"
+import { sendPasswordResetEmail } from "firebase/auth"
+import { my_auth } from "../firebaseConfig"
+import { Toast } from "./components/Toast"
 
 const ForgotPin = () => {
   const router = useRouter()
-  const [phoneNumber, setPhoneNumber] = useState("")
+  const { userType } = useLocalSearchParams<{ userType: string }>()
+  const [email, setEmail] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
-  const { t } = useTranslation()
-
+  const [loading, setLoading] = useState(false)
+  const { t, i18n } = useTranslation()
   const [toastVisible, setToastVisible] = useState(false)
   const [toastMessage, setToastMessage] = useState("")
+  const [toastType, setToastType] = useState<"success" | "error" | "info">("error")
 
-  // Add email state and update the UI to use email instead of phone number
-  const [email, setEmail] = useState("")
+  const isRTL = i18n.language === "ur"
 
-  // Replace the phone number validation with email validation
+  const showToast = (message: string, type: "success" | "error" | "info" = "error") => {
+    setToastMessage(message)
+    setToastType(type)
+    setToastVisible(true)
+  }
+
   const validateEmail = (text: string) => {
     setEmail(text)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -29,76 +38,128 @@ const ForgotPin = () => {
     }
   }
 
-  // Update handleSubmit to use email
-  const handleSubmit = () => {
+  const handleResetPassword = async () => {
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setToastVisible(true)
-      setToastMessage(t("Please enter a valid email address"))
+      showToast(t("Please enter a valid email address"), "error")
       return
     }
 
-    Alert.alert(t("Confirm"), t("Are you sure you want to send PIN reset instructions to ") + email + "?", [
-      {
-        text: t("Cancel"),
-        style: "cancel",
-      },
-      {
-        text: t("Yes"),
-        onPress: () => {
-          // Here you would typically make an API call to send the reset email
-          router.push("/VerifyEmailScreen")
-        },
-      },
-    ])
+    setLoading(true)
+    try {
+      console.log("Attempting to send password reset email to:", email)
+
+      // Actually send the password reset email using Firebase
+      await sendPasswordResetEmail(my_auth, email)
+      console.log("Password reset email sent successfully")
+
+      // Show success toast and navigate
+      showToast(t("Reset email sent successfully"), "success")
+
+      // Navigate after a short delay to allow the toast to be seen
+      setTimeout(() => {
+        router.push({
+          pathname: "/ResetPasswordConfirmation",
+          params: { email, userType },
+        })
+      }, 1500)
+    } catch (error: any) {
+      console.error("Error sending reset email:", error)
+      console.error("Error code:", error.code)
+      console.error("Error message:", error.message)
+
+      let errorMsg = t("Failed to send reset email")
+
+      if (error.code === "auth/user-not-found") {
+        errorMsg = t("No account found with this email")
+      } else if (error.code === "auth/invalid-email") {
+        errorMsg = t("Invalid email format")
+      } else if (error.code === "auth/too-many-requests") {
+        errorMsg = t("Too many requests. Please try again later")
+      } else if (error.code === "auth/network-request-failed") {
+        errorMsg = t("Network error. Please check your internet connection")
+      }
+
+      showToast(errorMsg, "error")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleBack = () => {
-    router.back()
+    router.push({
+      pathname: "/SignIn",
+      params: { userType },
+    })
   }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-        <Icon name="arrow-back" type="material" color="#FFC107" size={30} />
+      <TouchableOpacity style={[styles.backButton, isRTL && { right: 20, left: "auto" }]} onPress={handleBack}>
+        <Icon name={isRTL ? "arrow-forward" : "arrow-back"} type="material" color="#FFC107" size={30} />
       </TouchableOpacity>
 
       <View style={styles.titleContainer}>
         <Text style={styles.titleMain}>{t("Forgot PIN")}</Text>
-        <Text style={styles.titleSub}>{t("Enter your registered phone number")}</Text>
+        <Text style={styles.titleSub}>{t("Enter your registered email address")}</Text>
       </View>
 
       <View style={styles.form}>
         <View style={styles.inputContainer}>
-          {/* Replace the phone number input with email input */}
           <Input
             placeholder={t("Enter your email")}
             onChangeText={validateEmail}
             value={email}
             keyboardType="email-address"
             leftIcon={
-              <View style={styles.iconContainer}>
-                <Icon name="email" type="material" color="#FFFFFF" />
-                <View style={styles.separator} />
-              </View>
+              isRTL ? null : (
+                <View style={styles.iconContainer}>
+                  <Icon name="email" type="material" color="#FFFFFF" />
+                  <View style={styles.separator} />
+                </View>
+              )
             }
-            inputStyle={styles.inputText}
+            rightIcon={
+              isRTL ? (
+                <View style={styles.iconContainer}>
+                  <View style={styles.separator} />
+                  <Icon name="email" type="material" color="#FFFFFF" />
+                </View>
+              ) : null
+            }
+            inputStyle={[
+              styles.inputText,
+              isRTL && {
+                textAlign: "right",
+                paddingRight: 20,
+                paddingLeft: 0,
+              },
+            ]}
             placeholderTextColor="#E0E0E0"
             containerStyle={styles.inputField}
             underlineColorAndroid="transparent"
             inputContainerStyle={{ borderBottomWidth: 0 }}
             errorMessage={errorMessage}
-            errorStyle={styles.errorText}
+            errorStyle={[styles.errorText, isRTL && { textAlign: "right" }]}
+            disabled={loading}
           />
         </View>
 
         <Button
-          title={t("Send PIN")}
-          onPress={handleSubmit}
+          title={loading ? t("Sending...") : t("Reset Password")}
+          onPress={handleResetPassword}
           containerStyle={styles.buttonContainer}
           buttonStyle={styles.button}
           titleStyle={styles.buttonTitle}
+          disabled={loading}
+          icon={loading ? <ActivityIndicator color="#1B5E20" size="small" style={{ marginRight: 10 }} /> : null}
         />
       </View>
+
+      <Text style={[styles.infoText, isRTL && { textAlign: "right" }]}>
+        {t("We'll send you an email with instructions to reset your password.")}
+      </Text>
+
+      <Toast visible={toastVisible} message={toastMessage} type={toastType} onHide={() => setToastVisible(false)} />
     </View>
   )
 }
@@ -109,7 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#61B15A",
+    backgroundColor: "#4CAF50",
   },
   titleContainer: {
     marginBottom: 40,
@@ -128,8 +189,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#FFFFFF",
     marginTop: 10,
+    textAlign: "center",
   },
-
   form: {
     width: "100%",
     marginBottom: 20,
@@ -168,7 +229,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-
   backButton: {
     position: "absolute",
     top: 40,
@@ -187,29 +247,26 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   errorText: {
-    color: "red",
+    color: "#FF6B6B",
     marginTop: 5,
-  },
-  flagIcon: {
-    width: 24,
-    height: 16,
-    marginRight: 8,
   },
   iconContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 10,
   },
-  countryCode: {
-    color: "#FFFFFF",
-    marginRight: 8,
-    fontSize: 16,
-  },
   separator: {
     height: 20,
     width: 1,
     backgroundColor: "rgba(255, 255, 255, 0.5)",
     marginHorizontal: 10,
+  },
+  infoText: {
+    color: "#FFFFFF",
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 14,
+    paddingHorizontal: 20,
   },
 })
 

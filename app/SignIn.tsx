@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Text } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { Input, Button, Icon } from "react-native-elements"
 import { useTranslation } from "react-i18next"
 import { Toast } from "./components/Toast"
 import { db, my_auth } from "@/firebaseConfig"
-import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth"
+import { signInWithEmailAndPassword } from "firebase/auth"
 import { getDoc, doc } from "firebase/firestore"
 import * as SecureStore from "expo-secure-store"
 import { CustomToast } from "./components/CustomToast"
@@ -15,7 +15,8 @@ import { CustomToast } from "./components/CustomToast"
 const { width } = Dimensions.get("window") // Get screen width
 
 const SignIn = () => {
-  const { userType } = useLocalSearchParams<{ userType: string }>()
+  const params = useLocalSearchParams<{ userType: string }>()
+  const [userType, setUserType] = useState<string | undefined>(params.userType)
   const router = useRouter()
   const [phoneNumber, setPhoneNumber] = useState("")
   const [pinCode, setPinCode] = useState("")
@@ -26,6 +27,13 @@ const SignIn = () => {
   const [email, setEmail] = useState("")
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [toastType, setToastType] = useState<"success" | "error" | "info">("error")
+
+  // Update userType when params change
+  useEffect(() => {
+    if (params.userType) {
+      setUserType(params.userType)
+    }
+  }, [params.userType])
 
   const isRTL = i18n.language === "ur"
 
@@ -65,11 +73,12 @@ const SignIn = () => {
 
       const response = await signInWithEmailAndPassword(my_auth, email, pinCode)
 
-      // Add this check for email verification
+      // Check if email is verified
       if (!response.user.emailVerified) {
-        // Send another verification email
-        await sendEmailVerification(response.user)
-        showToast(t("Please verify your email before signing in. A new verification email has been sent."), "error")
+        // Navigate to verify email screen instead of showing error
+        showToast(t("Please verify your email before signing in"), "info")
+        console.log("Email not verified:", response.user.email)
+        router.push("/VerifyEmailScreen")
         setLoading(false)
         return
       }
@@ -171,7 +180,22 @@ const SignIn = () => {
   }
 
   const handleForgotPin = () => {
-    router.push("/ForgotPin")
+    router.push({
+      pathname: "/ForgotPin",
+      params: { userType },
+    })
+  }
+
+  // If no userType is available, redirect to user selection
+  useEffect(() => {
+    if (!userType) {
+      console.log("No userType found, redirecting to UserSelectionScreen")
+      router.replace("/UserSelectionScreen")
+    }
+  }, [userType, router])
+
+  if (!userType) {
+    return null // Don't render anything while redirecting
   }
 
   return (

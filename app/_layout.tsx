@@ -68,7 +68,7 @@ export default function RootLayout() {
             <Stack.Screen name="ForgotPin" options={{ headerShown: false }} />
             <Stack.Screen name="VerifyPin" options={{ headerShown: false }} />
             <Stack.Screen name="VerifyEmailScreen" options={{ headerShown: false }} />
-
+            <Stack.Screen name="ResetPasswordConfirmation" options={{ headerShown: false }} />
             {/* Farmer Screens */}
             <Stack.Screen name="farmer/dashboard" options={{ headerShown: false }} />
             <Stack.Screen name="farmer/NewUserForm" options={{ headerShown: false }} />

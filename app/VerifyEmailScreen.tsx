@@ -13,7 +13,7 @@ const VerifyEmailScreen = () => {
   const [loading, setLoading] = useState(false)
   const [resendLoading, setResendLoading] = useState(false)
   const { t } = useTranslation()
-   const auth = getAuth();
+  const auth = getAuth();
         
 
   const handleCheckVerification = async () => {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   signOutButtonText: {
-    color: "#FFFFFF",
+    color: "#FFC107",
     fontSize: 16,
     textDecorationLine: "underline",
   },
