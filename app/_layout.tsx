@@ -19,6 +19,7 @@ import CustomHeader from '../app/components/CustomHeader';
 import { UserProvider } from './context/UserProvider';
 import * as SecureStore from 'expo-secure-store';
 import { AuthProvider } from './context/AuthContext';
+import YieldPrediction from './farmer/YieldPrediction/YieldPrediction';
 
 
 
@@ -77,6 +78,7 @@ export default function RootLayout() {
             <Stack.Screen name="farmer/Help" options={{ ...commonHeaderOptions, title: t('Help') }} />
             <Stack.Screen name="farmer/CoinScreen" options={{ ...commonHeaderOptions, title: t('Coins') }} />
             <Stack.Screen name="farmer/YieldPrediction" options={{ ...commonHeaderOptions, title: t('Yield Prediction') }} />
+
             <Stack.Screen name="farmer/ExpertConsultation" options={{ ...commonHeaderOptions, title: t('expertConsultation') }} />
             <Stack.Screen name="farmer/BuyCoins" options={{ ...commonHeaderOptions, title: t('buyCoins') }} />
             <Stack.Screen name="farmer/AuctionSystem" options={{ ...commonHeaderOptions, title: t('auctionSystem') }} />

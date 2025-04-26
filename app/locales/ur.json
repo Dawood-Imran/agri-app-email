@@ -228,6 +228,15 @@
   "We've sent you an email with a link to reset your password. Please check your inbox and follow the instructions.": "ہم نے آپ کو پاس ورڈ ری سیٹ کرنے کے لنک کے ساتھ ایک ای میل بھیجی ہے۔ براہ کرم اپنا ان باکس چیک کریں اور ہدایات پر عمل کریں۔",
 
   "Wheat Yield Prediction": "گندم کی پیداوار کی پیش گوئی",
+  "Initial prediction data created successfully": "ابتدائی پیش گوئی کا ڈیٹا کامیابی سے بنایا گیا",
+  "Error fetching yield prediction": "پیداوار کی پیش گوئی حاصل کرنے میں خرابی",
+  "No field data available for prediction": "پیش گوئی کے لیے کوئی کھیت کا ڈیٹا دستیاب نہیں ہے",
+  "Prediction updated successfully": "پیش گوئی کامیابی سے اپ ڈیٹ ہو گئی",
+  "Failed to update prediction": "پیش گوئی کو اپ ڈیٹ کرنے میں ناکام",
+  "Wait for days to complete": "دنوں کے مکمل ہونے کا انتظار کریں",
+  "Please wait for days to complete before making a new prediction": "نئی پیش گوئی کرنے سے پہلے براہ کرم دنوں کے مکمل ہونے کا انتظار کریں",
+  "First round starts 15 days after sowing": "پہلا راؤنڈ بیج بونے کے 15 دن بعد شروع ہوتا ہے",
+  "Each round represents 15 days": "ہر راؤنڈ 15 دن کی نمائندگی کرتا ہے",
   
   "Area": "رقبہ",
   "acres": "ایکڑ",
