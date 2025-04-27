@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   optionsContainer: {
-    width: "100%",
+    width: "87%",
     gap: 15,
   },
   optionButton: {

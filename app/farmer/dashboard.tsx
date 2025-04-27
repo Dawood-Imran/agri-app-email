@@ -10,6 +10,9 @@ import CoinScreen from './CoinScreen';
 import CoinDisplay from '../../components/CoinDisplay';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { UserProvider , useUser } from '../context/UserProvider';
+import { useFarmer } from '../hooks/fetch_farmer';
+import { use } from 'i18next';
+
 
 
 
@@ -23,8 +26,22 @@ const TabIcon = ({ name, color, size = 26 }: { name: string; color: string; size
 
 const FarmerDashboard = () => {
   const { t } = useTranslation();
-  const [coins, setCoins] = useState(100); // Example initial value
+  const [coins, setCoins] = useState(120); 
   const navigation = useNavigation();
+  const { farmerData , loading: farmerLoading} = useFarmer();
+  farmerData?.coins && setCoins(farmerData.coins);
+  console.log('Farmer Data:', farmerData?.coins);
+
+  useEffect(() => { 
+    const fetchCoins = async () => {
+      if (farmerData) {
+        setCoins(farmerData.coins);
+      }
+    };
+    fetchCoins();
+  }
+  , [farmerData]);
+  
   
 
   return (

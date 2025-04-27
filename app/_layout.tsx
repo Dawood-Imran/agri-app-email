@@ -102,13 +102,6 @@ export default function RootLayout() {
               }} 
             />
             <Stack.Screen 
-              name="farmer/Agribot/PestControl" 
-              options={{ 
-                ...commonHeaderOptions, 
-                title: t('agribot.pestControl.title') 
-              }} 
-            />
-            <Stack.Screen 
               name="farmer/Agribot/FieldManagement" 
               options={{ 
                 ...commonHeaderOptions, 

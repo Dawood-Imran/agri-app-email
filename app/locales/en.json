@@ -55,16 +55,16 @@
       "signInRequired": "Please sign in to save field data"
     }
   },
-    "newFarmer": "New Farmer",
-    "fillDetails": "Please fill in the details below",
-    "phoneNumberPlaceholder": "Enter your 10-digit phone number",
-    "selectCity": "Select your city",
-    "addressPlaceholder": "Enter your complete address",
-    "Budget (PKR)": "Budget (PKR)",
-    "City": "City",
-    "Select City": "Select City",
-    "submit": "Submit",
-    "Lahore": "Lahore",
+  "newFarmer": "New Farmer",
+  "fillDetails": "Please fill in the details below",
+  "phoneNumberPlaceholder": "Enter your 10-digit phone number",
+  "selectCity": "Select your city",
+  "addressPlaceholder": "Enter your complete address",
+  "Budget (PKR)": "Budget (PKR)",
+  "City": "City",
+  "Select City": "Select City",
+  "submit": "Submit",
+  "Lahore": "Lahore",
   "Faisalabad": "Faisalabad",
   "Rawalpindi": "Rawalpindi",
   "Gujranwala": "Gujranwala",
@@ -142,15 +142,15 @@
 
   "An error occurred while saving user details.": "An error occurred while saving user details.",
   "Could not get your current location": "Could not get your current location",
-    "userDetailsSaved": "User details saved successfully",
-    "userNotAuthenticated": "User not authenticated",
-    "errorSavingDetails": "An error occurred while saving user details.",
-    "locationPermissionDenied": "Permission to access location was denied",
-    "locationError": "Could not get your current location",
-    "phoneNumberError": "Please enter a valid 10-digit phone number",
-    "cityError": "Please select your city",
-    "addressError": "Please enter a valid address",
-    "formValidationError": "Please fill all required fields correctly",
+  "userDetailsSaved": "User details saved successfully",
+  "userNotAuthenticated": "User not authenticated",
+  "errorSavingDetails": "An error occurred while saving user details.",
+  "locationPermissionDenied": "Permission to access location was denied",
+  "locationError": "Could not get your current location",
+  "phoneNumberError": "Please enter a valid 10-digit phone number",
+  "cityError": "Please select your city",
+  "addressError": "Please enter a valid address",
+  "formValidationError": "Please fill all required fields correctly",
   "currentWeather": "Current Weather",
   "location": "Location",
   "temperature": "Temperature",
@@ -172,6 +172,7 @@
   "Create Account": "Create Account",
   "Phone Number": "Phone Number",
   "Error": "Error",
+  
   "Name Required": "Name is required",
   "Phone Number Required": "Phone number is required",
   "Invalid Phone Number": "Invalid phone number format",
@@ -271,87 +272,18 @@
       "fieldManagement": "🚜 Field Management Tips"
     }
   },
-  "plantDiseases": {
-    "title": "Identify Plant Diseases",
-    "cropType": "Select Crop Type",
-    "affectedPart": "Select Affected Part",
-    "symptoms": "Select Symptoms",
-    "uploadImage": "Upload Image",
+  
+  "common": {
+    "loading": "Loading...",
     "submit": "Submit",
-    "cropOptions": {
-      "wheat": "Wheat (گندم)",
-      "rice": "Rice (چاول)",
-      "sugarcane": "Sugarcane (گنا)",
-      "maize": "Maize (مکئی)",
-      "cotton": "Cotton (کپاس)",
-      "potato": "Potato (آلو)",
-      "tomato": "Tomato (ٹماٹر)",
-      "peas": "Peas (مٹر)",
-      "chilies": "Chilies (مرچ)",
-      "onion": "Onion (پیاز)",
-      "garlic": "Garlic (لہسن)",
-      "mustard": "Mustard (سرسوں)",
-      "sunflower": "Sunflower (سورج مکھی)",
-      "other": "Other (دیگر)"
-    },
-    "affectedPartOptions": {
-      "leaves": "Leaves (پتے)",
-      "stem": "Stem (تنا)",
-      "roots": "Roots (جڑیں)"
-    },
-    "symptomOptions": {
-      "yellowSpots": "Yellow Spots (زرد دھبے)",
-      "wilting": "Wilting (پتے مرجھا رہے ہیں)",
-      "holesInLeaves": "Holes in Leaves (پتوں میں سوراخ)",
-      "brownSpots": "Brown Spots (بھورے دھبے)",
-      "blackSpots": "Black Spots (کالے دھبے)",
-      "curling": "Curling (پتے مڑ رہے ہیں)"
-    }
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next"
   },
-  "cropAdvice": {
-    "title": "Crop Advice",
-    "labels": {
-      "Select_Crop": "Select Crop",
-      "Select_Growth_Stage": "Select Growth Stage",
-      "Select_Soil_Type": "Select Soil Type",
-      "Select_Issue": "Select Issue"
-    },
-    "placeholders": {
-      "Select_Crop": "Select Crop",
-      "Select_Growth_Stage": "Select Growth Stage",
-      "Select_Soil_Type": "Select Soil Type",
-      "Select_Issue": "Select Issue"
-    },
-    "options": {
-      "cropType": [
-        "Maize (مکئی)",
-        "Potato (آلو)",
-        "Wheat (گندم)",
-        "Rice (چاول)",
-        "Sugarcane (گنا)",
-        "Cotton (کپاس)",
-        "Other (دیگر)"
-      ],
-      "growthStage": [
-        "Sowing (بیج بونا)",
-        "Growing (پودوں کی نشوونما)",
-        "Flowering (پھول آنا)",
-        "Harvesting (کٹائی)"
-      ],
-      "soilType": [
-        "Sandy (ریتلی مٹی)",
-        "Loamy (میرا مٹی)",
-        "Clay (چکنی مٹی)"
-      ],
-      "issue": [
-        "Low Yield (کم پیداوار)",
-        "Irrigation Problems (سیچائی کے مسائل)",
-        "Pests/Diseases (کیڑے/بیماریاں)",
-        "Soil Fertility (مٹی کی اہلیت)"
-      ]
-    },
-    "submit": "Submit"
-  },
+  
   "pestControl": {
     "title": "Pest Control Solutions",
     "labels": {
@@ -394,273 +326,286 @@
     },
     "submit": "Submit"
   },
-  "fieldManagement": {
-    "title": "Field Management Tips",
-    "subtitle": "Select the topics where you need help and get expert advice tailored for your region",
-    "getTips": "Get Tips",
-    "yourAdvice": "Your Personalized Advice",
-    "noTipsSelected": "Please select at least one topic to get advice",
-    "loading": "Getting expert advice...",
-    "error": "Error getting advice. Please try again.",
-    "categories": {
-      "soilPreparation": {
-        "title": "Soil Preparation Tips",
-        "description": "Learn about soil types and preparation methods",
-        "subOptions": {
-          "soilType": {
-            "title": "Best soil type for my crop",
-            "description": "What soil composition works best?"
-          },
-          "fertilizerChoice": {
-            "title": "Organic vs. chemical fertilizers",
-            "description": "Which is more effective for my soil?"
-          },
-          "plowingTechniques": {
-            "title": "Plowing and tilling techniques",
-            "description": "Recommended methods for preparing land"
-          },
-          "soilTesting": {
-            "title": "Soil testing and amendments",
-            "description": "How to test soil health and improve fertility"
-          }
-        }
-      },
-      "irrigation": {
-        "title": "Irrigation Management",
-        "description": "Water management and irrigation techniques",
-        "subOptions": {
-          "methods": {
-            "title": "Irrigation methods for water conservation",
-            "description": "Drip, flood, or sprinkler systems"
-          },
-          "scheduling": {
-            "title": "Scheduling and timing",
-            "description": "Best times of day or seasons to irrigate"
-          },
-          "waterShortage": {
-            "title": "Water shortage management",
-            "description": "Tips on managing irrigation during drought"
-          },
-          "waterlogging": {
-            "title": "Preventing waterlogging",
-            "description": "How to avoid over-irrigation and crop damage"
-          }
-        }
-      },
-      "pestControl": {
-        "title": "Pest Control",
-        "description": "Pest management and prevention strategies",
-        "subOptions": {
-          "identification": {
-            "title": "Identifying common pests",
-            "description": "What pests are prevalent in my region?"
-          },
-          "pesticides": {
-            "title": "Organic vs. chemical pesticides",
-            "description": "Advantages and disadvantages"
-          },
-          "ipm": {
-            "title": "Integrated Pest Management (IPM)",
-            "description": "A sustainable, multi-pronged approach"
-          },
-          "prevention": {
-            "title": "Preventative measures",
-            "description": "Techniques to reduce pest infestation before it starts"
-          }
-        }
-      },
-      "cropRotation": {
-        "title": "Crop Rotation & Selection",
-        "description": "Strategic crop planning and rotation",
-        "subOptions": {
-          "seasonalPlanning": {
-            "title": "Seasonal crop planning",
-            "description": "Which crops to plant each season"
-          },
-          "intercropping": {
-            "title": "Intercropping strategies",
-            "description": "Benefits of growing multiple crops together"
-          },
-          "nutrientRotation": {
-            "title": "Nutrient management through rotation",
-            "description": "How rotation can help restore soil health"
-          },
-          "marketDemand": {
-            "title": "Market demand considerations",
-            "description": "Choosing crops that yield higher returns locally"
-          }
-        }
-      },
-      "fertilizerManagement": {
-        "title": "Fertilizer & Nutrient Management",
-        "description": "Effective fertilizer application and nutrient management",
-        "subOptions": {
-          "fertilizerChoice": {
-            "title": "Choosing the right fertilizer",
-            "description": "Organic versus synthetic options"
-          },
-          "application": {
-            "title": "Application techniques",
-            "description": "How to apply fertilizers effectively"
-          },
-          "timing": {
-            "title": "Determining dosage and timing",
-            "description": "Best practices for fertilizer use"
-          },
-          "deficiencies": {
-            "title": "Identifying nutrient deficiencies",
-            "description": "Recognizing signs in crops and addressing them"
-          }
-        }
-      }
+  
+  "agribot": {
+    "title": "Welcome to AgriBot",
+    "description": "Your smart farming assistant. Get expert advice and solutions for your agricultural needs.",
+    "help": "Need Help?",
+    "loading": "Loading...",
+    "submit": "Submit",
+    "options": {
+      "plantDiseases": "🌱 Identify Plant Diseases",
+      "cropAdvice": "🌾 Get Crop Advice",
+      "pestControl": "🐛 Pest Control Solutions",
+      "fieldManagement": "🚜 Field Management Tips"
+    },
+    "cropAdvice": {
+      "title": "Crop Advice"
+     
+    },
+    "plantDiseases": {
+      "title": "Plant Disease Identification"
+    
     }
   },
-    "agribot": {
-      "title": "Welcome to AgriBot",
-      "description": "Your smart farming assistant. Get expert advice and solutions for your agricultural needs.",
-      "help": "Need Help?",
-      "loading": "Loading...",
-      "submit": "Submit",
-      "options": {
-        "plantDiseases": "🌱 Identify Plant Diseases",
-        "cropAdvice": "🌾 Get Crop Advice",
-        "pestControl": "🐛 Pest Control Solutions",
-        "fieldManagement": "🚜 Field Management Tips"
+
+  "fieldManagement": {
+    "title": "Field Management",
+    "subtitle": "Get personalized recommendations for your field",
+    "fieldDetails": "Field Details",
+    "cropType": "Crop Type",
+    "growthStage": "Current Growth Stage",
+    "fieldSize": "Field Size",
+    "irrigationType": "Irrigation Type",
+    "soilType": "Soil Type",
+    "waterAvailability": "Water Availability Status",
+    "observedProblems": "Any Observed Problems?",
+    "rainfallStatus": "Recent Rainfall Status",
+    "selectOption": "Select an option",
+    "enterFieldSize": "Enter size",
+    "next": "Next",
+    "back": "Back",
+    "recommendationQuestions": "What advice do you need?",
+    "selectQuestionsDescription": "Select the types of recommendations you would like to receive",
+    "questions": {
+      "fertilizer": "Do you want fertilizer recommendations for next 2 weeks?",
+      "pestControl": "Would you like pest/disease control tips?",
+      "irrigation": "Need irrigation schedule suggestion based on current water status?",
+      "seasonalCare": "Do you want seasonal care tips for this crop?",
+      "growthStageTips": "Would you like to know the best practices for this growth stage?",
+      "weatherBasedAdvice": "Want weather-based spraying/fertilizer advice?"
+    },
+    "getRecommendations": "Get Recommendations",
+    "yourRecommendations": "Your Recommendations",
+    "startOver": "Start Over",
+    "errors": {
+      "cropTypeRequired": "Please select a crop type",
+      "growthStageRequired": "Please select a growth stage",
+      "fieldSizeRequired": "Please enter field size",
+      "fieldSizeNumber": "Field size must be a number",
+      "soilTypeRequired": "Please select a soil type",
+      "waterAvailabilityRequired": "Please select water availability status",
+      "problemsRequired": "Please select at least one option",
+      "pleaseFixErrors": "Please fix the errors in the form",
+      "selectAtLeastOneQuestion": "Please select at least one question",
+      "failedToGetRecommendations": "Failed to get recommendations. Please try again."
+    }
+  },
+
+  "plantDiseases": {
+    "title": "Plant Disease Identification",
+    "subtitle": "Upload a photo and get disease diagnosis",
+    "cropType": "Crop Type",
+    "selectCrop": "Select crop type",
+    "growthStage": "Growth Stage",
+    "selectGrowthStage": "Select growth stage",
+    "soilType": "Soil Type",
+    "selectSoilType": "Select soil type",
+    "affectedPart": "Affected Plant Part",
+    "selectAffectedPart": "Select affected part",
+    "affectedParts": {
+      "leaves": "Leaves",
+      "stem": "Stem",
+      "roots": "Roots",
+      "flowers": "Flowers",
+      "fruits": "Fruits",
+      "wholePlant": "Whole Plant"
+    },
+    "farmerObservation": "Your Observations",
+    "farmerObservationPlaceholder": "Describe what you see (e.g., yellow spots, wilting, etc.)",
+    "language": "Preferred Language for Results",
+    "uploadImage": "Upload Image of Affected Plant",
+    "addPhoto": "Add Photo",
+    "diseaseIdentified": "Disease identified successfully",
+    "results": {
+      "description": "Description",
+      "diseaseManagement": "Disease Management",
+      "preventiveMeasures": "Preventive Measures",
+      "localContext": "Local Context",
+      "close": "Close"
+    },
+    "errors": {
+      "cropTypeRequired": "Please select a crop type",
+      "growthStageRequired": "Please select a growth stage",
+      "soilTypeRequired": "Please select a soil type",
+      "affectedPartRequired": "Please select the affected plant part",
+      "observationRequired": "Please provide your observations",
+      "imageRequired": "Please upload an image of the affected plant",
+      "permissionRequired": "Please allow access to your photo library",
+      "imagePickFailed": "Failed to pick image. Please try again.",
+      "imageNotFound": "Selected image file does not exist",
+      "pleaseFixErrors": "Please fix the errors in the form",
+      "submissionFailed": "Failed to submit. Please try again.",
+      "unknownError": "An unknown error occurred"
+    }
+  },
+
+  "cropAdvice": {
+    "title": "Crop Advice",
+    "subtitle": "Get personalized advice for your crop",
+    "formTitle": "Tell us about your crop",
+    "cropType": "Crop Type",
+    "selectCrop": "Select crop type",
+    "growthStage": "Growth Stage",
+    "selectGrowthStage": "Select growth stage",
+    "soilType": "Soil Type",
+    "selectSoilType": "Select soil type",
+    "issue": "What issue are you facing?",
+    "selectIssue": "Select issue",
+    "issueOptions": {
+      "nutrient": "Nutrient Deficiency",
+      "water": "Water Management",
+      "growth": "Poor Growth",
+      "yield": "Low Yield"
+    },
+    "selectQuestions": "Select relevant questions",
+    "questions": {
+      "nutrient": {
+        "colorChanges": "What color changes have you noticed in the leaves?",
+        "symptomsLocation": "Are the symptoms appearing in new or old leaves?",
+        "recentFertilizers": "Have you applied any fertilizers recently?"
       },
-      "plantDiseases": {
-        "title": "Plant Disease Detection",
-        "cropType": "Select Crop Type",
-        "selectCrop": "Choose a crop",
-        "affectedPart": "Affected Plant Part",
-        "selectPart": "Choose affected part",
-        "symptoms": "Select Symptoms",
-        "cropOptions": {
-          "wheat": "Wheat",
-          "rice": "Rice",
-          "cotton": "Cotton",
-          "maize": "Maize",
-          "sugarcane": "Sugarcane"
-        },
-        "affectedPartOptions": {
-          "leaves": "Leaves",
-          "stem": "Stem",
-          "roots": "Roots",
-          "fruits": "Fruits",
-          "flowers": "Flowers"
-        },
-        "symptomOptions": {
-          "yellowSpots": "Yellow Spots",
-          "brownSpots": "Brown Spots",
-          "wilting": "Wilting",
-          "dryness": "Dryness",
-          "rotting": "Rotting",
-          "stunted": "Stunted Growth",
-          "discoloration": "Discoloration"
-        },
-        "errors": {
-          "allFieldsRequired": "Please fill in all required fields",
-          "submissionFailed": "Failed to submit. Please try again."
-        },
-        "success": "Disease detection request submitted successfully"
+      "water": {
+        "irrigationFrequency": "How often do you irrigate the field?",
+        "waterlogging": "Have you noticed any waterlogging?",
+        "wilting": "Are the leaves wilting despite watering?"
       },
-      "cropAdvice": {
-        "title": "Crop Advice",
-        "cropType": "Select Crop Type",
-        "growthStage": "Growth Stage",
-        "soilType": "Soil Type",
-        "issue": "Select Issue",
-        "description": "Enter Description",
-        "cropOptions": {
-          "wheat": "Wheat",
-          "rice": "Rice",
-          "cotton": "Cotton",
-          "maize": "Maize",
-          "sugarcane": "Sugarcane"
-        },
-        "growthStageOptions": {
-          "sowing": "Sowing",
-          "germination": "Germination",
-          "vegetative": "Vegetative Growth",
-          "flowering": "Flowering",
-          "maturity": "Maturity"
-        },
-        "soilTypeOptions": {
-          "clay": "Clay",
-          "sandy": "Sandy",
-          "loam": "Loam",
-          "silt": "Silt"
-        },
-        "issueOptions": {
-          "nutrient": "Nutrient Deficiency",
-          "water": "Water Management",
-          "growth": "Poor Growth",
-          "yield": "Low Yield",
-          "other": "Other"
-        },
-        "errors": {
-          "allFieldsRequired": "Please fill in all required fields",
-          "submissionFailed": "Failed to submit. Please try again."
-        },
-        "success": "Advice request submitted successfully"
+      "growth": {
+        "stuntedGrowth": "Is the growth stunted compared to surrounding plants?",
+        "deformities": "Are there any visible deformities?",
+        "firstNoticed": "When did you first notice the poor growth?"
       },
-      "pestControl": {
-        "title": "Pest Control Solutions",
-        "pestType": "Type of Pest",
-        "severity": "Infestation Severity",
-        "area": "Affected Area",
-        "cropStage": "Crop Stage",
-        "pestOptions": {
-          "insects": "Insects",
-          "rodents": "Rodents",
-          "birds": "Birds",
-          "weeds": "Weeds",
-          "fungi": "Fungi"
+      "yield": {
+        "comparison": "How does the current yield compare to previous seasons?",
+        "fruitSize": "Are the fruits/grains smaller than usual?",
+        "pestDamage": "Have you noticed any pest damage?"
+      }
+    },
+    "yourAdvice": "Your Crop Advice",
+    "getMoreAdvice": "Get More Advice",
+    "adviceGenerated": "Advice generated successfully",
+    "responses": {
+      "nutrient": {
+        "title": "Recommended actions for nutrient management:",
+        "options": {
+          "applyFertilizer": "Apply balanced NPK fertilizer",
+          "soilTest": "Conduct a soil test to identify specific deficiencies",
+          "foliarSpray": "Use foliar spray for quick nutrient uptake"
         },
-        "severityOptions": {
-          "low": "Low",
-          "medium": "Medium",
-          "high": "High",
-          "severe": "Severe"
-        },
-        "areaOptions": {
-          "small": "Small Patch",
-          "quarter": "Quarter Field",
-          "half": "Half Field",
-          "full": "Entire Field"
-        },
-        "errors": {
-          "allFieldsRequired": "Please fill in all required fields",
-          "submissionFailed": "Failed to submit. Please try again."
-        },
-        "success": "Pest control request submitted successfully"
+        "preventionTitle": "Prevention measures:",
+        "prevention": {
+          "regularTesting": "Regular soil testing",
+          "organicMatter": "Add organic matter to improve soil fertility",
+          "balancedNutrition": "Maintain balanced nutrition throughout growing season"
+        }
       },
-      "fieldManagement": {
-        "title": "Tips & Techniques",
-        "categories": {
-          "water": "Water Management",
-          "soil": "Soil Health",
-          "fertilizer": "Fertilizer Application",
-          "weather": "Weather Protection",
-          "machinery": "Machinery Usage"
+      "water": {
+        "title": "Recommended actions for water management:",
+        "options": {
+          "adjustIrrigation": "Adjust irrigation frequency based on soil moisture",
+          "improveDrainage": "Improve field drainage system",
+          "mulching": "Apply mulch to conserve soil moisture"
         },
-        "tips": {
-          "water": [
-            "Implement drip irrigation",
-            "Monitor soil moisture",
-            "Schedule watering times"
-          ],
-          "soil": [
-            "Regular soil testing",
-            "Crop rotation",
-            "Organic matter addition"
-          ],
-          "fertilizer": [
-            "Balanced NPK application",
-            "Timing of application",
-            "Method of application"
-          ]
+        "preventionTitle": "Prevention measures:",
+        "prevention": {
+          "scheduledIrrigation": "Implement scheduled irrigation based on crop needs",
+          "rainwaterHarvesting": "Consider rainwater harvesting",
+          "droughtResistant": "Select drought-resistant varieties for dry areas"
+        }
+      },
+      "growth": {
+        "title": "Recommended actions for improving growth:",
+        "options": {
+          "checkRoots": "Check root health for disease or pest damage",
+          "pruneAffected": "Prune affected parts to promote new growth",
+          "growthStimulants": "Apply growth stimulants or hormones"
+        },
+        "preventionTitle": "Prevention measures:",
+        "prevention": {
+          "qualitySeeds": "Use quality seeds or seedlings",
+          "properSpacing": "Maintain proper spacing between plants",
+          "regularMonitoring": "Monitor plant growth regularly"
+        }
+      },
+      "yield": {
+        "title": "Recommended actions for improving yield:",
+        "options": {
+          "pollinationSupport": "Support pollination with bee attractants",
+          "thinFruits": "Thin fruits to improve size and quality",
+          "pestControl": "Implement integrated pest management"
+        },
+        "preventionTitle": "Prevention measures:",
+        "prevention": {
+          "cropRotation": "Practice crop rotation",
+          "improvedVarieties": "Use improved high-yielding varieties",
+          "optimalHarvesting": "Harvest at optimal time"
         }
       }
+    },
+    "errors": {
+      "cropTypeRequired": "Please select a crop type",
+      "growthStageRequired": "Please select a growth stage",
+      "soilTypeRequired": "Please select a soil type",
+      "issueRequired": "Please select the issue you're facing",
+      "questionsRequired": "Please select at least one question",
+      "pleaseFixErrors": "Please fix the errors in the form",
+      "submissionFailed": "Failed to submit. Please try again."
     }
-  
+  },
+
+  "cropTypes": {
+    "wheat": "Wheat",
+    "rice": "Rice",
+    "sugarcane": "Sugarcane",
+    "cotton": "Cotton",
+    "maize": "Maize",
+    "vegetables": "Vegetables",
+    "others": "Others"
+  },
+  "growthStages": {
+    "sowing": "Sowing",
+    "germination": "Germination",
+    "vegetative": "Vegetative",
+    "flowering": "Flowering",
+    "maturity": "Maturity",
+    "harvesting": "Harvesting"
+  },
+  "fieldSizeUnits": {
+    "acres": "Acres",
+    "kanal": "Kanal",
+    "marla": "Marla"
+  },
+  "irrigationTypes": {
+    "canal": "Canal",
+    "tube_well": "Tube Well",
+    "rain-fed": "Rain-fed",
+    "drip_irrigation": "Drip Irrigation",
+    "others": "Others"
+  },
+  "soilTypes": {
+    "sandy": "Sandy",
+    "loamy": "Loamy",
+    "clayey": "Clayey",
+    "silty": "Silty",
+    "saline": "Saline",
+    "unknown": "Unknown"
+  },
+  "waterAvailability": {
+    "good": "Good",
+    "moderate": "Moderate",
+    "poor": "Poor"
+  },
+  "observedProblems": {
+    "pest_attack": "Pest Attack",
+    "weeds": "Weeds",
+    "water_shortage": "Water Shortage",
+    "nutrient_deficiency": "Nutrient Deficiency",
+    "disease": "Disease",
+    "none": "None"
+  },
+  "rainfallStatus": {
+    "heavy_rain": "Heavy Rain",
+    "light_rain": "Light Rain",
+    "no_rain": "No Rain"
+  }
 }

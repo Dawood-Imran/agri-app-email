@@ -1,13 +1,31 @@
-import React from 'react';
+import React  from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { Button, ListItem, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { useFarmer } from '../hooks/fetch_farmer';
+
 
 const CoinScreen = () => {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const [balance, setBalance] = React.useState(100); // Example balance
+  const { farmerData , loading: farmerLoading} = useFarmer();
+    farmerData?.coins && setBalance(farmerData.coins);
+    console.log('Farmer Data:', farmerData?.coins);
+  
+    useEffect(() => { 
+      const fetchCoins = async () => {
+        if (farmerData) {
+          setBalance(farmerData.coins);
+        }
+      };
+      fetchCoins();
+    }
+    , [farmerData]);
+
+
   const [transactions, setTransactions] = React.useState([
     { id: 1, type: 'Spent', amount: 10, service: 'Yield Prediction', date: '2023-05-01' },
     { id: 2, type: 'Spent', amount: 20, service: 'Expert Consultation', date: '2023-04-29' },

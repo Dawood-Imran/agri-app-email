@@ -8,6 +8,7 @@ interface FarmerData {
   email: string;
   city: string;
   address: string;
+  coins: number;
   phoneNumber: string;
   location: {
     latitude: number;
