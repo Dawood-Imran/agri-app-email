@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Icon } from 'react-native-elements';
 import { TouchableOpacity, View, StyleSheet, Platform } from 'react-native';
@@ -9,6 +9,8 @@ import AccountTab from './AccountTab';
 import CoinDisplay from '../../components/CoinDisplay';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { useExpert } from './hooks/fetch_expert';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -20,8 +22,20 @@ const TabIcon = ({ name, color, size = 26 }: { name: string; color: string; size
 
 const ExpertDashboard = () => {
   const { t, i18n } = useTranslation();
-  const [coins, setCoins] = useState(500);
+  const [coins, setCoins] = useState(200);
   const navigation = useNavigation();
+  const { profileData, updateProfilePicture } = useExpert();
+
+  useEffect(() => { 
+    const fetchCoins = async () => {
+      if (profileData) {
+        setCoins(profileData.coins);
+      }
+    };
+    fetchCoins();
+  }
+  , [profileData]);
+  
 
   const screenOptions: BottomTabNavigationOptions = {
     tabBarActiveTintColor: '#FFC107',
@@ -40,13 +54,13 @@ const ExpertDashboard = () => {
       left: 20,
       right: 20,
       borderRadius: 15,
-      paddingBottom: 8,
+      marginHorizontal: 20,
+      marginVertical: 10,
       paddingHorizontal: 10,
     },
     tabBarItemStyle: {
       marginTop: 10,
       height: 50,
-      paddingBottom: 5,
     },
     tabBarLabelStyle: {
       fontSize: 12,
@@ -115,25 +129,19 @@ const ExpertDashboard = () => {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    width: 30,
+    width: 40,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 5,
-    marginHorizontal:20,
-    
   },
   coinButton: {
     marginRight: 15,
     padding: 8,
     borderRadius: 20,
-    
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    
-    
-    elevation: 3,
   },
 });
 

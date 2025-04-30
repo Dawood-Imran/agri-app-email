@@ -1,7 +1,7 @@
 import React, { useState , useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Icon } from 'react-native-elements';
-import { TouchableOpacity, View  } from 'react-native';
+import { TouchableOpacity, View , Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import MenuTab from './MenuTab';
@@ -16,6 +16,7 @@ import { use } from 'i18next';
 
 
 
+
 const Tab = createBottomTabNavigator();
 
 const TabIcon = ({ name, color, size = 26 }: { name: string; color: string; size?: number }) => (
@@ -25,7 +26,7 @@ const TabIcon = ({ name, color, size = 26 }: { name: string; color: string; size
 );
 
 const FarmerDashboard = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [coins, setCoins] = useState(120); 
   const navigation = useNavigation();
   const { farmerData , loading: farmerLoading} = useFarmer();
@@ -41,6 +42,11 @@ const FarmerDashboard = () => {
     fetchCoins();
   }
   , [farmerData]);
+
+  const toggleLanguage = () => {
+    const newLanguage = i18n.language === 'en' ? 'ur' : 'en';
+    i18n.changeLanguage(newLanguage);
+  };
   
   
 
@@ -71,12 +77,13 @@ const FarmerDashboard = () => {
           shadowOpacity: 0.1,
           shadowRadius: 8,
           position: 'absolute',
-          bottom: 5,
+          bottom: 20,
           left: 20,
           right: 20,
           borderRadius: 15,
           marginHorizontal: 20,
           marginVertical: 10,
+          paddingHorizontal: 10,
           
         },
         tabBarItemStyle: {
@@ -100,9 +107,21 @@ const FarmerDashboard = () => {
         headerRight: () => {
           
           return (
+            <View>
+
             <TouchableOpacity onPress={() => navigation.navigate('farmer/CoinScreen')}>
               <CoinDisplay coins={coins} />
             </TouchableOpacity>
+
+            <TouchableOpacity 
+          style={styles.languageToggle} 
+          onPress={toggleLanguage}>
+          <Text style={styles.languageToggleText}>
+            {i18n.language === 'en' ? 'اردو' : 'English'}
+          </Text>
+        </TouchableOpacity>
+            </View>
+            
           );
         },
       })}
@@ -129,6 +148,24 @@ const styles = {
     borderRadius: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
+  languageToggle: {
+    position: 'absolute',
+    top: -6,
+    right: 65,
+    backgroundColor: 'rgba(255, 193, 7, 0.8)',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    zIndex: 10,
+    width:70,
+    TextAlign: 'center',
+
+  },
+  languageToggleText: {
+    color: '#1B5E20',
+    fontWeight: 'bold',
+    fontSize: 14,
+  }
 };
 
 export default FarmerDashboard;

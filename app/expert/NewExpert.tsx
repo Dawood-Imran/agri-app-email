@@ -1,12 +1,15 @@
+"use client"
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { Input, Button } from 'react-native-elements';
+import { Input, Button, Icon } from 'react-native-elements';
 import { getAuth } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
+import { Toast } from "../components/Toast";
 
 const NewExpert = () => {
   const { t, i18n } = useTranslation();
@@ -20,6 +23,11 @@ const NewExpert = () => {
     end: '17:00'
   });
   const [loading, setLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastType, setToastType] = useState<"success" | "error" | "info">("error");
+
+  const isRTL = i18n.language === "ur";
 
   const specializationOptions = [
     'Crop Management',
@@ -32,6 +40,12 @@ const NewExpert = () => {
     'Agricultural Economics'
   ];
 
+  const showToast = (message: string, type: "success" | "error" | "info" = "error") => {
+    setToastMessage(message);
+    setToastType(type);
+    setToastVisible(true);
+  };
+
   const handlePhoneNumberChange = (text: string) => {
     const cleaned = text.replace(/[^0-9]/g, '');
     if (cleaned.length <= 10) {
@@ -39,7 +53,40 @@ const NewExpert = () => {
     }
   };
 
+  const validateForm = () => {
+    if (!phoneNumber.trim() || phoneNumber.length !== 10) {
+      showToast(t("Please enter a valid 10-digit phone number"), "error");
+      return false;
+    }
+
+    if (!specialization) {
+      showToast(t("Please select your specialization"), "error");
+      return false;
+    }
+
+    if (!consultationHours.start || !consultationHours.end) {
+      showToast(t("Please enter your consultation hours"), "error");
+      return false;
+    }
+
+    if (!city) {
+      showToast(t("Please select your city"), "error");
+      return false;
+    }
+
+    if (!experienceYears) {
+      showToast(t("Please select your years of experience"), "error");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     try {
       const auth = getAuth();
@@ -63,13 +110,18 @@ const NewExpert = () => {
           isNewUser: false
         }, { merge: true });
   
-        console.log('User details saved successfully');
-        router.replace('/expert/dashboard');
+        showToast(t("User details saved successfully"), "success");
+        
+        // Use setTimeout to ensure the toast is visible before navigation
+        setTimeout(() => {
+          router.replace('/expert/dashboard');
+        }, 1000);
       } else {
-        console.log('User not authenticated');
+        showToast(t("User not authenticated"), "error");
       }
     } catch (error) {
       console.error('Error saving user details:', error);
+      showToast(t("An error occurred while saving your information."), "error");
     } finally {
       setLoading(false);
     }
@@ -78,30 +130,57 @@ const NewExpert = () => {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.titleMain, i18n.language === 'ur' && styles.urduTitle]}>{t('New Expert')}</Text>
-        <Image source={require('../../assets/images/badge.png')} style={styles.image} />
+        <Text style={styles.titleMain}>
+          {t('New Expert')} <Text style={styles.userType}>{t('Profile')}</Text>
+        </Text>
       </View>
-      <Text style={[styles.labeltxt, i18n.language === 'ur' && styles.urduText]}>{t('Please fill in the details below')}</Text>
+      
       <View style={styles.form}>
-        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('Phone Number')}</Text>
-        <Input
-          placeholder="3XXXXXXXXX"
-          value={phoneNumber}
-          onChangeText={handlePhoneNumberChange}
-          keyboardType="numeric"
-          leftIcon={<Text style={styles.countryCode}>+92</Text>}
-          containerStyle={styles.inputField}
-          inputStyle={[styles.inputText, i18n.language === 'ur' && styles.urduInput]}
-          placeholderTextColor="#E0E0E0"
-          inputContainerStyle={{ borderBottomWidth: 0 }}
-        />
+        <View style={styles.inputContainer}>
+          <Input
+            placeholder={t("Phone Number")}
+            value={phoneNumber}
+            onChangeText={handlePhoneNumberChange}
+            keyboardType="numeric"
+            leftIcon={
+              isRTL ? null : (
+                <View style={styles.iconContainer}>
+                  <Image source={require("../../assets/pakistan-flag.jpg")} style={styles.flagIcon} />
+                  <Text style={styles.countryCode}>+92</Text>
+                  <View style={styles.separator} />
+                </View>
+              )
+            }
+            rightIcon={
+              isRTL ? (
+                <View style={styles.iconContainer}>
+                  <View style={styles.separator} />
+                  <Text style={styles.countryCode}>+92</Text>
+                  <Image source={require("../../assets/pakistan-flag.jpg")} style={styles.flagIcon} />
+                </View>
+              ) : null
+            }
+            containerStyle={styles.inputField}
+            inputContainerStyle={{ borderBottomWidth: 0 }}
+            inputStyle={[
+              styles.inputText,
+              isRTL && {
+                textAlign: "right",
+                paddingRight: 20,
+                paddingLeft: 0,
+              },
+            ]}
+            placeholderTextColor="#E0E0E0"
+          />
+        </View>
 
-        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('Specialization')}</Text>
+        {!isRTL && <Text style={styles.label}>{t('Specialization')}</Text>}
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={specialization}
-            style={[styles.picker, i18n.language === 'ur' && styles.urduPicker]}
+            style={[styles.picker, isRTL && styles.pickerRTL]}
             onValueChange={(itemValue: string) => setSpecialization(itemValue)}
+            dropdownIconColor="#FFFFFF"
           >
             <Picker.Item label={t('Select Specialization')} value="" />
             {specializationOptions.map((option) => (
@@ -110,73 +189,89 @@ const NewExpert = () => {
           </Picker>
         </View>
 
-        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('Consultation Hours')}</Text>
+        {!isRTL && <Text style={styles.label}>{t('Consultation Hours')}</Text>}
         <View style={styles.hoursContainer}>
           <View style={styles.hoursPicker}>
-            <Text style={styles.hoursLabel}>{t('Start Time')}</Text>
             <Input
+              placeholder={t("Start Time")}
               value={consultationHours.start}
               onChangeText={(text) => setConsultationHours(prev => ({ ...prev, start: text }))}
               containerStyle={[styles.inputField, styles.timeInput]}
-              inputStyle={[styles.inputText, i18n.language === 'ur' && styles.urduInput]}
-              placeholder="09:00"
+              inputStyle={[
+                styles.inputText,
+                isRTL && {
+                  textAlign: "right",
+                  paddingRight: 20,
+                  paddingLeft: 0,
+                },
+              ]}
+              placeholderTextColor="#E0E0E0"
+              inputContainerStyle={{ borderBottomWidth: 0 }}
             />
           </View>
           <View style={styles.hoursPicker}>
-            <Text style={styles.hoursLabel}>{t('End Time')}</Text>
             <Input
+              placeholder={t("End Time")}
               value={consultationHours.end}
               onChangeText={(text) => setConsultationHours(prev => ({ ...prev, end: text }))}
               containerStyle={[styles.inputField, styles.timeInput]}
-              inputStyle={[styles.inputText, i18n.language === 'ur' && styles.urduInput]}
-              placeholder="17:00"
+              inputStyle={[
+                styles.inputText,
+                isRTL && {
+                  textAlign: "right",
+                  paddingRight: 20,
+                  paddingLeft: 0,
+                },
+              ]}
+              placeholderTextColor="#E0E0E0"
+              inputContainerStyle={{ borderBottomWidth: 0 }}
             />
           </View>
         </View>
 
-        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('City')}</Text>
+        {!isRTL && <Text style={styles.label}>{t('City')}</Text>}
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={city}
-            style={[styles.picker, i18n.language === 'ur' && styles.urduPicker]}
+            style={[styles.picker, isRTL && styles.pickerRTL]}
             onValueChange={(itemValue: string) => setCity(itemValue)}
+            dropdownIconColor="#FFFFFF"
           >
             <Picker.Item label={t('Select City')} value="" />
-            <Picker.Item label="Lahore" value="Lahore" />
-            <Picker.Item label="Faisalabad" value="Faisalabad" />
-            <Picker.Item label="Rawalpindi" value="Rawalpindi" />
-            <Picker.Item label="Gujranwala" value="Gujranwala" />
-            <Picker.Item label="Multan" value="Multan" />
-            <Picker.Item label="Sargodha" value="Sargodha" />
-            <Picker.Item label="Sialkot" value="Sialkot" />
-            <Picker.Item label="Bahawalpur" value="Bahawalpur" />
-            <Picker.Item label="Sahiwal" value="Sahiwal" />
-            <Picker.Item label="Sheikhupura" value="Sheikhupura" />
-            <Picker.Item label="Jhang" value="Jhang" />
-            <Picker.Item label="Rahim Yar Khan" value="Rahim Yar Khan" />
-            <Picker.Item label="Kasur" value="Kasur" />
-            <Picker.Item label="Okara" value="Okara" />
+            <Picker.Item label={t("Lahore")} value="Lahore" />
+            <Picker.Item label={t("Faisalabad")} value="Faisalabad" />
+            <Picker.Item label={t("Rawalpindi")} value="Rawalpindi" />
+            <Picker.Item label={t("Gujranwala")} value="Gujranwala" />
+            <Picker.Item label={t("Multan")} value="Multan" />
+            <Picker.Item label={t("Sargodha")} value="Sargodha" />
+            <Picker.Item label={t("Sialkot")} value="Sialkot" />
+            <Picker.Item label={t("Bahawalpur")} value="Bahawalpur" />
+            <Picker.Item label={t("Sahiwal")} value="Sahiwal" />
+            <Picker.Item label={t("Sheikhupura")} value="Sheikhupura" />
+            <Picker.Item label={t("Jhang")} value="Jhang" />
+            <Picker.Item label={t("Rahim Yar Khan")} value="Rahim Yar Khan" />
+            <Picker.Item label={t("Kasur")} value="Kasur" />
+            <Picker.Item label={t("Okara")} value="Okara" />
           </Picker>
         </View>
 
-        <Text style={[styles.label, i18n.language === 'ur' && styles.urduText]}>{t('Experience Years')}</Text>
+        {!isRTL && <Text style={styles.label}>{t('Experience Years')}</Text>}
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={experienceYears}
-            style={[styles.picker, i18n.language === 'ur' && styles.urduPicker]}
+            style={[styles.picker, isRTL && styles.pickerRTL]}
             onValueChange={(itemValue: string) => setExperienceYears(itemValue)}
+            dropdownIconColor="#FFFFFF"
           >
             <Picker.Item label={t('Select Experience')} value="" />
-            <Picker.Item label="1 year" value="1" />
-            <Picker.Item label="2 years" value="2" />
-            <Picker.Item label="3 years" value="3" />
-            <Picker.Item label="4 years" value="4" />
-            <Picker.Item label="5 years" value="5" />
-            <Picker.Item label="More than 5 years" value="5+" />
+            <Picker.Item label={t("1 year")} value="1" />
+            <Picker.Item label={t("2 years")} value="2" />
+            <Picker.Item label={t("3 years")} value="3" />
+            <Picker.Item label={t("4 years")} value="4" />
+            <Picker.Item label={t("5 years")} value="5" />
+            <Picker.Item label={t("More than 5 years")} value="5+" />
           </Picker>
         </View>
-
-     
 
         <Button
           title={t('Submit')}
@@ -184,9 +279,11 @@ const NewExpert = () => {
           loading={loading}
           containerStyle={styles.buttonContainer}
           buttonStyle={styles.button}
-          titleStyle={[styles.buttonTitle, i18n.language === 'ur' && styles.urduText]}
+          titleStyle={styles.buttonTitle}
         />
       </View>
+      
+      <Toast visible={toastVisible} message={toastMessage} type={toastType} onHide={() => setToastVisible(false)} />
     </View>
   );
 };
@@ -200,46 +297,50 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
   },
   titleContainer: {
-    flexDirection: 'row',
-    marginTop: 20,
-    marginBottom: 20,
-    alignItems: 'center',
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingTop: 30,
+    marginBottom: 30,
   },
   titleMain: {
-    fontSize: 40,
+    fontSize: 28,
     color: '#FFFFFF',
     fontWeight: 'bold',
     marginBottom: 5,
     lineHeight: 44,
   },
-  image: {
-    width: 80,
-    height: 80,
-    marginLeft: 20,
-  },
-  labeltxt: {
+  userType: {
     color: '#FFC107',
-    fontSize: 18,
-    marginBottom: 20,
-    marginLeft: 5,
+    fontWeight: 'bold',
+    fontSize: 40,
+    paddingVertical: 10,
+    lineHeight: 45,
   },
   form: {
     width: '100%',
     marginBottom: 20,
   },
+  inputContainer: {
+    marginBottom: 15,
+  },
   label: {
     color: '#FFFFFF',
     fontSize: 16,
-    marginBottom: 5,
-    marginLeft: 5,
+    marginBottom: 8,
+    marginLeft: 10,
+  },
+  labelRTL: {
+    textAlign: "right",
+    marginRight: 10,
+    marginLeft: 0,
   },
   inputField: {
     borderBottomWidth: 0,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 15,
     paddingHorizontal: 15,
-    marginBottom: 10,
-    height: 45,
+    marginBottom: 5,
+    height: 53,
     width: '100%',
   },
   inputText: {
@@ -248,9 +349,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   buttonContainer: {
-    marginTop: 10,
-    width: '80%',
-    left: '10%',
+    marginTop: 20,
+    width: '60%',
+    left: '20%',
   },
   button: {
     backgroundColor: '#FFC107',
@@ -265,7 +366,8 @@ const styles = StyleSheet.create({
   pickerContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 15,
-    marginBottom: 10,
+    marginBottom: 15,
+    marginHorizontal: 10,
     overflow: 'hidden',
   },
   picker: {
@@ -273,26 +375,29 @@ const styles = StyleSheet.create({
     width: '100%',
     color: '#FFFFFF',
   },
+  pickerRTL: {
+    textAlign: "right",
+  },
+  iconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 10,
+  },
+  flagIcon: {
+    width: 24,
+    height: 16,
+    marginRight: 8,
+  },
   countryCode: {
     color: '#FFFFFF',
     marginRight: 8,
     fontSize: 16,
   },
-  urduText: {
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
-  urduTitle: {
-    textAlign: 'right',
-  },
-  urduInput: {
-    textAlign: 'right',
-    paddingRight: 20,
-    paddingLeft: 0,
-  },
-  urduPicker: {
-    textAlign: 'right',
-    direction: 'rtl',
+  separator: {
+    height: 20,
+    width: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    marginHorizontal: 10,
   },
   hoursContainer: {
     flexDirection: 'row',
@@ -302,11 +407,6 @@ const styles = StyleSheet.create({
   hoursPicker: {
     flex: 1,
     marginHorizontal: 5,
-  },
-  hoursLabel: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    marginBottom: 5,
   },
   timeInput: {
     width: '100%',

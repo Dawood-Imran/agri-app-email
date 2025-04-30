@@ -1,12 +1,10 @@
-import React, { useState, useEffect , useCallback} from 'react';
-import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image , Text, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, ImageBackground, Image, Text, Alert, RefreshControl } from 'react-native';
 import { Card, Icon } from 'react-native-elements';
-
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { useUser } from '../context/UserProvider';
 import { useFarmer } from '../hooks/fetch_farmer';
-
 
 const API_KEY = "33e96491c93c4bb88bc130136241209";  // Replace with your WeatherAPI key
 const BASE_URL = "http://api.weatherapi.com/v1/current.json";
@@ -25,18 +23,15 @@ interface WeatherData {
   };
 }
 
-
-
 const MenuTab = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   
-  const { userName, userType, email , city , isLoading , reloadUser} = useUser(); 
+  const { userName, userType, email, city, isLoading, reloadUser } = useUser(); 
   const { farmerData, loading: farmerLoading, reloadFarmerData } = useFarmer();
-
-
 
   useEffect(() => {
     if (!farmerLoading && farmerData?.city) {
@@ -45,31 +40,42 @@ const MenuTab = () => {
     }
   }, [farmerLoading, farmerData]);
 
-
-
-const fetchWeather = async () => {
-  setLoading(true);
-  try {
-    const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${farmerData?.city}&aqi=no`);
-    if (!response.ok) {
-      throw new Error(`API returned status: ${response.status}`);
+  const fetchWeather = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${farmerData?.city}&aqi=no`);
+      if (!response.ok) {
+        throw new Error(`API returned status: ${response.status}`);
+      }
+      const data = await response.json();
+      setWeatherData(data);
+    } catch (error: any) {
+      console.error('Error fetching weather data:', error);
+      Alert.alert('Weather Fetch Error', 'Unable to fetch weather data. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-    const data = await response.json();
-    setWeatherData(data);
-  } catch (error: any) {
-    console.error('Error fetching weather data:', error);
-    Alert.alert('Weather Fetch Error', 'Unable to fetch weather data. Please try again later.');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([reloadUser(), reloadFarmerData(), fetchWeather()]);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [reloadUser, reloadFarmerData]);
 
   const handleReload = () => {
     reloadUser();
   };
 
- 
+  const toggleLanguage = () => {
+    const newLanguage = i18n.language === 'en' ? 'ur' : 'en';
+    i18n.changeLanguage(newLanguage);
+  };
 
   const getWeatherIcon = (condition: string): string => {
     const iconMap: { [key: string]: string } = {
@@ -125,7 +131,8 @@ const fetchWeather = async () => {
       styles:{ size: 30 },
       icon: require('../../assets/bot-logo.png'),
       route: '/farmer/Agribot/LandingPage'
-    }
+    },
+    
   ];
 
   if (isLoading || loading) {
@@ -133,7 +140,7 @@ const fetchWeather = async () => {
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#FFC107" />
         <TouchableOpacity onPress={handleReload} style={styles.reloadButton}>
-          <Text style={styles.reloadButtonText}>Reload</Text>
+          <Text style={styles.reloadButtonText}>{t('reload')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -143,8 +150,6 @@ const fetchWeather = async () => {
   const temperature = weatherData?.current?.temp_c !== undefined ? `${weatherData.current.temp_c}°C` : '--';
   const humidity = weatherData?.current?.humidity !== undefined ? `${weatherData.current.humidity}%` : '--';
   const windSpeed = weatherData?.current?.wind_kph !== undefined ? `${weatherData.current.wind_kph} km/h` : '--';
-
-  
 
   return (
     <ImageBackground
@@ -157,22 +162,26 @@ const fetchWeather = async () => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#FFC107"]}
+              tintColor="#FFC107"
+            />
+          }
         >
           <View style={styles.header}>
-            <Text style={styles.greeting}>Hello, {farmerData?.name}</Text>
+            <Text style={styles.greeting}>{t('welcomeFarmer')}</Text>
             <View style={styles.locationContainer}>
-      
-          <Image source={require('../../assets/images/farmer-icons/weather-icons/map.png')} style={styles.locationIcon} />
-          <Text style={styles.locationText}>{farmerData?.city}</Text>
-        </View>
+              <Image source={require('../../assets/images/farmer-icons/weather-icons/map.png')} style={styles.locationIcon} />
+              <Text style={styles.locationText}>{farmerData?.city}</Text>
+            </View>
             <Text style={styles.subGreeting}>
-              {weatherData ? `It's a ${weatherData.current.condition.text} day!` : 'Loading...'}
+              {weatherData ? t('weatherCondition', { condition: weatherData.current.condition.text }) : t('loading')}
             </Text>
 
-            
-
             {loading && <ActivityIndicator size="large" color="#FFFFFF" />}
-
           </View>
 
           <View style={styles.weatherContainer}>
@@ -227,7 +236,10 @@ const fetchWeather = async () => {
 
           <View style={styles.menuContainer}>
             {features.map((feature, index) => (
-              <TouchableOpacity key={index} onPress={() => router.push(feature.route as never)}>
+              <TouchableOpacity 
+                key={index} 
+                onPress={() => feature.action ? feature.action() : router.push(feature.route as never)}
+              >
                 <View style={styles.featureCard}>
                   <View style={styles.featureContent}>
                     <Image 
@@ -263,9 +275,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   greeting: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#FFC107',
+    marginRight: 5,
+    textAlign: 'center',
   },
   subGreeting: {
     fontSize: 16,

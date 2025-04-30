@@ -3,30 +3,33 @@ import { ScrollView, StyleSheet, View , Text} from 'react-native';
 import { Button, ListItem, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useExpert } from './hooks/fetch_expert';
+import { useState, useEffect } from 'react';
+
 
 const CoinScreen = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
-  const [balance, setBalance] = React.useState(500);
+  const [coins, setCoins] = useState(200);
+  const { profileData, updateProfilePicture } = useExpert();
+  
+  
   const [consultations, setConsultations] = React.useState([
     { id: 1, farmer: 'John Doe', duration: '30 min', coins: 50, date: '2023-05-01' },
     { id: 2, farmer: 'Jane Smith', duration: '45 min', coins: 75, date: '2023-04-28' },
   ]);
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Icon 
-          name="arrow-back" 
-          type="material" 
-          color="#FFC107" 
-          size={30} 
-          onPress={() => navigation.goBack()} 
-          containerStyle={{ marginLeft: 10 }}
-        />
-      ),
-    });
-  }, [navigation]);
+  useEffect(() => { 
+      const fetchCoins = async () => {
+        if (profileData) {
+          setCoins(profileData.coins);
+        }
+      };
+      fetchCoins();
+    }
+    , [profileData]);
+
+
 
   return (
     < View style={styles.container}>
@@ -36,7 +39,7 @@ const CoinScreen = () => {
             {i18n.language === 'ur' ? 'کمائے گئے کوائنز کا بیلنس' : t('Earned Coins Balance')}
           </ Text>
           < Text style={styles.balance}>
-            {balance} {i18n.language === 'ur' ? 'ایگرو کوائنز' : t('agroCoins')}
+            {coins} {i18n.language === 'ur' ? 'ایگرو کوائنز' : t('agroCoins')}
           </ Text>
         </View>
         

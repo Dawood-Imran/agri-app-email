@@ -48,13 +48,7 @@ const CoinScreen = () => {
             {balance} {i18n.language === 'ur' ? 'ایگرو کوائنز' : t('agroCoins')}
           </Text>
         </View>
-        <Button
-          title={i18n.language === 'ur' ? 'کوائنز خریدیں' : t('buyCoins')}
-          onPress={() => {/* Implement coin purchase */}}
-          buttonStyle={styles.button}
-          titleStyle={styles.buttonTitle}
-          containerStyle={styles.buttonContainer}
-        />
+        
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>
             {i18n.language === 'ur' ? 'لین دین کی تاریخ' : t('Transaction History')}

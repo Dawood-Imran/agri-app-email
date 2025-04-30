@@ -628,5 +628,55 @@
     "heavy_rain": "زیادہ بارش",
     "light_rain": "ہلکی بارش",
     "no_rain": "کوئی بارش نہیں"
-  }
+  },
+
+
+  "New Farmer": "نیا کسان",
+  "New Expert": "نیا ماہر",
+  "New Buyer": "نیا خریدار",
+  
+  "Please fill in the details below": "براہ کرم ذیل میں تفصیلات پُر کریں",
+  
+  "Specialization": "تخصص",
+  "Select Specialization": "تخصص منتخب کریں",
+  "Crop Management": "فصل کا انتظام",
+  "Soil Science": "مٹی کا سائنس",
+  "Pest Control": "کیڑے مکوڑوں کا کنٹرول",
+  "Irrigation Systems": "آبپاشی کے نظام",
+  "Organic Farming": "نامیاتی کاشتکاری",
+  "Livestock Management": "مویشیوں کا انتظام",
+  "Horticulture": "باغبانی",
+  "Agricultural Economics": "زرعی معاشیات",
+  
+  "Start Time": "شروع کا وقت",
+  "End Time": "ختم کا وقت",
+  "Experience Years": "تجربہ کے سال",
+  "Select Experience": "تجربہ منتخب کریں",
+  "1 year": "1 سال",
+  "2 years": "2 سال",
+  "3 years": "3 سال",
+  "4 years": "4 سال",
+  "5 years": "5 سال",
+  "More than 5 years": "5 سال سے زیادہ",
+  "An error occurred while saving your information.": "آپ کی معلومات محفوظ کرتے وقت ایک خرابی پیش آئی۔",
+  "Please select your specialization": "براہ کرم اپنی تخصص منتخب کریں",
+  "Please enter your consultation hours": "براہ کرم اپنے مشاورت کے اوقات درج کریں",
+  "Please select your years of experience": "براہ کرم اپنے تجربے کے سال منتخب کریں",
+ 
+  "error": "خرابی",
+ 
+  "Information saved successfully!": "معلومات کامیابی سے محفوظ ہو گئیں!",
+  "All fields are required": "تمام خانے ضروری ہیں",
+
+  "welcomeFarmer": "ایگری بوسٹ میں خوش آمدید",
+  "weatherCondition": "آج کا دن {{condition}} ہے",
+  "loading": "لوڈ ہو رہا ہے...",
+  
+  "reload": "دوبارہ لوڈ کریں",
+  "noData": "کوئی ڈیٹا نہیں",
+  
+  "pullToRefresh": "ریفریش کرنے کے لیے نیچے کھینچیں",
+  "refreshing": "ریفریش ہو رہا ہے...",
+  "weatherFetchError": "موسم کی معلومات حاصل کرنے میں خرابی",
+  "unableToFetchWeather": "موسم کی معلومات حاصل کرنے میں ناکامی۔ براہ کرم بعد میں دوبارہ کوشش کریں۔"
 }

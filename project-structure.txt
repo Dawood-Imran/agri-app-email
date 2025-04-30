@@ -1,0 +1,153 @@
+App/
+├─ src/
+│  ├─ navigation/
+│  │  └─ ChatNavigator.tsx
+│  ├─ screens/
+│  │  ├─ ChatListScreen.tsx
+│  │  ├─ ChatRoomScreen.tsx
+│  │  ├─ ImagePreviewModal.tsx
+│  │  ├─ AudioRecorderModal.tsx
+│  │  └─ CallScreen.tsx
+│  └─ components/
+│     ├─ ChatMessage.tsx
+│     ├─ MediaSender.tsx
+│     └─ AudioPlayer.tsx
+├─ app/
+│  ├─ _layout.tsx
+│  ├─ +html.tsx
+│  ├─ +not-found.tsx
+│  ├─ ForgotPin.tsx
+│  ├─ Help.tsx
+│  ├─ i18n.ts
+│  ├─ index.tsx
+│  ├─ LanguageSelection.tsx
+│  ├─ ResetPasswordConfirmation.tsx
+│  ├─ SignIn.tsx
+│  ├─ SignUp.tsx
+│  ├─ SplashScreen.tsx
+│  ├─ UserSelectionScreen.tsx
+│  ├─ VerifyEmailScreen.tsx
+│  └─ VerifyPin.tsx
+│  ├─ (tabs)/
+│  │  ├─ _layout.tsx
+│  │  ├─ explore.tsx
+│  │  └─ index.tsx
+│  ├─ buyer/
+│  │  ├─ AccountTab.tsx
+│  │  ├─ AuctionSystemTab.tsx
+│  │  ├─ CoinScreen.tsx
+│  │  ├─ dashboard.tsx
+│  │  ├─ Help.tsx
+│  │  ├─ NewBuyer.tsx
+│  │  ├─ Profile.tsx
+│  │  └─ Settings.tsx
+│  ├─ components/
+│  │  ├─ CustomHeader.tsx
+│  │  ├─ CustomToast.tsx
+│  │  ├─ ProfilePicture.tsx
+│  │  └─ Toast.tsx
+│  ├─ context/
+│  │  ├─ AuthContext.js
+│  │  └─ UserProvider.tsx
+│  ├─ expert/
+│  │  ├─ AccountTab.tsx
+│  │  ├─ CoinScreen.tsx
+│  │  ├─ dashboard.tsx
+│  │  ├─ Help.tsx
+│  │  ├─ MessagesTab.tsx
+│  │  ├─ NewExpert.tsx
+│  │  ├─ Profile.tsx
+│  │  └─ Settings.tsx
+│  ├─ farmer/
+│  │  ├─ AccountTab.tsx
+│  │  ├─ AuctionSystem.tsx
+│  │  ├─ BuyCoins.tsx
+│  │  ├─ CoinScreen.tsx
+│  │  ├─ dashboard.tsx
+│  │  ├─ ExpertConsultation.tsx
+│  │  ├─ FieldDetails.tsx
+│  │  ├─ Help.tsx
+│  │  ├─ MenuTab.tsx
+│  │  ├─ NewUserForm.tsx 
+│  │  ├─ Profile.tsx
+│  │  ├─ SchemeDetails.tsx
+│  │  ├─ SchemesList.tsx
+│  │  ├─ Settings.tsx
+│  │  ├─ YieldPrediction.tsx
+│  │  ├─ Agribot/
+│  │  │  ├─ LandingPage.tsx
+│  │  │  └─ CropAdvice.tsx
+│  │  └─ YieldPrediction/
+│  │     ├─ YieldPredictionComponent.tsx
+│  │     ├─ EmptyState.tsx
+│  │     ├─ FieldDetailsCard.tsx
+│  │     ├─ YieldEstimateCard.tsx
+│  │     ├─ YieldForecastChart.tsx
+│  │     ├─ PredictionControls.tsx
+│  │     ├─ PredictionHistory.tsx
+│  │     ├─ MapSection.tsx
+│  │     ├─ HeaderSection.tsx
+│  │     └─ types.ts
+│  ├─ hooks/
+│  │  ├─ fetch_farmer.ts
+│  │  ├─ useFields.ts
+│  │  ├─ useInitialNavigation.ts
+│  │  └─ useSchemes.ts
+│  ├─ locales/
+│  │  ├─ en.json
+│  │  └─ ur.json
+│  └─ utils/
+├─ assets/
+│  ├─ app-logo-3.png
+│  ├─ app-logo-3(1).png
+│  ├─ app-logo-wo-text.png
+│  ├─ bot-logo.png
+│  ├─ email-send.jpg
+│  ├─ pakistan-flag.jpg
+│  ├─ scraped_data.json
+│  ├─ fonts/
+│  │  └─ SpaceMono-Regular.ttf
+│  ├─ images/
+│  │  ├─ adaptive-icon.png
+│  │  ├─ badge.png
+│  │  ├─ expert-consultation-template.png
+│  │  ├─ farmer.png
+│  │  ├─ favicon.png
+│  │  ├─ gettyimages-1068196174-612x612.jpg
+│  │  ├─ icon.png
+│  │  ├─ illustration-1.png
+│  │  ├─ image.png
+│  │  ├─ investor.png
+│  │  └─ partial-react-logo.png
+│  └─ screen-display/
+│     └─ screen 1.jpg
+├─ components/
+│  ├─ CoinDisplay.tsx
+│  ├─ Collapsible.tsx
+│  ├─ ExternalLink.tsx
+│  ├─ HelloWave.tsx
+│  ├─ ParallaxScrollView.tsx
+│  ├─ ThemedText.tsx
+│  ├─ ThemedView.tsx
+│  ├─ __tests__/
+│  └─ navigation/
+├─ config/
+│  └─ firebaseConfig.ts
+├─ constants/
+│  └─ Colors.ts
+├─ hooks/
+│  ├─ useColorScheme.ts
+│  ├─ useColorScheme.web.ts
+│  └─ useThemeColor.ts
+├─ scripts/
+│  └─ reset-project.js
+├─ app.json
+├─ babel.config.js
+├─ expo-env.d.ts
+├─ firebaseConfig.js
+├─ firestore.rules
+├─ google-services.json
+├─ i18n.ts
+├─ package.json
+├─ README.md
+└─ tsconfig.json

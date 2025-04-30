@@ -607,5 +607,60 @@
     "heavy_rain": "Heavy Rain",
     "light_rain": "Light Rain",
     "no_rain": "No Rain"
-  }
+  },
+
+    "New Farmer": "New Farmer",
+    "New Expert": "New Expert",
+    "New Buyer": "New Buyer",
+    
+    "Please fill in the details below": "Please fill in the details below",
+    
+    "Specialization": "Specialization",
+    "Select Specialization": "Select Specialization",
+    "Crop Management": "Crop Management",
+    "Soil Science": "Soil Science",
+    "Pest Control": "Pest Control",
+    "Irrigation Systems": "Irrigation Systems",
+    "Organic Farming": "Organic Farming",
+    "Livestock Management": "Livestock Management",
+    "Horticulture": "Horticulture",
+    "Agricultural Economics": "Agricultural Economics",
+   
+    "Start Time": "Start Time",
+    "End Time": "End Time",
+    "Experience Years": "Experience Years",
+    "Select Experience": "Select Experience",
+    "1 year": "1 year",
+    "2 years": "2 years",
+    "3 years": "3 years",
+    "4 years": "4 years",
+    "5 years": "5 years",
+    "More than 5 years": "More than 5 years",
+    
+    "An error occurred while saving your information.": "An error occurred while saving your information.",
+    
+    "Please select your specialization": "Please select your specialization",
+    "Please enter your consultation hours": "Please enter your consultation hours",
+    "Please select your years of experience": "Please select your years of experience",
+    
+    "error": "Error",
+    "Success": "Success",
+    "Information saved successfully!": "Information saved successfully!",
+    "All fields are required": "All fields are required",
+
+
+  "welcomeFarmer": "Welcome to AgroBoost",
+  "weatherCondition": "It's a {{condition}} day!",
+  "loading": "Loading...",
+  
+  "reload": "Reload",
+  "noData": "No Data",
+  
+  "pullToRefresh": "Pull to refresh",
+  "refreshing": "Refreshing...",
+  "weatherFetchError": "Weather Fetch Error",
+  "unableToFetchWeather": "Unable to fetch weather data. Please try again later."
+  
+
 }
+

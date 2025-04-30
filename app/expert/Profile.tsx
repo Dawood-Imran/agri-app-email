@@ -1,56 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../context/UserProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfilePicture from '../components/ProfilePicture';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db, my_auth } from '../../firebaseConfig';
+import { my_auth } from '../../firebaseConfig';
+import { useExpert } from './hooks/fetch_expert';
 
 const Profile = () => {
   const { t, i18n } = useTranslation();
   const { userName, email, city } = useUser();
-  const [profileData, setProfileData] = useState({
-    specialization: '',
-    experience: '',
-    consultationHours: {} as { start?: string; end?: string } | string,
-    consultations: 0,
-    coins: 0,
-    profilePicture: '',
-    preferredLanguage: 'en',
-    phoneNumber: '',
-    rating: 0,
-    totalRatings: 0
-  });
+  const { profileData, updateProfilePicture } = useExpert();
 
-  useEffect(() => {
-    const user = my_auth.currentUser;
-    if (!user) return;
-
-    const unsubscribe = onSnapshot(doc(db, 'expert', user.uid), (doc) => {
-      if (doc.exists()) {
-        const data = doc.data();
-        setProfileData({
-          specialization: data.specialization || '',
-          experience: data.experience || '',
-          consultationHours: data.consultationHours || '',
-          consultations: data.consultations || 0,
-          coins: data.coins || 0,
-          profilePicture: data.profilePicture || '',
-          preferredLanguage: data.preferredLanguage || 'en',
-          phoneNumber: data.phoneNumber || '',
-          rating: data.rating || 0,
-          totalRatings: data.totalRatings || 0
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const handleImageUpdated = (url: string) => {
-    setProfileData(prev => ({ ...prev, profilePicture: url }));
+  const handleImageUpdated = (url) => {
+    updateProfilePicture(url);
   };
+
+  if (profileData.loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>{t('Loading profile...')}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -151,8 +124,8 @@ const Profile = () => {
               <Text style={styles.infoValue}>
                 {profileData.preferredLanguage === 'ur' ? t('Urdu') : t('English')}
               </Text>
-        </View>
-        </View>
+            </View>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -163,6 +136,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#4CAF50',
   },
   profileSection: {
     padding: 20,
@@ -210,13 +194,12 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Changed to space-between for more space between items
+    justifyContent: 'space-between',
     paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
     marginBottom: 20,
   },
-  
   statItem: {
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
@@ -225,7 +208,7 @@ const styles = StyleSheet.create({
     minWidth: 100,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    margin:2
+    margin: 2
   },
   statValue: {
     fontSize: 24,
@@ -270,4 +253,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile; 
+export default Profile;

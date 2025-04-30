@@ -161,10 +161,13 @@ const FieldManagementScreen = () => {
   }
 
   const generateRecommendations = async () => {
+
     if (!validateStep2()) return
 
     setLoading(true)
     try {
+      console.log("Generating recommendations...")
+      console.log("Form Data for Field Management:", formData)
       // In a real app, you would make an API call here
       // For now, we'll simulate a delay and generate mock recommendations
       await new Promise((resolve) => setTimeout(resolve, 2000))
