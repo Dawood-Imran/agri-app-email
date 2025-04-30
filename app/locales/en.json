@@ -659,7 +659,25 @@
   "pullToRefresh": "Pull to refresh",
   "refreshing": "Refreshing...",
   "weatherFetchError": "Weather Fetch Error",
-  "unableToFetchWeather": "Unable to fetch weather data. Please try again later."
+  "unableToFetchWeather": "Unable to fetch weather data. Please try again later.",
+  
+  "agriculturalExpert": "Agricultural Expert",
+  "pendingConsultations": "Pending Consultations",
+  "completedToday": "Completed Today",
+  "rating": "Rating",
+  "recentConsultations": "Recent Consultations",
+  "respond": "Respond",
+  "responded": "Responded",
+  "noConsultationsYet": "No consultations yet",
+  "justNow": "Just now",
+  "hoursAgo": "hours ago",
+  "consultationDetails": "Consultation Details",
+  "farmerQuery": "Farmer Query",
+  "yourResponse": "Your Response",
+  "send": "Send",
+  "cancel": "Cancel",
+  "responseSubmitted": "Response submitted successfully",
+  "errorSubmittingResponse": "Error submitting response. Please try again."
   
 
 }

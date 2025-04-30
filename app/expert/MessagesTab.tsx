@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, Text, Image } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, Text, Image, RefreshControl } from 'react-native';
 import { useUser } from '../context/UserProvider';
 import { useTranslation } from 'react-i18next';
 import { Card } from 'react-native-elements';
@@ -7,6 +7,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { collection, query, where, orderBy, onSnapshot, doc, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { getAuth } from 'firebase/auth';
+import { useExpert } from './hooks/fetch_expert';
+
 
 interface Consultation {
   id: string;
@@ -27,21 +29,28 @@ const MessagesTab = () => {
   const { t, i18n } = useTranslation();
   const { userName, userType, email, city, experienceYears, isLoading, reloadUser } = useUser();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const { profileData, updateProfilePicture } = useExpert();
+  
   const [stats, setStats] = useState<ExpertStats>({
     pendingConsultations: 0,
     completedToday: 0,
     rating: 0
   });
   const [recentConsultations, setRecentConsultations] = useState<Consultation[]>([]);
+  const [coins, setcoins] = useState(120);
+  
+  const isRTL = i18n.language === 'ur';
 
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     const auth = getAuth();
     const user = auth.currentUser;
 
     if (user) {
       // Fetch expert stats
       const expertRef = doc(db, 'expert', user.uid);
-      getDoc(expertRef).then((docSnap) => {
+      try {
+        const docSnap = await getDoc(expertRef);
         if (docSnap.exists()) {
           const expertData = docSnap.data();
           setStats({
@@ -49,9 +58,24 @@ const MessagesTab = () => {
             completedToday: expertData.stats?.completedToday || 0,
             rating: expertData.stats?.rating || 0
           });
+          if (expertData.coins) {
+            setcoins(expertData.coins);
+          }
         }
-      });
+      } catch (error) {
+        console.error('Error fetching expert data:', error);
+      }
+    }
+  }, []);
 
+  useEffect(() => {
+    console.log('Fetching data...');
+    console.log(profileData)
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      fetchData();
 
       const consultationsRef = collection(db, 'consultations');
       const q = query(
@@ -74,11 +98,23 @@ const MessagesTab = () => {
 
       return () => unsubscribe();
     }
-  }, []);
+  }, [fetchData]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([reloadUser(), fetchData()]);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [reloadUser, fetchData]);
 
   const handleReload = () => {
     setLoading(true);
     reloadUser();
+    fetchData().finally(() => setLoading(false));
   };
 
   if (isLoading || loading) {
@@ -86,7 +122,7 @@ const MessagesTab = () => {
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#FFC107" />
         <TouchableOpacity onPress={handleReload} style={styles.reloadButton}>
-          <Text style={styles.reloadButtonText}>{t('Reload')}</Text>
+          <Text style={styles.reloadButtonText}>{t('reload')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -100,7 +136,7 @@ const MessagesTab = () => {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     
     if (hours < 24) {
-      return hours === 0 ? t('Just now') : `${hours} ${t('hours ago')}`;
+      return hours === 0 ? t('justNow') : `${hours} ${t('hoursAgo')}`;
     }
     return date.toLocaleDateString();
   };
@@ -110,14 +146,33 @@ const MessagesTab = () => {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={["#4CAF50"]}
+          tintColor="#4CAF50"
+          title={t('pullToRefresh')}
+          titleColor="#4CAF50"
+        />
+      }
     >
       <View style={styles.header}>
-        <View style={styles.greetingContainer}>
-          <Text style={[styles.greeting, i18n.language === 'ur' && styles.urduText]}>
-            {t('Welcome')}, Dr. {userName}
+        <View style={[
+          styles.greetingContainer,
+          isRTL && styles.greetingContainerRTL
+        ]}>
+          <Text style={[
+            styles.greeting,
+            isRTL && styles.urduText
+          ]}>
+            {t('welcome')}
           </Text>
-          <Text style={[styles.subGreeting, i18n.language === 'ur' && styles.urduText]}>
-            {t('Agricultural Expert')}
+          <Text style={[
+            styles.subGreeting,
+            isRTL && styles.urduText
+          ]}>
+            {t(profileData.specialization || 'Expert')}
           </Text>
         </View>
       </View>
@@ -126,34 +181,53 @@ const MessagesTab = () => {
         <Card containerStyle={styles.statCard}>
           <MaterialCommunityIcons name="clock-outline" size={24} color="#4CAF50" />
           <Text style={styles.statNumber}>{stats.pendingConsultations}</Text>
-          <Text style={styles.statLabel}>{t('Pending Consultations')}</Text>
+          <Text style={styles.statLabel}>{t('pendingConsultations')}</Text>
         </Card>
 
         <Card containerStyle={styles.statCard}>
           <MaterialCommunityIcons name="check-circle-outline" size={24} color="#4CAF50" />
           <Text style={styles.statNumber}>{stats.completedToday}</Text>
-          <Text style={styles.statLabel}>{t('Completed Today')}</Text>
+          <Text style={styles.statLabel}>{t('completedToday')}</Text>
         </Card>
 
         <Card containerStyle={styles.statCard}>
           <MaterialCommunityIcons name="star-outline" size={24} color="#4CAF50" />
           <Text style={styles.statNumber}>{stats.rating.toFixed(1)}</Text>
-          <Text style={styles.statLabel}>{t('Rating')}</Text>
+          <Text style={styles.statLabel}>{t('rating')}</Text>
         </Card>
       </View>
 
       <View style={styles.consultationsContainer}>
-        <Text style={[styles.sectionTitle, i18n.language === 'ur' && styles.urduText]}>
-          {t('Recent Consultations')}
+        <Text style={[
+          styles.sectionTitle,
+          isRTL && styles.urduText
+        ]}>
+          {t('recentConsultations')}
         </Text>
         {recentConsultations.map((consultation) => (
           <View key={consultation.id} style={styles.consultationCard}>
-            <View style={styles.consultationHeader}>
-              <MaterialCommunityIcons name="account-outline" size={24} color="#4CAF50" />
-              <Text style={styles.farmerName}>{consultation.farmerName}</Text>
+            <View style={[
+              styles.consultationHeader,
+              isRTL && styles.consultationHeaderRTL
+            ]}>
+              <MaterialCommunityIcons 
+                name="account-outline" 
+                size={24} 
+                color="#4CAF50" 
+                style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }}
+              />
+              <Text style={[
+                styles.farmerName,
+                isRTL && styles.urduText
+              ]}>
+                {consultation.farmerName}
+              </Text>
               <Text style={styles.consultationTime}>{formatTime(consultation.timestamp)}</Text>
             </View>
-            <Text style={styles.consultationQuery}>
+            <Text style={[
+              styles.consultationQuery,
+              isRTL && styles.urduText
+            ]}>
               {consultation.message}
             </Text>
             <TouchableOpacity 
@@ -165,7 +239,7 @@ const MessagesTab = () => {
               disabled={consultation.status === 'responded'}
             >
               <Text style={styles.respondButtonText}>
-                {consultation.status === 'responded' ? t('Responded') : t('Respond')}
+                {consultation.status === 'responded' ? t('responded') : t('respond')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -173,7 +247,12 @@ const MessagesTab = () => {
         {recentConsultations.length === 0 && (
           <View style={styles.noConsultationsContainer}>
             <MaterialCommunityIcons name="message-text-outline" size={48} color="#4CAF50" />
-            <Text style={styles.noConsultationsText}>{t('No consultations yet')}</Text>
+            <Text style={[
+              styles.noConsultationsText,
+              isRTL && styles.urduText
+            ]}>
+              {t('noConsultationsYet')}
+            </Text>
           </View>
         )}
       </View>
@@ -216,6 +295,9 @@ const styles = StyleSheet.create({
   },
   greetingContainer: {
     flex: 1,
+  },
+  greetingContainerRTL: {
+    alignItems: 'flex-end',
   },
   greeting: {
     fontSize: 28,
@@ -278,6 +360,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  consultationHeaderRTL: {
+    flexDirection: 'row-reverse',
   },
   farmerName: {
     fontSize: 16,

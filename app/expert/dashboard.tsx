@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Icon } from 'react-native-elements';
-import { TouchableOpacity, View, StyleSheet, Platform } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Platform , Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import MessagesTab from './MessagesTab';
@@ -25,6 +25,11 @@ const ExpertDashboard = () => {
   const [coins, setCoins] = useState(200);
   const navigation = useNavigation();
   const { profileData, updateProfilePicture } = useExpert();
+
+  const toggleLanguage = () => {
+    const newLanguage = i18n.language === 'en' ? 'ur' : 'en';
+    i18n.changeLanguage(newLanguage);
+  };
 
   useEffect(() => { 
     const fetchCoins = async () => {
@@ -83,12 +88,24 @@ const ExpertDashboard = () => {
     },
     headerTitleAlign: i18n.language === 'ur' ? 'left' : 'left',
     headerRight: () => (
-      <TouchableOpacity
+
+      <View>
+        <TouchableOpacity
         style={styles.coinButton}
         onPress={() => navigation.navigate('expert/CoinScreen' as never)}
       >
         <CoinDisplay coins={coins} />
       </TouchableOpacity>
+      
+          <TouchableOpacity 
+                style={styles.languageToggle} 
+                onPress={toggleLanguage}>
+                <Text style={styles.languageToggleText}>
+                  {i18n.language === 'en' ? 'اردو' : 'English'}
+                </Text>
+              </TouchableOpacity>
+      </View>
+      
     ),
   };
 
@@ -143,6 +160,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  languageToggle: {
+    position: 'absolute',
+    top: 3,
+    right: 85,
+    backgroundColor: 'rgba(255, 193, 7, 0.8)',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    zIndex: 10,
+    width:70,
+    textAlign: 'center',
+
+  },
+  languageToggleText: {
+    color: '#1B5E20',
+    fontWeight: 'bold',
+    fontSize: 14,
+  }
 });
 
 export default ExpertDashboard;

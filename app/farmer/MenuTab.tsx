@@ -175,7 +175,7 @@ const MenuTab = () => {
             <Text style={styles.greeting}>{t('welcomeFarmer')}</Text>
             <View style={styles.locationContainer}>
               <Image source={require('../../assets/images/farmer-icons/weather-icons/map.png')} style={styles.locationIcon} />
-              <Text style={styles.locationText}>{farmerData?.city}</Text>
+              <Text style={styles.locationText}>{t(farmerData?.city)}</Text>
             </View>
             <Text style={styles.subGreeting}>
               {weatherData ? t('weatherCondition', { condition: weatherData.current.condition.text }) : t('loading')}

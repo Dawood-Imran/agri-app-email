@@ -678,5 +678,23 @@
   "pullToRefresh": "ریفریش کرنے کے لیے نیچے کھینچیں",
   "refreshing": "ریفریش ہو رہا ہے...",
   "weatherFetchError": "موسم کی معلومات حاصل کرنے میں خرابی",
-  "unableToFetchWeather": "موسم کی معلومات حاصل کرنے میں ناکامی۔ براہ کرم بعد میں دوبارہ کوشش کریں۔"
+  "unableToFetchWeather": "موسم کی معلومات حاصل کرنے میں ناکامی۔ براہ کرم بعد میں دوبارہ کوشش کریں۔",
+  
+  "agriculturalExpert": "زراعت کے ماہر",
+  "pendingConsultations": "زیر التواء مشاورتیں",
+  "completedToday": "آج مکمل کی گئیں",
+  "rating": "درجہ بندی",
+  "recentConsultations": "حالیہ مشاورتیں",
+  "respond": "جواب دیں",
+  "responded": "جواب دیا گیا",
+  "noConsultationsYet": "ابھی تک کوئی مشاورت نہیں",
+  "justNow": "ابھی ابھی",
+  "hoursAgo": "گھنٹے پہلے",
+  "consultationDetails": "مشاورت کی تفصیلات",
+  "farmerQuery": "کسان کا سوال",
+  "yourResponse": "آپ کا جواب",
+  "send": "بھیجیں",
+  "cancel": "منسوخ کریں",
+  "responseSubmitted": "جواب کامیابی سے جمع کرایا گیا",
+  "errorSubmittingResponse": "جواب جمع کرانے میں خرابی۔ براہ کرم دوبارہ کوشش کریں۔"
 }
