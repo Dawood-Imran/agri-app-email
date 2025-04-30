@@ -1,32 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, View , Text} from 'react-native';
 import { Button, ListItem, Icon } from 'react-native-elements';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { useBuyer } from './hooks/fetch_buyer';
+
 
 const CoinScreen = () => {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
   const [balance, setBalance] = React.useState(1000);
+  const { profileData, updateProfilePicture } = useBuyer();
+  
   const [transactions, setTransactions] = React.useState([
     { id: 1, type: 'Spent', amount: 200, item: 'Wheat Auction', date: '2023-05-01' },
     { id: 2, type: 'Bought', amount: 500, item: 'Coin Purchase', date: '2023-04-28' },
   ]);
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Icon 
-          name="arrow-back" 
-          type="material" 
-          color="#FFC107" 
-          size={30} 
-          onPress={() => navigation.goBack()} 
-          containerStyle={{ marginLeft: 10 }}
-        />
-      ),
-    });
-  }, [navigation]);
+  useEffect(() => {
+        const fetchCoins = async () => {
+          if (profileData) {
+            setBalance(profileData.coins);
+          }
+        };
+        fetchCoins();
+      }, [profileData]);
+
+
 
   return (
     <  View style={styles.container}>

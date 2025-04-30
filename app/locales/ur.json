@@ -669,9 +669,11 @@
   "All fields are required": "تمام خانے ضروری ہیں",
 
   "welcomeFarmer": "ایگری بوسٹ میں خوش آمدید",
+  "welcomeExpert": "ایگری بوسٹ میں خوش آمدید ",
+  "welcomeBuyer": "ایگری بوسٹ میں خوش آمدید خریدار",
   "weatherCondition": "آج کا دن {{condition}} ہے",
   "loading": "لوڈ ہو رہا ہے...",
-  
+  "phoneNumber": "فون نمبر",
   "reload": "دوبارہ لوڈ کریں",
   "noData": "کوئی ڈیٹا نہیں",
   

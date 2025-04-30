@@ -166,7 +166,7 @@ const MessagesTab = () => {
             styles.greeting,
             isRTL && styles.urduText
           ]}>
-            {t('welcome')}
+            {t('welcomeExpert')}
           </Text>
           <Text style={[
             styles.subGreeting,
@@ -300,9 +300,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   greeting: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#FFC107',
     marginBottom: 8,
   },
   subGreeting: {

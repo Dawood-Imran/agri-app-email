@@ -652,6 +652,8 @@
   "welcomeFarmer": "Welcome to AgroBoost",
   "weatherCondition": "It's a {{condition}} day!",
   "loading": "Loading...",
+  "welcomeExpert": "Welcome to AgroBoost Expert",
+  "welcomeBuyer": "Welcome to AgroBoost Buyer",
   
   "reload": "Reload",
   "noData": "No Data",

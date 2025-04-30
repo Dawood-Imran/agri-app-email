@@ -64,7 +64,7 @@ const Profile = () => {
           <View style={styles.infoItem}>
             <MaterialCommunityIcons name="phone" size={24} color="#4CAF50" />
             <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>{t('Phone')}</Text>
+              <Text style={styles.infoLabel}>{t('phoneNumber')}</Text>
               <Text style={styles.infoValue}>{profileData.phoneNumber}</Text>
             </View>
           </View>
@@ -117,15 +117,7 @@ const Profile = () => {
             </View>
           </View>
 
-          <View style={styles.infoItem}>
-            <MaterialCommunityIcons name="translate" size={24} color="#4CAF50" />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>{t('Preferred Language')}</Text>
-              <Text style={styles.infoValue}>
-                {profileData.preferredLanguage === 'ur' ? t('Urdu') : t('English')}
-              </Text>
-            </View>
-          </View>
+          
         </View>
       </View>
     </ScrollView>
