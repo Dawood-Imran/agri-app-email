@@ -8,6 +8,14 @@ import { db, my_auth } from '../../../firebaseConfig';
  */
 export const useExpert = () => {
   const [profileData, setProfileData] = useState({
+    name: '',
+    email: '',
+    city: '',
+    address: '',
+    numberOfRatings: 0,
+    pendingConsultations: 0,
+    totalConsultations: 0,
+    completedConsultations: 0,
     specialization: '',
     experience: '',
     consultationHours: {} as { start?: string; end?: string } | string,
@@ -36,6 +44,14 @@ export const useExpert = () => {
       if (doc.exists()) {
         const data = doc.data();
         setProfileData({
+          name: data.name || '',
+          email: data.email || '',
+          city: data.city || '',
+          address: data.address || '',
+          numberOfRatings: data.numberOfRatings || 0,
+          pendingConsultations: data.pendingConsultations || 0,
+          totalConsultations: data.totalConsultations || 0,
+          completedConsultations: data.completedConsultations || 0,
           specialization: data.specialization || '',
           experience: data.experience || '',
           consultationHours: data.consultationHours || '',

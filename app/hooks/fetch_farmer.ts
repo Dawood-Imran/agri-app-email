@@ -34,26 +34,30 @@ export const useFarmer = () => {
       const farmerSnap = await getDoc(farmerRef);
 
       if (farmerSnap.exists()) {
-        setFarmerData(farmerSnap.data() as FarmerData);
+        const data = farmerSnap.data() as FarmerData;
+        // Only update state if data has actually changed
+        if (JSON.stringify(data) !== JSON.stringify(farmerData)) {
+          setFarmerData(data);
+        }
       } else {
         setFarmerData(null);
-        console.warn('No farmer data found for user:', currentUser.uid);
       }
     } catch (err: any) {
-      console.error('Error fetching farmer data:', err);
       setError(err.message || 'Failed to fetch farmer data');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [farmerData]); // Add farmerData as dependency to prevent unnecessary state updates
 
-  const reloadFarmerData = () => {
+  const reloadFarmerData = useCallback(() => {
     setLoading(true);
     fetchFarmerData();
-  };
+  }, [fetchFarmerData]);
 
   useEffect(() => {
-    fetchFarmerData();
+    if (!farmerData) {
+      fetchFarmerData();
+    }
   }, [fetchFarmerData]);
 
   return { farmerData, loading, error, reloadFarmerData };

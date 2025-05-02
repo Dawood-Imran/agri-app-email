@@ -37,7 +37,7 @@ const AccountTab = () => {
         t('You have been logged out successfully'),
         [
           {
-            text: 'OK',
+            text: t('OK'),
             onPress: () => {
               router.replace('/UserSelectionScreen');
             }

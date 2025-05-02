@@ -4,19 +4,44 @@ import { useTranslation } from 'react-i18next';
 import { useUser } from '../context/UserProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfilePicture from '../components/ProfilePicture';
-import { doc, onSnapshot } from 'firebase/firestore';
+
 import { db, my_auth } from '../../firebaseConfig';
 import { useFarmer } from '../hooks/fetch_farmer';
 import { use } from 'i18next';
+import { collection, query, where, orderBy, onSnapshot, doc, getDoc, type Timestamp, limit } from "firebase/firestore"
+import { getAuth } from "firebase/auth"
 
 
 const Profile = () => {
   const { t, i18n } = useTranslation();
   const { userName, email, city } = useUser();
   const { farmerData , loading: farmerLoading} = useFarmer();
+  const [consultations, setConsultations] = useState(0);
   
+  const getFarmerConsultationCount = async () => {
+      const auth = getAuth()
+      const user = auth.currentUser
+  
+      if (user) {
+        const consultationsRef = collection(db, "consultations")
+        const q = query(consultationsRef, where("farmerId", "==", user.uid), where("status", "==", "active"))
+  
+        const unsubscribe = onSnapshot(
+          q,
+          (snapshot) => {
+            setConsultations(snapshot.size)
+          },
+          (error) => {
+            console.error("Error fetching consultations:", error)
+          },
+        )
+  
+        return () => unsubscribe()
+      }
+    }
 
   useEffect(() => {
+    getFarmerConsultationCount();
     console.log('Farmer Data:', farmerData);
   }, [farmerData]);
 
@@ -68,7 +93,7 @@ const Profile = () => {
             <Text style={styles.statLabel}>{t('Coins')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{farmerData?.consultations || 0}</Text>
+            <Text style={styles.statValue}>{consultations || 0}</Text>
             <Text style={styles.statLabel}>{t('Consultations')}</Text>
           </View>
           
@@ -96,6 +121,14 @@ const Profile = () => {
             <View style={styles.infoTextContainer}>
               <Text style={styles.infoLabel}>{t('City')}</Text>
               <Text style={styles.infoValue}>{farmerData?.city || ''}</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoItem}>
+            <MaterialCommunityIcons name="cash" size={24} color="#4CAF50" size={24} color="#4CAF50" />
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoLabel}>{t('Budget')}</Text>
+              <Text style={styles.infoValue}>{farmerData?.budget || ''}</Text>
             </View>
           </View>
 
@@ -200,6 +233,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: "#FFFFFF",
   },
   infoTextContainer: {
     marginLeft: 15,

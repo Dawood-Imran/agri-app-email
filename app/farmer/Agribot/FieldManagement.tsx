@@ -161,6 +161,7 @@ const FieldManagementScreen = () => {
   }
 
   const generateRecommendations = async () => {
+    
 
     if (!validateStep2()) return
 

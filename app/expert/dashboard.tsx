@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import MessagesTab from './MessagesTab';
 import AccountTab from './AccountTab';
+import MenuTab from './MenuTab';
 import CoinDisplay from '../../components/CoinDisplay';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
@@ -97,13 +98,17 @@ const ExpertDashboard = () => {
         <CoinDisplay coins={coins} />
       </TouchableOpacity>
       
-          <TouchableOpacity 
-                style={styles.languageToggle} 
-                onPress={toggleLanguage}>
-                <Text style={styles.languageToggleText}>
-                  {i18n.language === 'en' ? 'اردو' : 'English'}
-                </Text>
-              </TouchableOpacity>
+            <TouchableOpacity 
+                        style={[
+                          styles.languageToggle, 
+                          { width: i18n.language === 'en' ? 55 : 70 } // Adjust width based on language
+                        ]} 
+                        onPress={toggleLanguage}>
+                        <Text style={styles.languageToggleText}>
+                          {i18n.language === 'en' ? 'اردو' : 'English'}
+                        </Text>
+                        </TouchableOpacity>
+            
       </View>
       
     ),
@@ -121,12 +126,23 @@ const ExpertDashboard = () => {
           } else if (route.name === t('account')) {
             iconName = focused ? 'account' : 'account-outline';
           }
+          else if (route.name === t('menu')) {
+            iconName = focused ? 'view-dashboard' : 'view-dashboard-outline';
+          }
 
           return <TabIcon name={iconName} color={color} />;
         },
       })}
     >
       <Tab.Screen 
+        name={t('menu')} 
+        component={MenuTab}
+        options={{
+          title: t('menu'),
+        }}
+      />
+
+    <Tab.Screen 
         name={t('messages')} 
         component={MessagesTab}
         options={{
@@ -153,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   coinButton: {
-    marginRight: 15,
+    marginRight: 10,
     padding: 8,
     borderRadius: 20,
     flexDirection: 'row',

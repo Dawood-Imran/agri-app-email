@@ -27,23 +27,18 @@ const MenuTab = () => {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changed to false initially
   const [refreshing, setRefreshing] = useState(false);
   
   const { userName, userType, email, city, isLoading, reloadUser } = useUser(); 
   const { farmerData, loading: farmerLoading, reloadFarmerData } = useFarmer();
 
-  useEffect(() => {
-    if (!farmerLoading && farmerData?.city) {
-      fetchWeather();
-      console.log('Farmer Data Menu Tab:', farmerData);
-    }
-  }, [farmerLoading, farmerData]);
-
-  const fetchWeather = async () => {
+  const fetchWeather = useCallback(async () => {
+    if (!farmerData?.city) return;
+    
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${farmerData?.city}&aqi=no`);
+      const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${farmerData.city}&aqi=no`);
       if (!response.ok) {
         throw new Error(`API returned status: ${response.status}`);
       }
@@ -55,7 +50,14 @@ const MenuTab = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [farmerData?.city]);
+
+  // Only fetch weather when farmer data is first loaded or city changes
+  useEffect(() => {
+    if (!farmerLoading && farmerData?.city && !weatherData) {
+      fetchWeather();
+    }
+  }, [farmerLoading, farmerData?.city, fetchWeather, weatherData]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -66,7 +68,7 @@ const MenuTab = () => {
     } finally {
       setRefreshing(false);
     }
-  }, [reloadUser, reloadFarmerData]);
+  }, [reloadUser, reloadFarmerData, fetchWeather]);
 
   const handleReload = () => {
     reloadUser();
@@ -139,9 +141,7 @@ const MenuTab = () => {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator size="large" color="#FFC107" />
-        <TouchableOpacity onPress={handleReload} style={styles.reloadButton}>
-          <Text style={styles.reloadButtonText}>{t('reload')}</Text>
-        </TouchableOpacity>
+        
       </View>
     );
   }
@@ -377,6 +377,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    color : '#FFFFFF'
   },
   reloadButton: {
     marginTop: 20,

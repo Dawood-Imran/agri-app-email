@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 10,
+    
   },
   coinText: {
     color: '#FFC107',

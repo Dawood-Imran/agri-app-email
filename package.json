@@ -31,6 +31,7 @@
     "@rneui/themed": "^4.0.0-rc.8",
     "@supabase/supabase-js": "^2.45.4",
     "expo": "^52.0.11",
+    "expo-av": "^15.1.4",
     "expo-camera": "~16.0.7",
     "expo-constants": "~17.0.3",
     "expo-file-system": "~18.0.12",

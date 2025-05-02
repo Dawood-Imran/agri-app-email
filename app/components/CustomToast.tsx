@@ -63,7 +63,7 @@ export const CustomToast: React.FC<CustomToastProps> = ({
     // Otherwise use type-based colors
     switch (type) {
       case 'success':
-        return '#4CAF50';
+        return '#FFC107';
       case 'error':
         return '#FF5252';
       case 'info':

@@ -96,17 +96,17 @@ const NewExpert = () => {
         await setDoc(userTypeRef, {
           city,
           address,
-          experienceYears,
+          experience: experienceYears ,
           phoneNumber: `+92${phoneNumber}`,
           specialization,
           consultationHours,
-          stats: {
-            pendingConsultations: 0,
-            completedToday: 0,
-            totalConsultations: 0,
-            rating: 0,
-            numberOfRatings: 0
-          },
+          coins: 0,
+          profilePicture: '',
+          pendingConsultations: 0,
+          completedToday: 0,
+          consultations: 0,
+          rating: 0,
+          numberOfRatings: 0,
           isNewUser: false
         }, { merge: true });
   

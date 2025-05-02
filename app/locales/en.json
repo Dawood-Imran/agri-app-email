@@ -662,6 +662,32 @@
   "refreshing": "Refreshing...",
   "weatherFetchError": "Weather Fetch Error",
   "unableToFetchWeather": "Unable to fetch weather data. Please try again later.",
+
+  "Are you sure you want to logout?": "Are you sure you want to logout?",
+  "Confirm Logout": "Confirm Logout",
+  "Logout Successful": "Logout Successful",
+  "You have been logged out successfully": "You have been logged out successfully",
+  "OK": "OK",
+  "No": "No",
+
+  "years": "Years",
+
+  "activeConsultations": "Active Consultations",
+  "completedConsultations": "Completed Consultations",
+  "active":"Active",
+  "completed":"Completed",
+
+  "General Consultation": "General Consultation",
+  "Active Consultations": "Active Consultations",
+  
+  "Invalid email address": "Invalid email address",
+  "User not found": "User not found",
+  "Incorrect password": "Incorrect password",
+  "noInternetConnection": "No Internet Connection",
+  "Invalid credentials":"Invalid credentials",
+  "An unexpected error occurred": "An unexpected error occurred",
+  "Invalid user type": "Invalid user type",
+  "Sign-in successful": "Sign-in successful",
   
   "agriculturalExpert": "Agricultural Expert",
   "pendingConsultations": "Pending Consultations",

@@ -11,10 +11,11 @@ const Profile = () => {
   const { t, i18n } = useTranslation();
   const { userName, email, city } = useUser();
   const { profileData, updateProfilePicture } = useExpert();
+  console.log('Profile Data:', profileData);
 
   const handleImageUpdated = (url) => {
     updateProfilePicture(url);
-  };
+  }; 
 
   if (profileData.loading) {
     return (
@@ -36,7 +37,7 @@ const Profile = () => {
             onImageUpdated={handleImageUpdated}
           />
           <Text style={[styles.name, i18n.language === 'ur' && styles.urduText]}>
-            {userName}
+            {profileData.name || userName}
           </Text>
           <Text style={[styles.role, i18n.language === 'ur' && styles.urduText]}>
             {profileData.specialization || t('Expert')}
@@ -49,9 +50,9 @@ const Profile = () => {
           <View style={styles.statItem}>
             <Text style={styles.statValue}>{profileData.rating.toFixed(1)}</Text>
             <Text style={styles.statLabel}>{t('Rating')}</Text>
-          </View>
+          </View> 
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{profileData.consultations}</Text>
+            <Text style={styles.statValue}>{profileData?.consultations || 0}</Text>
             <Text style={styles.statLabel}>{t('Consultations')}</Text>
           </View>
           <View style={styles.statItem}>
@@ -89,7 +90,7 @@ const Profile = () => {
             <MaterialCommunityIcons name="briefcase-outline" size={24} color="#4CAF50" />
             <View style={styles.infoTextContainer}>
               <Text style={styles.infoLabel}>{t('Experience')}</Text>
-              <Text style={styles.infoValue}>{profileData.experience || t('Not specified')}</Text>
+              <Text style={styles.infoValue}>{profileData?.experience || t('Not specified')} {t('years')}</Text>
             </View>
           </View>
 
@@ -113,7 +114,7 @@ const Profile = () => {
             <MaterialCommunityIcons name="star-outline" size={24} color="#4CAF50" />
             <View style={styles.infoTextContainer}>
               <Text style={styles.infoLabel}>{t('Total Ratings')}</Text>
-              <Text style={styles.infoValue}>{profileData.totalRatings}</Text>
+              <Text style={styles.infoValue}>{profileData.rating}</Text>
             </View>
           </View>
 

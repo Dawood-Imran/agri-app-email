@@ -78,7 +78,7 @@ export default function RootLayout() {
             <Stack.Screen name="farmer/Help" options={{ ...commonHeaderOptions, title: t('Help') }} />
             <Stack.Screen name="farmer/CoinScreen" options={{ ...commonHeaderOptions, title: t('Coins') }} />
             <Stack.Screen name="farmer/YieldPrediction" options={{ ...commonHeaderOptions, title: t('Yield Prediction') }} />
-
+            <Stack.Screen name="farmer/ChatScreen" options={{ ...commonHeaderOptions, title: t('Chat') }} />
             <Stack.Screen name="farmer/ExpertConsultation" options={{ ...commonHeaderOptions, title: t('expertConsultation') }} />
             <Stack.Screen name="farmer/BuyCoins" options={{ ...commonHeaderOptions, title: t('buyCoins') }} />
             <Stack.Screen name="farmer/AuctionSystem" options={{ ...commonHeaderOptions, title: t('auctionSystem') }} />
@@ -125,7 +125,7 @@ export default function RootLayout() {
             <Stack.Screen name="expert/Help" options={{ ...commonHeaderOptions, title: t('Help') }} />
             <Stack.Screen name="expert/CoinScreen" options={{ ...commonHeaderOptions, title: t('Coins') }} />
             <Stack.Screen name="expert/MessagesTab" options={{ headerShown: false }} />
-
+            <Stack.Screen name="expert/ChatScreen" options={{ ...commonHeaderOptions, title: t('Chat') }} />
             {/* Buyer Screens */}
             <Stack.Screen name="buyer/dashboard" options={{ headerShown: false }} />
             <Stack.Screen name="buyer/NewBuyer" options={{ headerShown: false }} />

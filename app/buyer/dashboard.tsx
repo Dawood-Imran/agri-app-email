@@ -116,14 +116,17 @@ if (profileData.loading) {
             <CoinDisplay coins={coins} />
           </TouchableOpacity>
 
-          <TouchableOpacity 
-                          style={styles.languageToggle} 
-                          onPress={toggleLanguage}>
-                          <Text style={styles.languageToggleText}>
-                            {i18n.language === 'en' ? 'اردو' : 'English'}
-                          </Text>
-              </TouchableOpacity>
-          </View>
+            <TouchableOpacity 
+                        style={[
+                          styles.languageToggle, 
+                          { width: i18n.language === 'en' ? 55 : 70 } // Adjust width based on language
+                        ]} 
+                        onPress={toggleLanguage}>
+                        <Text style={styles.languageToggleText}>
+                          {i18n.language === 'en' ? 'اردو' : 'English'}
+                        </Text>
+           </TouchableOpacity>
+            </View>
           
           
         ),

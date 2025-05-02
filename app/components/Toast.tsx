@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Animated, StyleSheet, View , Text} from 'react-native';
+import { Animated, StyleSheet, View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface ToastProps {
@@ -21,13 +21,19 @@ export const Toast: React.FC<ToastProps> = ({
 
   useEffect(() => {
     if (visible) {
+      // Reset opacity to 0 before starting new animation
+      opacity.setValue(0);
+      
       Animated.sequence([
+        // Fade in
         Animated.timing(opacity, {
           toValue: 1,
           duration: 300,
           useNativeDriver: true,
         }),
-        Animated.delay(2000),
+        // Stay visible longer (3 seconds)
+        Animated.delay(4000),
+        // Fade out
         Animated.timing(opacity, {
           toValue: 0,
           duration: 300,
@@ -39,7 +45,7 @@ export const Toast: React.FC<ToastProps> = ({
         }
       });
     }
-  }, [visible]);
+  }, [visible, message]); // Added message as dependency to restart animation when message changes
 
   if (!visible) return null;
 
@@ -52,22 +58,43 @@ export const Toast: React.FC<ToastProps> = ({
       case 'info':
         return 'information';
       case 'custom':
-        return 'information'; // Default icon for custom type
+        return 'information';
       default:
         return 'alert-circle';
     }
   };
 
   const getBackgroundColor = () => {
-    // If a custom color is provided, use it; otherwise, use the default based on type
-    return color || (type === 'success' ? '#4CAF50' : type === 'error' ? '#FF5252' : '#2196F3');
+    if (color) return color;
+    
+    switch (type) {
+      case 'success':
+        return '#4CAF50';
+      case 'error':
+        return '#FF5252';
+      case 'info':
+        return '#2196F3';
+      default:
+        return '#FF5252';
+    }
   };
 
   return (
     <Animated.View 
       style={[
         styles.container, 
-        { opacity, backgroundColor: getBackgroundColor() }
+        { 
+          opacity,
+          backgroundColor: getBackgroundColor(),
+          transform: [
+            {
+              translateY: opacity.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        }
       ]}
     >
       <MaterialCommunityIcons 
@@ -75,7 +102,7 @@ export const Toast: React.FC<ToastProps> = ({
         size={24} 
         color="#FFFFFF" 
       />
-      <  Text style={styles.message}>{message}</  Text>
+      <Text style={styles.message}>{message}</Text>
     </Animated.View>
   );
 };
@@ -83,10 +110,9 @@ export const Toast: React.FC<ToastProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 70,
+    bottom: 90,
     left: 20,
     right: 20,
-    backgroundColor: '#FF5252',
     padding: 16,
     borderRadius: 12,
     flexDirection: 'row',
@@ -99,6 +125,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    zIndex: 1000,
   },
   message: {
     color: '#FFFFFF',

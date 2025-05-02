@@ -1,415 +1,462 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, StyleSheet, View, ActivityIndicator, TouchableOpacity, Text, Image, RefreshControl } from 'react-native';
-import { useUser } from '../context/UserProvider';
-import { useTranslation } from 'react-i18next';
-import { Card } from 'react-native-elements';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { collection, query, where, orderBy, onSnapshot, doc, getDoc, Timestamp } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import { getAuth } from 'firebase/auth';
-import { useExpert } from './hooks/fetch_expert';
+"use client"
 
-
-interface Consultation {
-  id: string;
-  farmerName: string;
-  message: string;
-  timestamp: Timestamp;
-  status: 'pending' | 'responded';
-  expertId: string;
-}
-
-interface ExpertStats {
-  pendingConsultations: number;
-  completedToday: number;
-  rating: number;
-}
+import { useState, useEffect } from "react"
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator, Alert } from "react-native"
+import { useTranslation } from "react-i18next"
+import { useRouter } from "expo-router"
+import { getAuth } from "firebase/auth"
+import { 
+  collection, 
+  query, 
+  where, 
+  onSnapshot, 
+  doc, 
+  getDoc, 
+  updateDoc, 
+  orderBy, 
+  addDoc,
+  serverTimestamp, 
+  increment
+} from "firebase/firestore"
+import { db } from "../../firebaseConfig"
+import { Ionicons } from "@expo/vector-icons"
 
 const MessagesTab = () => {
-  const { t, i18n } = useTranslation();
-  const { userName, userType, email, city, experienceYears, isLoading, reloadUser } = useUser();
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const { profileData, updateProfilePicture } = useExpert();
-  
-  const [stats, setStats] = useState<ExpertStats>({
-    pendingConsultations: 0,
-    completedToday: 0,
-    rating: 0
-  });
-  const [recentConsultations, setRecentConsultations] = useState<Consultation[]>([]);
-  const [coins, setcoins] = useState(120);
-  
-  const isRTL = i18n.language === 'ur';
+  const { t } = useTranslation()
+  const router = useRouter()
+  const [chatRequests, setChatRequests] = useState([])
+  const [activeConsultations, setActiveConsultations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [farmers, setFarmers] = useState({})
 
-  const fetchData = useCallback(async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    if (user) {
-      // Fetch expert stats
-      const expertRef = doc(db, 'expert', user.uid);
-      try {
-        const docSnap = await getDoc(expertRef);
-        if (docSnap.exists()) {
-          const expertData = docSnap.data();
-          setStats({
-            pendingConsultations: expertData.stats?.pendingConsultations || 0,
-            completedToday: expertData.stats?.completedToday || 0,
-            rating: expertData.stats?.rating || 0
-          });
-          if (expertData.coins) {
-            setcoins(expertData.coins);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching expert data:', error);
-      }
-    }
-  }, []);
+  const auth = getAuth()
+  const currentUser = auth.currentUser
 
   useEffect(() => {
-    console.log('Fetching data...');
-    console.log(profileData)
-    const auth = getAuth();
-    const user = auth.currentUser;
+    if (!currentUser) return
 
-    if (user) {
-      fetchData();
+    setLoading(true)
 
-      const consultationsRef = collection(db, 'consultations');
-      const q = query(
-        consultationsRef,
-        where('expertId', '==', user.uid),
-        orderBy('timestamp', 'desc')
-      );
+    // Fetch pending chat requests
+    const requestsRef = collection(db, "chatRequests")
+    const requestsQuery = query(requestsRef, where("expertId", "==", currentUser.uid), where("status", "==", "pending"))
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const consultations: Consultation[] = [];
-        snapshot.forEach((doc) => {
-          consultations.push({ id: doc.id, ...doc.data() } as Consultation);
-        });
-        setRecentConsultations(consultations);
-        setLoading(false);
-      }, (error) => {
-        console.error('Error fetching consultations:', error);
-        setLoading(false);
-      });
+    // Fetch active consultations from the consultations collection
+    const consultationsRef = collection(db, "consultations")
+    const consultationsQuery = query(
+      consultationsRef,
+      where("expertId", "==", currentUser.uid),
+      where("status", "==", "active"),
+      orderBy("lastUpdated", "desc")
+    )
 
-      return () => unsubscribe();
+    // Listen for pending requests
+    const unsubscribeRequests = onSnapshot(requestsQuery, async (snapshot) => {
+      const requests = []
+      const farmerIds = new Set()
+
+      snapshot.forEach((doc) => {
+        const request = { id: doc.id, ...doc.data() }
+        requests.push(request)
+        farmerIds.add(request.farmerId)
+      })
+
+      setChatRequests(requests)
+
+      // Fetch farmer info for all requests
+      await fetchFarmerInfo(farmerIds)
+    })
+
+    // Listen for active consultations
+    const unsubscribeConsultations = onSnapshot(consultationsQuery, async (snapshot) => {
+      const consultations = []
+      const farmerIds = new Set()
+
+      snapshot.forEach((doc) => {
+        const consultation = { id: doc.id, ...doc.data() }
+        consultations.push(consultation)
+        farmerIds.add(consultation.farmerId)
+      })
+
+      setActiveConsultations(consultations)
+
+      // Fetch farmer info for all consultations
+      await fetchFarmerInfo(farmerIds)
+      setLoading(false)
+    })
+
+    return () => {
+      unsubscribeRequests()
+      unsubscribeConsultations()
     }
-  }, [fetchData]);
+  }, [currentUser])
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
+  const fetchFarmerInfo = async (farmerIds) => {
     try {
-      await Promise.all([reloadUser(), fetchData()]);
+      const newFarmers = { ...farmers }
+
+      for (const farmerId of farmerIds) {
+        if (!newFarmers[farmerId]) {
+          const farmerDoc = await getDoc(doc(db, "farmer", farmerId))
+
+          if (farmerDoc.exists()) {
+            newFarmers[farmerId] = farmerDoc.data()
+          }
+        }
+      }
+
+      setFarmers(newFarmers)
     } catch (error) {
-      console.error('Error refreshing data:', error);
-    } finally {
-      setRefreshing(false);
+      console.error("Error fetching farmer info:", error)
     }
-  }, [reloadUser, fetchData]);
-
-  const handleReload = () => {
-    setLoading(true);
-    reloadUser();
-    fetchData().finally(() => setLoading(false));
-  };
-
-  if (isLoading || loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#FFC107" />
-        <TouchableOpacity onPress={handleReload} style={styles.reloadButton}>
-          <Text style={styles.reloadButtonText}>{t('reload')}</Text>
-        </TouchableOpacity>
-      </View>
-    );
   }
 
-  const formatTime = (timestamp: Timestamp): string => {
-    if (!timestamp) return '';
-    const date = timestamp.toDate();
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    
-    if (hours < 24) {
-      return hours === 0 ? t('justNow') : `${hours} ${t('hoursAgo')}`;
-    }
-    return date.toLocaleDateString();
-  };
+  const handleAcceptRequest = async (request) => {
+    try {
+      // Update the chat request status
+      await updateDoc(doc(db, "chatRequests", request.id), {
+        status: "accepted",
+        acceptedAt: serverTimestamp(),
+      })
 
-  return (
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={["#4CAF50"]}
-          tintColor="#4CAF50"
-          title={t('pullToRefresh')}
-          titleColor="#4CAF50"
-        />
+    const docRef = doc(db, "expert", currentUser.uid);
+
+      await updateDoc(docRef, {
+      "stats.totalConsultations": increment(1),
+    });
+
+      // Create a new entry in the consultations collection
+      const consultationData = {
+        farmerId: request.farmerId,
+        expertId: currentUser.uid,
+        status: "active",
+        chatRequestId: request.id,
+        createdAt: serverTimestamp(),
+        lastUpdated: serverTimestamp(),
+        lastMessage: "",
+        unreadCount: 0,
+        farmerName: farmers[request.farmerId]?.name || "Farmer",
+        expertName: currentUser.displayName || "Expert",
+        topic: "General Consultation"
       }
-    >
-      <View style={styles.header}>
-        <View style={[
-          styles.greetingContainer,
-          isRTL && styles.greetingContainerRTL
-        ]}>
-          <Text style={[
-            styles.greeting,
-            isRTL && styles.urduText
-          ]}>
-            {t('welcomeExpert')}
+
+      const consultationRef = await addDoc(collection(db, "consultations"), consultationData)
+
+      // Navigate to chat screen
+      router.push({
+        pathname: "/expert/ChatScreen",
+        params: {
+          farmerId: request.farmerId,
+          farmerName: farmers[request.farmerId]?.name || "Farmer",
+          requestId: request.id,
+          consultationId: consultationRef.id
+        },
+      })
+    } catch (error) {
+      console.error("Error accepting request:", error)
+      Alert.alert(t("Error"), t("Failed to accept request. Please try again."))
+    }
+  }
+
+  const handleRejectRequest = async (request) => {
+    try {
+      await updateDoc(doc(db, "chatRequests", request.id), {
+        status: "rejected",
+        rejectedAt: serverTimestamp(),
+      })
+    } catch (error) {
+      console.error("Error rejecting request:", error)
+      Alert.alert(t("Error"), t("Failed to reject request. Please try again."))
+    }
+  }
+
+  const handleOpenChat = (consultation) => {
+    router.push({
+      pathname: "/expert/ChatScreen",
+      params: {
+        farmerId: consultation.farmerId,
+        farmerName: consultation.farmerName || farmers[consultation.farmerId]?.name || "Farmer",
+        consultationId: consultation.id,
+        chatRequestId: consultation.chatRequestId
+      },
+    })
+  }
+
+  const renderRequestItem = ({ item }) => {
+    const farmer = farmers[item.farmerId] || {}
+
+    return (
+      <View style={styles.requestCard}>
+        <Image
+          source={farmer.profilePic ? { uri: farmer.profilePic } : require("../../assets/images/farmer.png")}
+          style={styles.farmerImage}
+        />
+        <View style={styles.requestInfo}>
+          <Text style={styles.farmerName}>{farmer.name || t("Farmer")}</Text>
+          <Text style={styles.requestTime}>
+            {item.createdAt?.toDate().toLocaleString() || new Date().toLocaleString()}
           </Text>
-          <Text style={[
-            styles.subGreeting,
-            isRTL && styles.urduText
-          ]}>
-            {t(profileData.specialization || 'Expert')}
-          </Text>
+          <Text style={styles.requestMessage}>{t("Requesting consultation")}</Text>
+        </View>
+        <View style={styles.requestActions}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.acceptButton]}
+            onPress={() => handleAcceptRequest(item)}
+          >
+            <Ionicons name="checkmark" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.rejectButton]}
+            onPress={() => handleRejectRequest(item)}
+          >
+            <Ionicons name="close" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
         </View>
       </View>
+    )
+  }
 
-      <View style={styles.statsContainer}>
-        <Card containerStyle={styles.statCard}>
-          <MaterialCommunityIcons name="clock-outline" size={24} color="#4CAF50" />
-          <Text style={styles.statNumber}>{stats.pendingConsultations}</Text>
-          <Text style={styles.statLabel}>{t('pendingConsultations')}</Text>
-        </Card>
+  const renderConsultationItem = ({ item }) => {
+    const farmer = farmers[item.farmerId] || {}
+    const lastMessageTime = item.lastUpdated?.toDate() || new Date()
+    const timeString = formatMessageTime(lastMessageTime)
 
-        <Card containerStyle={styles.statCard}>
-          <MaterialCommunityIcons name="check-circle-outline" size={24} color="#4CAF50" />
-          <Text style={styles.statNumber}>{stats.completedToday}</Text>
-          <Text style={styles.statLabel}>{t('completedToday')}</Text>
-        </Card>
-
-        <Card containerStyle={styles.statCard}>
-          <MaterialCommunityIcons name="star-outline" size={24} color="#4CAF50" />
-          <Text style={styles.statNumber}>{stats.rating.toFixed(1)}</Text>
-          <Text style={styles.statLabel}>{t('rating')}</Text>
-        </Card>
-      </View>
-
-      <View style={styles.consultationsContainer}>
-        <Text style={[
-          styles.sectionTitle,
-          isRTL && styles.urduText
-        ]}>
-          {t('recentConsultations')}
-        </Text>
-        {recentConsultations.map((consultation) => (
-          <View key={consultation.id} style={styles.consultationCard}>
-            <View style={[
-              styles.consultationHeader,
-              isRTL && styles.consultationHeaderRTL
-            ]}>
-              <MaterialCommunityIcons 
-                name="account-outline" 
-                size={24} 
-                color="#4CAF50" 
-                style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }}
-              />
-              <Text style={[
-                styles.farmerName,
-                isRTL && styles.urduText
-              ]}>
-                {consultation.farmerName}
-              </Text>
-              <Text style={styles.consultationTime}>{formatTime(consultation.timestamp)}</Text>
-            </View>
-            <Text style={[
-              styles.consultationQuery,
-              isRTL && styles.urduText
-            ]}>
-              {consultation.message}
-            </Text>
-            <TouchableOpacity 
-              style={[
-                styles.respondButton,
-                consultation.status === 'responded' && styles.respondedButton
-              ]}
-              onPress={() => {/* Handle response */}}
-              disabled={consultation.status === 'responded'}
-            >
-              <Text style={styles.respondButtonText}>
-                {consultation.status === 'responded' ? t('responded') : t('respond')}
-              </Text>
-            </TouchableOpacity>
+    return (
+      <TouchableOpacity style={styles.chatCard} onPress={() => handleOpenChat(item)}>
+        <Image
+          source={farmer.profilePic ? { uri: farmer.profilePic } : require("../../assets/images/farmer.png")}
+          style={styles.farmerImage}
+        />
+        <View style={styles.chatInfo}>
+          <View style={styles.chatHeader}>
+            <Text style={styles.farmerName}>{item.farmerName || farmer.name || t("Farmer")}</Text>
+            <Text style={styles.chatTime}>{timeString}</Text>
           </View>
-        ))}
-        {recentConsultations.length === 0 && (
-          <View style={styles.noConsultationsContainer}>
-            <MaterialCommunityIcons name="message-text-outline" size={48} color="#4CAF50" />
-            <Text style={[
-              styles.noConsultationsText,
-              isRTL && styles.urduText
-            ]}>
-              {t('noConsultationsYet')}
-            </Text>
+          <Text style={styles.consultationTopic}>{item.topic || t("General Consultation")}</Text>
+          <Text style={styles.lastMessage} numberOfLines={1} ellipsizeMode="tail">
+            {item.lastMessage || t("Start chatting")}
+          </Text>
+          {item.unreadCount > 0 && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+  const formatMessageTime = (date) => {
+    const now = new Date()
+    const diff = now - date
+    const oneDay = 24 * 60 * 60 * 1000
+
+    if (diff < oneDay) {
+      // Today, show time
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    } else if (diff < 2 * oneDay) {
+      // Yesterday
+      return t("Yesterday")
+    } else {
+      // Show date
+      return date.toLocaleDateString()
+    }
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFC107" />
+        <Text style={styles.loadingText}>{t("Loading messages...")}</Text>
+      </View>
+    )
+  }
+
+  return (
+    <View style={styles.container}>
+      {chatRequests.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("Consultation Requests")}</Text>
+          <FlatList
+            data={chatRequests}
+            renderItem={renderRequestItem}
+            keyExtractor={(item) => item.id}
+            horizontal={false}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      )}
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{t("Active Consultations")}</Text>
+        {activeConsultations.length > 0 ? (
+          <FlatList
+            data={activeConsultations}
+            renderItem={renderConsultationItem}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="chatbubble-ellipses-outline" size={60} color="#CCCCCC" />
+            <Text style={styles.emptyText}>{t("No active consultations")}</Text>
+            <Text style={styles.emptySubtext}>{t("When farmers request consultations, they will appear here")}</Text>
           </View>
         )}
       </View>
-    </ScrollView>
-  );
-};
+    </View>
+  )
+}
 
 const styles = StyleSheet.create({
-  loaderContainer: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#F5F5F5",
+    padding: 15,
   },
-  reloadButton: {
-    marginTop: 16,
-    padding: 10,
-    backgroundColor: '#4CAF50',
-    borderRadius: 8,
-  },
-  reloadButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    backgroundColor: '#F5F5F5',
-    padding: 16,
-  },
-  header: {
-    marginBottom: 24,
-    backgroundColor: '#4CAF50',
-    padding: 20,
-    borderRadius: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  greetingContainer: {
+  loadingContainer: {
     flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",  // Adding white background
   },
-  greetingContainerRTL: {
-    alignItems: 'flex-end',
+  loadingText: {
+    marginTop: 10,
+    color: "#666",
   },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFC107',
-    marginBottom: 8,
-  },
-  subGreeting: {
-    fontSize: 18,
-    color: '#E8F5E9',
-    marginBottom: 8,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  statCard: {
-    flex: 1,
-    margin: 4,
-    padding: 12,
-    alignItems: 'center',
-    borderRadius: 12,
-    elevation: 2,
-    backgroundColor: '#FFFFFF',
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    marginTop: 8,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666666',
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  consultationsContainer: {
-    marginBottom: 24,
+  section: {
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 16,
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
   },
-  consultationCard: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    backgroundColor: '#FFFFFF',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+  requestCard: {
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  consultationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
+  farmerImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 15,
   },
-  consultationHeaderRTL: {
-    flexDirection: 'row-reverse',
+  requestInfo: {
+    flex: 1,
+    justifyContent: "center",
   },
   farmerName: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
-    marginLeft: 8,
-    flex: 1,
+    fontWeight: "bold",
+    color: "#333",
   },
-  consultationTime: {
+  requestTime: {
     fontSize: 12,
-    color: '#666666',
+    color: "#999",
+    marginTop: 2,
   },
-  consultationQuery: {
+  requestMessage: {
     fontSize: 14,
-    color: '#444444',
-    marginBottom: 12,
+    color: "#666",
+    marginTop: 5,
   },
-  respondButton: {
-    backgroundColor: '#4CAF50',
-    padding: 8,
-    borderRadius: 8,
-    alignItems: 'center',
+  requestActions: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  respondButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
   },
-  respondedButton: {
-    backgroundColor: '#A5D6A7',
+  acceptButton: {
+    backgroundColor: "#4CAF50",
   },
-  noConsultationsContainer: {
-    alignItems: 'center',
-    padding: 32,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+  rejectButton: {
+    backgroundColor: "#FF6B6B",
+  },
+  chatCard: {
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
     elevation: 2,
   },
-  noConsultationsText: {
-    marginTop: 16,
+  chatInfo: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  chatHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  chatTime: {
+    fontSize: 12,
+    color: "#999",
+  },
+  consultationTopic: {
+    fontSize: 14,
+    color: "#4CAF50",
+    fontWeight: "500",
+    marginTop: 2,
+  },
+  lastMessage: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 5,
+  },
+  unreadBadge: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    backgroundColor: "#FF6B6B",
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  unreadCount: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 30,
+  },
+  emptyText: {
     fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#999",
+    marginTop: 10,
   },
-  urduText: {
-    textAlign: 'right',
-    writingDirection: 'rtl',
+  emptySubtext: {
+    fontSize: 14,
+    color: "#999",
+    textAlign: "center",
+    marginTop: 5,
   },
-});
+})
 
-export default MessagesTab;
+export default MessagesTab

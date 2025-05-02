@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Text } from "react-native"
+import { StyleSheet, TouchableOpacity, View, Dimensions, Image, Text, Alert } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { Input, Button, Icon } from "react-native-elements"
 import { useTranslation } from "react-i18next"
@@ -37,9 +37,9 @@ const SignIn = () => {
 
   const isRTL = i18n.language === "ur"
 
-  const showToast = (message: string, toastType: "success" | "error" | "info" = "error") => {
+  const showToast = (message: string, type: "success" | "error" | "info" = "error") => {
     setToastMessage(message)
-    setToastType(toastType)
+    setToastType(type)
     setToastVisible(true)
   }
 
@@ -75,16 +75,13 @@ const SignIn = () => {
 
       // Check if email is verified
       if (!response.user.emailVerified) {
-        // Navigate to verify email screen instead of showing error
         showToast(t("Please verify your email before signing in"), "info")
-        console.log("Email not verified:", response.user.email)
-        router.push("/VerifyEmailScreen")
+        setTimeout(() => {
+          router.push("/VerifyEmailScreen")
+        }, 1500)
         setLoading(false)
         return
       }
-
-      showToast(t("Sign-in successful"), "success")
-      console.log("Sign-in successful:", response.user.uid)
 
       // Check user document first
       const userDoc = await getDoc(doc(db, userType.toLowerCase(), response.user.uid))
@@ -95,14 +92,20 @@ const SignIn = () => {
         return
       }
 
+      showToast(t("Sign-in successful"), "success")
+
       // Store auth state
       await SecureStore.setItemAsync("userAuthenticated", "true")
       await SecureStore.setItemAsync("userType", userType)
       await SecureStore.setItemAsync("userEmail", email)
 
+
+      // Show success toast
+      
+
       // Determine navigation based on user type and new user status
-      let navigationTarget
       const isNewUser = userDoc.data().isNewUser
+      let navigationTarget = ""
 
       switch (userType.toLowerCase()) {
         case "farmer":
@@ -120,12 +123,12 @@ const SignIn = () => {
           return
       }
 
-      // Use requestAnimationFrame and setTimeout for safer navigation
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          router.replace(navigationTarget as any)
-        }, 100)
-      })
+      // Wait longer for success toast to be visible before navigating
+      
+        router.replace(navigationTarget)
+        setLoading(false)
+        return
+
     } catch (error: any) {
       console.error("Error:", error)
       let errMsg = t("An unexpected error occurred")
@@ -147,7 +150,6 @@ const SignIn = () => {
       setLoading(false)
     }
   }
-  toastMessage && <CustomToast visible={true} message={toastMessage} type="error" />
 
   const handleFormSubmit = () => {
     if (validateForm()) {
@@ -311,10 +313,10 @@ const SignIn = () => {
           {t("Don't Have Account")} <Text style={styles.signUpHighlight}>{t("Create Account")}</Text>
         </Text>
       </TouchableOpacity>
-      <Toast
-        visible={toastVisible}
-        message={toastMessage || ""}
-        type={toastType}
+      <Toast 
+        visible={toastVisible} 
+        message={toastMessage || ""} 
+        type={toastType} 
         onHide={() => setToastVisible(false)}
       />
     </View>
