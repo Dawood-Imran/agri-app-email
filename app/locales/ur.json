@@ -630,6 +630,15 @@
     "no_rain": "کوئی بارش نہیں"
   },
 
+  "chat": {
+    "online": "آن لائن",
+    "offline": "آف لائن",
+    "typeMessage": "پیغام ٹائپ کریں...",
+    "sendImage": "تصویر بھیجیں",
+    "sendVoice": "وائس پیغام بھیجیں",
+    "recording": "ریکارڈنگ...",
+    "tapToCancel": "منسوخ کرنے کے لیے ٹیپ کریں"
+  },
 
   "New Farmer": "نیا کسان",
   "New Expert": "نیا ماہر",

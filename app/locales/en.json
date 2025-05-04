@@ -25,7 +25,7 @@
   "buyCoins": "Buy Coins",
   "Enter Email": "Enter Email",
   "Field Details": "Field Details",
-  "AgriBot":"AgriBot",
+  "AgriBot": "AgriBot",
   "fieldDetails": {
     "title": "Field Details",
     "addFields": "Add Fields",
@@ -87,13 +87,13 @@
   "User details saved successfully": "User details saved successfully",
   "User not authenticated": "User not authenticated",
   "Wheat Yield Prediction": "Wheat Yield Prediction",
-  
+
   "Area": "Area",
   "acres": "acres",
   "Crop Type": "Crop Type",
   "Soil Type": "Soil Type",
   "Sowing Date": "Sowing Date",
-  
+
   "Estimated Yield": "Estimated Yield",
   "maunds": "maunds",
   "higher than city average": "higher than city average",
@@ -108,7 +108,7 @@
   "Predict Now": "Predict Now",
   "Update Prediction": "Update Prediction",
   "Prediction History": "Prediction History",
-  
+
   "Yield (maunds)": "Yield (maunds)",
   "Trend": "Trend",
   "Increased": "Increased",
@@ -172,7 +172,7 @@
   "Create Account": "Create Account",
   "Phone Number": "Phone Number",
   "Error": "Error",
-  
+
   "Name Required": "Name is required",
   "Phone Number Required": "Phone number is required",
   "Invalid Phone Number": "Invalid phone number format",
@@ -261,7 +261,7 @@
   "Payment Method": "Payment Method",
   "Shipping Address": "Shipping Address",
   "Billing Address": "Billing Address",
-  
+
   "landing": {
     "title": "Welcome to AgriBot",
     "options": {
@@ -272,7 +272,7 @@
       "fieldManagement": "🚜 Field Management Tips"
     }
   },
-  
+
   "common": {
     "loading": "Loading...",
     "submit": "Submit",
@@ -283,7 +283,7 @@
     "back": "Back",
     "next": "Next"
   },
-  
+
   "pestControl": {
     "title": "Pest Control Solutions",
     "labels": {
@@ -326,7 +326,7 @@
     },
     "submit": "Submit"
   },
-  
+
   "agribot": {
     "title": "Welcome to AgriBot",
     "description": "Your smart farming assistant. Get expert advice and solutions for your agricultural needs.",
@@ -341,11 +341,9 @@
     },
     "cropAdvice": {
       "title": "Crop Advice"
-     
     },
     "plantDiseases": {
       "title": "Plant Disease Identification"
-    
     }
   },
 
@@ -609,55 +607,54 @@
     "no_rain": "No Rain"
   },
 
-    "New Farmer": "New Farmer",
-    "New Expert": "New Expert",
-    "New Buyer": "New Buyer",
-    
-    "Please fill in the details below": "Please fill in the details below",
-    
-    "Specialization": "Specialization",
-    "Select Specialization": "Select Specialization",
-    "Crop Management": "Crop Management",
-    "Soil Science": "Soil Science",
-    "Pest Control": "Pest Control",
-    "Irrigation Systems": "Irrigation Systems",
-    "Organic Farming": "Organic Farming",
-    "Livestock Management": "Livestock Management",
-    "Horticulture": "Horticulture",
-    "Agricultural Economics": "Agricultural Economics",
-   
-    "Start Time": "Start Time",
-    "End Time": "End Time",
-    "Experience Years": "Experience Years",
-    "Select Experience": "Select Experience",
-    "1 year": "1 year",
-    "2 years": "2 years",
-    "3 years": "3 years",
-    "4 years": "4 years",
-    "5 years": "5 years",
-    "More than 5 years": "More than 5 years",
-    
-    "An error occurred while saving your information.": "An error occurred while saving your information.",
-    
-    "Please select your specialization": "Please select your specialization",
-    "Please enter your consultation hours": "Please enter your consultation hours",
-    "Please select your years of experience": "Please select your years of experience",
-    
-    "error": "Error",
-    "Success": "Success",
-    "Information saved successfully!": "Information saved successfully!",
-    "All fields are required": "All fields are required",
+  "New Farmer": "New Farmer",
+  "New Expert": "New Expert",
+  "New Buyer": "New Buyer",
 
+  "Please fill in the details below": "Please fill in the details below",
+
+  "Specialization": "Specialization",
+  "Select Specialization": "Select Specialization",
+  "Crop Management": "Crop Management",
+  "Soil Science": "Soil Science",
+  "Pest Control": "Pest Control",
+  "Irrigation Systems": "Irrigation Systems",
+  "Organic Farming": "Organic Farming",
+  "Livestock Management": "Livestock Management",
+  "Horticulture": "Horticulture",
+  "Agricultural Economics": "Agricultural Economics",
+
+  "Start Time": "Start Time",
+  "End Time": "End Time",
+  "Experience Years": "Experience Years",
+  "Select Experience": "Select Experience",
+  "1 year": "1 year",
+  "2 years": "2 years",
+  "3 years": "3 years",
+  "4 years": "4 years",
+  "5 years": "5 years",
+  "More than 5 years": "More than 5 years",
+
+  "An error occurred while saving your information.": "An error occurred while saving your information.",
+
+  "Please select your specialization": "Please select your specialization",
+  "Please enter your consultation hours": "Please enter your consultation hours",
+  "Please select your years of experience": "Please select your years of experience",
+
+  "error": "Error",
+  "Success": "Success",
+  "Information saved successfully!": "Information saved successfully!",
+  "All fields are required": "All fields are required",
 
   "welcomeFarmer": "Welcome to AgroBoost",
   "weatherCondition": "It's a {{condition}} day!",
   "loading": "Loading...",
   "welcomeExpert": "Welcome to AgroBoost Expert",
   "welcomeBuyer": "Welcome to AgroBoost Buyer",
-  
+
   "reload": "Reload",
   "noData": "No Data",
-  
+
   "pullToRefresh": "Pull to refresh",
   "refreshing": "Refreshing...",
   "weatherFetchError": "Weather Fetch Error",
@@ -674,21 +671,21 @@
 
   "activeConsultations": "Active Consultations",
   "completedConsultations": "Completed Consultations",
-  "active":"Active",
-  "completed":"Completed",
+  "active": "Active",
+  "completed": "Completed",
 
   "General Consultation": "General Consultation",
   "Active Consultations": "Active Consultations",
-  
+
   "Invalid email address": "Invalid email address",
   "User not found": "User not found",
   "Incorrect password": "Incorrect password",
   "noInternetConnection": "No Internet Connection",
-  "Invalid credentials":"Invalid credentials",
+  "Invalid credentials": "Invalid credentials",
   "An unexpected error occurred": "An unexpected error occurred",
   "Invalid user type": "Invalid user type",
   "Sign-in successful": "Sign-in successful",
-  
+
   "agriculturalExpert": "Agricultural Expert",
   "pendingConsultations": "Pending Consultations",
   "completedToday": "Completed Today",
@@ -705,8 +702,16 @@
   "send": "Send",
   "cancel": "Cancel",
   "responseSubmitted": "Response submitted successfully",
-  "errorSubmittingResponse": "Error submitting response. Please try again."
-  
+  "errorSubmittingResponse": "Error submitting response. Please try again.",
 
+  "chat": {
+    "online": "Online",
+    "offline": "Offline",
+    "typeMessage": "Type a message...",
+    "sendImage": "Send Image",
+    "sendVoice": "Send Voice Message",
+    "recording": "Recording...",
+    "tapToCancel": "Tap to cancel"
+  }
 }
 
