@@ -8,6 +8,7 @@ import { getAuth, signOut } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 
+
 const AccountTab = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -16,7 +17,7 @@ const AccountTab = () => {
   const handleLogout = async () => {
     const auth = getAuth();
     try {
-      // Sign out from Firebase
+      // Sign out from System
       await signOut(auth);
 
       // Clear AsyncStorage data
